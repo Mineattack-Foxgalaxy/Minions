@@ -1,0 +1,35 @@
+- Module:
+  - Bewegungsmodul     <--
+  - Angriffsmodul     <--
+  - Abbaumodul     <--
+  - Platziermodul / Verwendungsmodul     <--
+  - Werfmodul
+  - Inventarmanagementmodul     <--
+  - Inventaropenmodul
+
+- Detektoren:
+  - Blockdetektor     <--
+  - Entitydetektor     <
+  - Dimensiondetektor
+  - Positiondetektor
+  - Inventardetektor
+
+- Programmieren:
+  - Variablen
+  - (Listen)
+  - Warten
+  - Wiederholen
+    - Wiederhole bis/während
+    - Wiederhole x mal/(für jedes Element)
+  - Bedingung
+
+- VariableTypen:
+  - Integer
+  - String
+  - Position
+  - Block
+  - BlockType
+  - (NBT)
+  - (World)
+  - (Chunk)
+  - Inventory

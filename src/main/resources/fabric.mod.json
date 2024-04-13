@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "minions",
+  "version": "${version}",
+  "name": "Minions",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/falko/Minions"
+  },
+  "license": "MIT",
+  "icon": "assets/minions/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.github.skippyall.minions.client.MinionsClient"
+    ],
+    "main": [
+      "io.github.skippyall.minions.Minions"
+    ],
+    "server": [
+      "io.github.skippyall.minions.server.MinionsServer"
+    ]
+  },
+  "mixins": [
+    "minions.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
