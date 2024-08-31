@@ -15,7 +15,7 @@ import net.minecraft.server.network.ServerConfigurationNetworkHandler;
 import net.minecraft.util.Identifier;
 
 public class ClientToServerNetworking {
-    public static final Identifier RL = new Identifier(Minions.MOD_ID, "network");
+    /*public static final Identifier RL = Identifier.of(Minions.MOD_ID, "network");
     @Environment(EnvType.CLIENT)
     public static void sendJoinPacket(PlayerEntity player) {
         PacketByteBuf pbf = new PacketByteBuf(Unpooled.buffer());
@@ -36,5 +36,5 @@ public class ClientToServerNetworking {
         }
         String[] parts = message.split("|");
 
-    }
+    }*/
 }

@@ -2,23 +2,29 @@ package io.github.skippyall.minions.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.ProfileResult;
+import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.MinionInventory;
 import io.github.skippyall.minions.minion.ModuleInventory;
-import net.fabricmc.fabric.api.entity.FakePlayer;
+import io.github.skippyall.minions.program.runtime.MinionRuntime;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.NetworkSide;
+import net.minecraft.network.packet.StatusPackets;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerTask;
 import net.minecraft.server.network.ConnectedClientData;
@@ -32,6 +38,8 @@ import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.TeleportTarget;
+
 import java.util.UUID;
 
 public class MinionFakePlayer extends ServerPlayerEntity {
@@ -42,7 +50,8 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     private float moveSideways;
 
     private boolean programmable;
-    private ModuleInventory moduleInventory = new ModuleInventory();
+    private final ModuleInventory moduleInventory = new ModuleInventory();
+    private final MinionRuntime runtime = new MinionRuntime(this);
 
     public static void createMinion(String username, ServerWorld level, ServerPlayerEntity owner, boolean canProgram, Vec3d pos, double yaw, double pitch) {
         MinecraftServer server = level.getServer();
@@ -60,20 +69,18 @@ public class MinionFakePlayer extends ServerPlayerEntity {
             }
             MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, SyncedClientOptions.createDefault(), false, canProgram);
             instance.fixStartingPosition = () -> instance.refreshPositionAndAngles(pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
-            server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), instance, new ConnectedClientData(profile, 0, instance.getClientOptions()));
+            server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), instance, new ConnectedClientData(profile, 0, instance.getClientOptions(), false));
             instance.teleport(level, pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
             instance.setHealth(20.0F);
             instance.unsetRemoved();
+            instance.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT).setBaseValue(0.6F);
             instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
             server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
             server.getPlayerManager().sendToDimension(new EntityPositionS2CPacket(instance), level.getRegistryKey());//instance.dimension);
             //instance.world.getChunkManager(). updatePosition(instance);
             instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
             instance.getAbilities().flying = false;
-            instance.setStepHeight(0.6F);
         });
-
-
     }
 
     @SuppressWarnings("unused") //Don't know if I'll need this
@@ -85,7 +92,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         GameProfile gameprofile = player.getGameProfile();
         MinionFakePlayer playerShadow = new MinionFakePlayer(server, worldIn, gameprofile, player.getClientOptions(), true, false);
         playerShadow.setSession(player.getSession());
-        server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), playerShadow, new ConnectedClientData(gameprofile, 0, player.getClientOptions()));
+        server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), playerShadow, new ConnectedClientData(gameprofile, 0, player.getClientOptions(), false));
 
         playerShadow.setHealth(player.getHealth());
         playerShadow.networkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
@@ -121,7 +128,11 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         return moduleInventory;
     }
 
-    public EntityPlayerActionPack getActionPack() {
+    public MinionRuntime getRuntime() {
+        return runtime;
+    }
+
+    public EntityPlayerActionPack getMinionActionPack() {
         return ((ServerPlayerInterface)this).getActionPack();
     }
 
@@ -155,10 +166,10 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         shakeOff();
 
         if (reason.getContent() instanceof TranslatableTextContent text && text.getKey().equals("multiplayer.disconnect.duplicate_login")) {
-            this.networkHandler.onDisconnected(reason);
+            this.networkHandler.onDisconnected(new DisconnectionInfo(reason));
         } else {
             this.server.send(new ServerTask(this.server.getTicks(), () -> {
-                this.networkHandler.onDisconnected(reason);
+                this.networkHandler.onDisconnected(new DisconnectionInfo(reason));
             }));
         }
     }
@@ -181,7 +192,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
             // happens with that paper port thingy - not sure what that would fix, but hey
             // the game not gonna crash violently.
         }
-
+        runtime.tick();
 
     }
 
@@ -221,9 +232,9 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     @Override
-    public Entity moveToWorld(ServerWorld serverLevel)
+    public Entity teleportTo(TeleportTarget target)
     {
-        super.moveToWorld(serverLevel);
+        super.teleportTo(target);
         if (notInAnyWorld) {
             ClientStatusC2SPacket p = new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN);
             networkHandler.onClientStatus(p);
@@ -239,7 +250,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
 
     public void moveForward(float forward) {
         this.moveForward += forward;
-        EntityPlayerActionPack actionPack = getActionPack();
+        EntityPlayerActionPack actionPack = getMinionActionPack();
         if (moveForward != 0) {
             actionPack.setForward(moveForward > 0 ? 1 : -1);
         }
@@ -247,7 +258,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
 
     public void moveSideways(float sideways) {
         this.moveSideways += sideways;
-        EntityPlayerActionPack actionPack = getActionPack();
+        EntityPlayerActionPack actionPack = getMinionActionPack();
         if (moveSideways != 0) {
             actionPack.setStrafing(moveSideways > 0 ? 1 : -1);
         }
@@ -261,17 +272,39 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         if ((newForward < 0 && moveForward >= 0) || (newForward > 0 && moveForward <= 0)) {
             newMovement = new Vec3d(newMovement.x, newMovement.y, moveForward);
             moveForward = 0;
-            getActionPack().setForward(0);
+            getMinionActionPack().setForward(0);
         }else {
             moveForward = newForward;
         }
         if ((newSideways < 0 && moveSideways >= 0) || (newSideways > 0 && moveSideways <= 0)) {
             newMovement = new Vec3d(newMovement.x, newMovement.y, moveSideways);
             moveSideways = 0;
-            getActionPack().setStrafing(0);
+            getMinionActionPack().setStrafing(0);
         }else {
             moveSideways = newSideways;
         }
         super.move(movementType, newMovement);
+    }
+
+    @Override
+    protected void drop(ServerWorld world, DamageSource damageSource) {
+        super.drop(world, damageSource);
+        dropItem(new ItemStack(Minions.MINION_ITEM), true, false);
+        for(ItemStack item : moduleInventory.getItems()) {
+            dropItem(item, true, false);
+        }
+        moduleInventory.clear();
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.put("modules", moduleInventory.writeNbt(new NbtCompound(), getRegistryManager()));
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        moduleInventory.readNbt(nbt.getCompound("modules"), getRegistryManager());
     }
 }

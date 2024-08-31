@@ -3,6 +3,7 @@ package io.github.skippyall.minions.fakeplayer;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
+import net.minecraft.network.NetworkState;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.text.Text;
 
@@ -22,7 +23,6 @@ public class FakeClientConnection extends ClientConnection {
 
     @Override
     public void handleDisconnection() {
-        getPacketListener().onDisconnected(getDisconnectReason()==null ? Text.literal("Disconnected"): getDisconnectReason());
     }
 
     @Override
@@ -31,7 +31,6 @@ public class FakeClientConnection extends ClientConnection {
     }
 
     @Override
-    public void setPacketListener(PacketListener packetListener) {
-
+    public <T extends PacketListener> void transitionInbound(NetworkState<T> state, T packetListener) {
     }
 }

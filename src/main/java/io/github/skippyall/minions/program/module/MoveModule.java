@@ -16,8 +16,8 @@ public class MoveModule extends Module {
         super("Movement");
     }
 
-    public List<CodeBlock> getCodeBlocks() {
-        List<CodeBlock> codeBlocks = new ArrayList<>();
+    public List<CodeBlock<?,?>> getCodeBlocks() {
+        List<CodeBlock<?,?>> codeBlocks = new ArrayList<>();
         codeBlocks.add(CodeBlocks.GO);
         return codeBlocks;
     }

@@ -11,6 +11,6 @@ public class MinionsClient implements ClientModInitializer {
      */
     @Override
     public void onInitializeClient() {
-        ClientConfigurationConnectionEvents.INIT.register(ClientToServerNetworking::onConfigurationInit);
+        //ClientConfigurationConnectionEvents.INIT.register(ClientToServerNetworking::onConfigurationInit);
     }
 }

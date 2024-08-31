@@ -6,12 +6,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 public class ModuleInventory implements ImplementedInventory {
-    private static final TagKey<Item> MODULES = TagKey.of(RegistryKeys.ITEM, new Identifier(Minions.MOD_ID,"modules"));
+    private static final TagKey<Item> MODULES = TagKey.of(RegistryKeys.ITEM, Identifier.of(Minions.MOD_ID,"modules"));
     private DefaultedList<ItemStack> stacks = DefaultedList.ofSize(27, ItemStack.EMPTY);
 
     public ModuleInventory() {
@@ -32,11 +33,11 @@ public class ModuleInventory implements ImplementedInventory {
         return stacks;
     }
 
-    public void readNbt(NbtCompound nbt) {
-        Inventories.readNbt(nbt, stacks);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        Inventories.readNbt(nbt, stacks, lookup);
     }
 
-    public void writeNbt(NbtCompound nbt) {
-        Inventories.writeNbt(nbt, stacks);
+    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
+        return Inventories.writeNbt(nbt, stacks, lookup);
     }
 }

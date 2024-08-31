@@ -3,22 +3,20 @@ package io.github.skippyall.minions.minion;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.PlainTextContent;
-import net.minecraft.text.TextContent;
 import net.minecraft.util.ActionResult;
 import org.jetbrains.annotations.Nullable;
 
 public class MinionItem extends Item implements PolymerItem {
-    private boolean canProgram;
+    private final boolean canProgram;
     public MinionItem(boolean canProgram) {
-        super(new FabricItemSettings());
+        super(new Item.Settings());
+        this.canProgram  = canProgram;
     }
 
     @Override
@@ -27,9 +25,9 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack stack, TooltipContext flag, ServerPlayerEntity player) {
-        ItemStack out = PolymerItemUtils.createItemStack(stack, flag, player);
-        out.addEnchantment(Enchantments.MENDING, 1);
+    public ItemStack getPolymerItemStack(ItemStack stack, TooltipType tooltipType, RegistryWrapper.WrapperLookup lookup, ServerPlayerEntity player) {
+        ItemStack out = PolymerItemUtils.createItemStack(stack, lookup, player);
+        out.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
         return out;
     }
 

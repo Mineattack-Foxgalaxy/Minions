@@ -11,12 +11,13 @@ import net.minecraft.server.network.ServerConfigurationNetworkHandler;
 public class MinionsServer implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
-        ServerConfigurationNetworking.registerGlobalReceiver(ClientToServerNetworking.RL, ClientToServerNetworking::receive);
+        /*ServerConfigurationNetworking.registerGlobalReceiver(ClientToServerNetworking.RL, ClientToServerNetworking::receive);
         ServerConfigurationConnectionEvents.CONFIGURE.register(new ServerConfigurationConnectionEvents.Configure() {
             @Override
             public void onSendConfiguration(ServerConfigurationNetworkHandler handler, MinecraftServer server) {
                 VersionChecker.resetPlayer(handler.getDebugProfile().getId());
             }
-        });
+        });*/
+
     }
 }
