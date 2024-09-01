@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " H ",
+    "SAS",
+    " L "
+  ],
+  "key": {
+    "H": "#minions:heads",
+    "S": "minecraft:stick",
+    "A": "minecraft:armor_stand",
+    "L": "minecraft:lodestone"
+  },
+  "result": {
+    "id": "minions:minion",
+    "count": 1
+  }
+}
