@@ -16,10 +16,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import org.apache.logging.log4j.core.jmx.Server;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -49,7 +46,7 @@ public class PlayerListMixin {
     @WrapOperation(method = "respawnPlayer", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/server/world/ServerWorld;Lcom/mojang/authlib/GameProfile;Lnet/minecraft/network/packet/c2s/common/SyncedClientOptions;)Lnet/minecraft/server/network/ServerPlayerEntity;"))
     public ServerPlayerEntity makePlayerForRespawn(MinecraftServer minecraftServer, ServerWorld serverLevel, GameProfile gameProfile, SyncedClientOptions clientInformation, Operation<ServerPlayerEntity> original, ServerPlayerEntity serverPlayer, boolean bl) {
         if (serverPlayer instanceof MinionFakePlayer minion) {
-            return MinionFakePlayer.respawnFake(minecraftServer, serverLevel, gameProfile, clientInformation, minion.isProgrammable());
+            return MinionFakePlayer.respawnFake(minecraftServer, serverLevel, gameProfile, clientInformation);
         }
         return original.call(minecraftServer, serverLevel, gameProfile, clientInformation);
     }

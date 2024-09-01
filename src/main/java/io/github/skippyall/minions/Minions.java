@@ -33,7 +33,7 @@ public class Minions implements ModInitializer {
             MinionPersistentState.create(server);
             MinionPersistentState.INSTANCE.getMinionData().forEach(data -> {
                 System.out.println("spawn Minion " + data.name);
-                MinionFakePlayer.spawnMinion(data, server.getOverworld());
+                MinionFakePlayer.spawnMinionAt(data, server.getOverworld(), null, null);
             });
         });
         ServerTickEvents.START_SERVER_TICK.register(server -> {

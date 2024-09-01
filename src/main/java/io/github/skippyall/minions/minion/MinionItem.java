@@ -3,8 +3,6 @@ package io.github.skippyall.minions.minion;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
-import net.minecraft.client.render.VertexFormatElement;
-import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.*;
@@ -15,6 +13,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
 
 public class MinionItem extends Item implements PolymerItem {
@@ -46,28 +45,29 @@ public class MinionItem extends Item implements PolymerItem {
             name = "Minion";
         }
         if(!context.getWorld().isClient) {
-            MinionPersistentState.MinionData data = getData(context.getStack());
+            MinionData data = getData(context.getStack());
             if (data == null) {
                 MinionFakePlayer.createMinion(name, (ServerWorld) context.getWorld(), (ServerPlayerEntity) context.getPlayer(), canProgram, context.getBlockPos().toCenterPos().add(0,0.5,0), 0, 0);
             }else {
-                MinionFakePlayer.spawnMinionAt(data, (ServerWorld) context.getWorld(), context.getBlockPos().toCenterPos().add(0,0.5,0), 0, 0);
+                MinionFakePlayer.spawnMinionAt(data, (ServerWorld) context.getWorld(), context.getBlockPos().toCenterPos().add(0,0.5,0), new Vec2f(0, 0));
                 MinionPersistentState.INSTANCE.addMinion(data);
             }
         }
+        context.getStack().decrement(1);
         return ActionResult.SUCCESS;
     }
 
-    public static void setData(MinionPersistentState.MinionData data, ItemStack item) {
+    public static void setData(MinionData data, ItemStack item) {
         NbtCompound nbt = item.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
         nbt.put("data", data.writeNbt());
         item.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 
     @Nullable
-    public static MinionPersistentState.MinionData getData(ItemStack item) {
+    public static MinionData getData(ItemStack item) {
         NbtCompound nbt = item.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
         if (nbt.getType("data") == NbtElement.COMPOUND_TYPE) {
-            return MinionPersistentState.MinionData.readNbt(nbt.getCompound("data"));
+            return MinionData.readNbt(nbt.getCompound("data"));
         }
         return null;
     }
