@@ -16,7 +16,7 @@ public class MinionPersistentState extends PersistentState {
 
     public static MinionPersistentState INSTANCE;
 
-    public static List<MinionData> minionData = new ArrayList<>();
+    private List<MinionData> minionData = new ArrayList<>();
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
@@ -30,10 +30,42 @@ public class MinionPersistentState extends PersistentState {
 
     public static MinionPersistentState read(NbtCompound compound, RegistryWrapper.WrapperLookup lookup) {
         NbtList list = compound.getList("minions", NbtElement.COMPOUND_TYPE);
+        MinionPersistentState instance = new MinionPersistentState();
         for(NbtElement element : list) {
-            minionData.add(MinionData.readNbt((NbtCompound) element));
+            instance.addMinion(MinionData.readNbt((NbtCompound) element));
         }
-        return new MinionPersistentState();
+        return instance;
+    }
+
+    public void addMinion(MinionFakePlayer minion) {
+        addMinion(MinionData.fromMinion(minion));
+    }
+
+    public void addMinion(MinionData data) {
+        System.out.println("add Minion " + data.name);
+        minionData.add(data);
+        markDirty();
+    }
+
+    public void removeMinion(MinionFakePlayer minionData) {
+        removeMinion(minionData.getUuid());
+    }
+
+    public void removeMinion(UUID minionUUID) {
+        MinionData removal = null;
+        for (MinionData data : minionData) {
+            if (data.uuid.equals(minionUUID)) {
+                removal = data;
+            }
+        }
+        if (removal != null) {
+            minionData.remove(removal);
+        }
+        markDirty();
+    }
+
+    public List<MinionData> getMinionData() {
+        return minionData;
     }
 
     public static void create(MinecraftServer server) {
@@ -42,9 +74,13 @@ public class MinionPersistentState extends PersistentState {
 
     public static class MinionData {
         public UUID uuid;
+        public String name;
+        public boolean programmable;
 
-        public MinionData(UUID uuid) {
+        public MinionData(UUID uuid, String name, boolean programmable) {
             this.uuid = uuid;
+            this.name = name;
+            this.programmable = programmable;
         }
 
         public NbtCompound writeNbt() {
@@ -62,6 +98,8 @@ public class MinionPersistentState extends PersistentState {
             nbt.put("rotation", rotList);*/
 
             nbt.putUuid("uuid", uuid);
+            nbt.putString("name", name);
+            nbt.putBoolean("programmable", programmable);
 
             return nbt;
         }
@@ -79,12 +117,14 @@ public class MinionPersistentState extends PersistentState {
             Vec2f rot = new Vec2f(yaw, pitch);*/
 
             UUID uuid = nbt.getUuid("uuid");
+            String name = nbt.getString("name");
+            boolean programmable = nbt.getBoolean("programmable");
 
-            return new MinionData(uuid);
+            return new MinionData(uuid, name, programmable);
         }
 
         public static MinionData fromMinion(MinionFakePlayer minion) {
-            return new MinionData(minion.getUuid());
+            return new MinionData(minion.getUuid(), minion.getMinionName(), minion.isProgrammable());
         }
     }
 }
