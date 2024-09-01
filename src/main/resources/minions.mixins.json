@@ -4,6 +4,7 @@
   "package": "io.github.skippyall.minions.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ChunkTicketManagerFixMixin",
     "ConnectionMixin",
     "Debug2Mixin",
     "DebugMixin",
