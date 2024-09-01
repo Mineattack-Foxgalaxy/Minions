@@ -4,11 +4,16 @@
   "package": "io.github.skippyall.minions.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ChunkTicketManagerFixMixin",
     "ConnectionMixin",
+    "Debug2Mixin",
+    "DebugMixin",
+    "GameProfileMixin",
     "MinecraftServerMixin",
     "PlayerListEntryS2CPacket$EntryMixin",
     "PlayerListMixin",
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "ServerPlayNetworkHandlerMixin"
   ],
   "client": [],
   "server": [],

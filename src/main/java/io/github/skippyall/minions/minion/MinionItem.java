@@ -3,9 +3,14 @@ package io.github.skippyall.minions.minion;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
+import net.minecraft.client.render.VertexFormatElement;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -41,8 +46,37 @@ public class MinionItem extends Item implements PolymerItem {
             name = "Minion";
         }
         if(!context.getWorld().isClient) {
-            MinionFakePlayer.createMinion(name, (ServerWorld) context.getWorld(), (ServerPlayerEntity) context.getPlayer(), canProgram, context.getBlockPos().toCenterPos().add(0,0.5,0), 0, 0);
+            MinionPersistentState.MinionData data = getData(context.getStack());
+            if (data == null) {
+                MinionFakePlayer.createMinion(name, (ServerWorld) context.getWorld(), (ServerPlayerEntity) context.getPlayer(), canProgram, context.getBlockPos().toCenterPos().add(0,0.5,0), 0, 0);
+            }else {
+                MinionFakePlayer.spawnMinionAt(data, (ServerWorld) context.getWorld(), context.getBlockPos().toCenterPos().add(0,0.5,0), 0, 0);
+                MinionPersistentState.INSTANCE.addMinion(data);
+            }
         }
         return ActionResult.SUCCESS;
+    }
+
+    public static void setData(MinionPersistentState.MinionData data, ItemStack item) {
+        NbtCompound nbt = item.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
+        nbt.put("data", data.writeNbt());
+        item.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+    }
+
+    @Nullable
+    public static MinionPersistentState.MinionData getData(ItemStack item) {
+        NbtCompound nbt = item.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
+        if (nbt.getType("data") == NbtElement.COMPOUND_TYPE) {
+            return MinionPersistentState.MinionData.readNbt(nbt.getCompound("data"));
+        }
+        return null;
+    }
+
+    public static boolean containsData(ItemStack item) {
+        NbtComponent nbt = item.get(DataComponentTypes.CUSTOM_DATA);
+        if (nbt == null) {
+            return false;
+        }
+        return nbt.copyNbt().contains("data");
     }
 }

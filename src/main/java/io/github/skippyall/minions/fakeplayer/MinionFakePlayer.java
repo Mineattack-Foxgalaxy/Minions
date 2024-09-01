@@ -4,9 +4,14 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.MinionInventory;
+import io.github.skippyall.minions.minion.MinionItem;
+import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.ModuleInventory;
+import io.github.skippyall.minions.mixins.GameProfileMixin;
 import io.github.skippyall.minions.program.runtime.MinionRuntime;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.MovementType;
@@ -18,13 +23,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.NetworkSide;
-import net.minecraft.network.packet.StatusPackets;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerTask;
 import net.minecraft.server.network.ConnectedClientData;
@@ -34,12 +37,12 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.TeleportTarget;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class MinionFakePlayer extends ServerPlayerEntity {
@@ -56,30 +59,112 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     public static void createMinion(String username, ServerWorld level, ServerPlayerEntity owner, boolean canProgram, Vec3d pos, double yaw, double pitch) {
         MinecraftServer server = level.getServer();
         server.getUserCache().findByNameAsync(username).thenAcceptAsync((optional) -> {
+            try {
+                GameProfile profile = null;
+                if(optional.isPresent()){
+                    UUID uuid = optional.get().getId();
+                    ProfileResult result = server.getSessionService().fetchProfile(uuid, true);
+                    if(result != null) {
+                        profile = result.profile();
+                    }
+                }
+                if(profile == null) {
+                    profile = new GameProfile(new UUID(0,0), username);
+                }
+                GameProfile newProfile = new GameProfile(UUID.randomUUID(), username);
+                newProfile.getProperties().putAll(profile.getProperties());
+                GameProfile finalProfile = newProfile;
+                ((GameProfileMixin)finalProfile).setId(UUID.randomUUID());
+                Minions.addExecuteOnNextTick(() -> {
+                    MinionFakePlayer instance = new MinionFakePlayer(server, level, finalProfile, SyncedClientOptions.createDefault(), false, canProgram);
+                    instance.fixStartingPosition = () -> instance.refreshPositionAndAngles(pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
+                    server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), instance, new ConnectedClientData(finalProfile, 0, instance.getClientOptions(), false));
+                    instance.teleport(level, pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
+                    instance.setHealth(20.0F);
+                    instance.unsetRemoved();
+                    instance.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT).setBaseValue(0.6F);
+                    instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
+                    server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
+                    server.getPlayerManager().sendToDimension(new EntityPositionS2CPacket(instance), level.getRegistryKey());//instance.dimension);
+                    //instance.world.getChunkManager(). updatePosition(instance);
+                    instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
+                    instance.getAbilities().flying = false;
+                    MinionPersistentState.INSTANCE.addMinion(instance);
+                });
+            }catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
+    public static void spawnMinion(MinionPersistentState.MinionData data, ServerWorld level) {
+        MinecraftServer server = level.getServer();
+        server.getUserCache().findByNameAsync(data.name).thenAcceptAsync((optional) -> {
             GameProfile profile = null;
-            if(optional.isPresent()){
-                UUID uuid = optional.get().getId();
-                ProfileResult result = server.getSessionService().fetchProfile(uuid, true);
-                if(result != null) {
+            if (optional.isPresent()) {
+                ProfileResult result = server.getSessionService().fetchProfile(optional.get().getId(), true);
+                if (result != null) {
                     profile = result.profile();
                 }
             }
-            if(profile == null) {
-                profile = new GameProfile(Uuids.getOfflinePlayerUuid(username), username);
+            if (profile == null) {
+                profile = new GameProfile(new UUID(0, 0), data.name);
             }
-            MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, SyncedClientOptions.createDefault(), false, canProgram);
-            instance.fixStartingPosition = () -> instance.refreshPositionAndAngles(pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
-            server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), instance, new ConnectedClientData(profile, 0, instance.getClientOptions(), false));
-            instance.teleport(level, pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
-            instance.setHealth(20.0F);
-            instance.unsetRemoved();
-            instance.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT).setBaseValue(0.6F);
-            instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
-            server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
-            server.getPlayerManager().sendToDimension(new EntityPositionS2CPacket(instance), level.getRegistryKey());//instance.dimension);
-            //instance.world.getChunkManager(). updatePosition(instance);
-            instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
-            instance.getAbilities().flying = false;
+            GameProfile newProfile = new GameProfile(data.uuid, data.name);
+            newProfile.getProperties().putAll(profile.getProperties());
+            GameProfile finalProfile = newProfile;
+            ((GameProfileMixin)finalProfile).setId(data.uuid);
+            Minions.addExecuteOnNextTick(() -> {
+                MinionFakePlayer instance = new MinionFakePlayer(server, level, finalProfile, SyncedClientOptions.createDefault(), false, data.programmable);
+                System.out.println(instance.getPos());
+                server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), instance, new ConnectedClientData(finalProfile, 0, instance.getClientOptions(), false));
+                System.out.println(instance.getPos());
+                instance.setHealth(20.0F);
+                instance.unsetRemoved();
+                instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
+                server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
+                server.getPlayerManager().sendToDimension(new EntityPositionS2CPacket(instance), level.getRegistryKey());//instance.dimension);
+                //instance.world.getChunkManager(). updatePosition(instance);
+                instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
+                instance.getAbilities().flying = false;
+            });
+        });
+    }
+
+    public static void spawnMinionAt(MinionPersistentState.MinionData data, ServerWorld level, Vec3d pos, double yaw, double pitch) {
+        MinecraftServer server = level.getServer();
+        server.getUserCache().findByNameAsync(data.name).thenAcceptAsync((optional) -> {
+            GameProfile profile = null;
+            if (optional.isPresent()) {
+                ProfileResult result = server.getSessionService().fetchProfile(optional.get().getId(), true);
+                if (result != null) {
+                    profile = result.profile();
+                }
+            }
+            if (profile == null) {
+                profile = new GameProfile(new UUID(0, 0), data.name);
+            }
+            GameProfile newProfile = new GameProfile(data.uuid, data.name);
+            newProfile.getProperties().putAll(profile.getProperties());
+            GameProfile finalProfile = newProfile;
+            ((GameProfileMixin)finalProfile).setId(data.uuid);
+            Minions.addExecuteOnNextTick(() -> {
+                MinionFakePlayer instance = new MinionFakePlayer(server, level, finalProfile, SyncedClientOptions.createDefault(), false, data.programmable);
+                instance.fixStartingPosition = () -> instance.refreshPositionAndAngles(pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
+                System.out.println(instance.getPos());
+                server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), instance, new ConnectedClientData(finalProfile, 0, instance.getClientOptions(), false));
+                System.out.println(instance.getPos());
+                instance.teleport(level, pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
+                instance.setVelocity(0,0,0);
+                instance.setHealth(20.0F);
+                instance.unsetRemoved();
+                instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
+                server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
+                server.getPlayerManager().sendToDimension(new EntityPositionS2CPacket(instance), level.getRegistryKey());//instance.dimension);
+                //instance.world.getChunkManager(). updatePosition(instance);
+                instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
+                instance.getAbilities().flying = false;
+            });
         });
     }
 
@@ -117,7 +202,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     {
         super(server, worldIn, profile, cli);
         isAShadow = shadow;
-
+        this.programmable = programmable;
     }
 
     public boolean isProgrammable() {
@@ -155,11 +240,11 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         if (!isUsingItem()) super.onEquipStack(slot, previous, stack);
     }
 
-    @Override
+    /*@Override
     public void kill()
     {
         kill(Text.literal("Killed"));
-    }
+    }*/
 
     public void kill(Text reason)
     {
@@ -172,6 +257,8 @@ public class MinionFakePlayer extends ServerPlayerEntity {
                 this.networkHandler.onDisconnected(new DisconnectionInfo(reason));
             }));
         }
+
+        MinionPersistentState.INSTANCE.removeMinion(this);
     }
 
     @Override
@@ -269,14 +356,14 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         float newForward = (float) (moveForward - movement.z);
         float newSideways = (float) (moveSideways - movement.x);
         Vec3d newMovement = movement;
-        if ((newForward < 0 && moveForward >= 0) || (newForward > 0 && moveForward <= 0)) {
+        if ((newForward < 0 && moveForward > 0) || (newForward > 0 && moveForward < 0)) {
             newMovement = new Vec3d(newMovement.x, newMovement.y, moveForward);
             moveForward = 0;
             getMinionActionPack().setForward(0);
         }else {
             moveForward = newForward;
         }
-        if ((newSideways < 0 && moveSideways >= 0) || (newSideways > 0 && moveSideways <= 0)) {
+        if ((newSideways < 0 && moveSideways > 0) || (newSideways > 0 && moveSideways < 0)) {
             newMovement = new Vec3d(newMovement.x, newMovement.y, moveSideways);
             moveSideways = 0;
             getMinionActionPack().setStrafing(0);
@@ -289,11 +376,20 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     @Override
     protected void drop(ServerWorld world, DamageSource damageSource) {
         super.drop(world, damageSource);
-        dropItem(new ItemStack(Minions.MINION_ITEM), true, false);
+        dropItem(toItemStack(), true, false);
         for(ItemStack item : moduleInventory.getItems()) {
             dropItem(item, true, false);
         }
         moduleInventory.clear();
+    }
+
+    private ItemStack toItemStack() {
+        ItemStack stack = new ItemStack(Minions.MINION_ITEM);
+        MinionItem.setData(MinionPersistentState.MinionData.fromMinion(this), stack);
+        if (!getMinionName().equals("Minion")) {
+            stack.set(DataComponentTypes.CUSTOM_NAME, Text.of(getMinionName()));
+        }
+        return stack;
     }
 
     @Override
@@ -306,5 +402,9 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         moduleInventory.readNbt(nbt.getCompound("modules"), getRegistryManager());
+    }
+
+    public String getMinionName() {
+        return getGameProfile().getName();
     }
 }
