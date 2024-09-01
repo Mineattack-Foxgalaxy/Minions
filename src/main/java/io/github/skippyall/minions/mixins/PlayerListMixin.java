@@ -2,6 +2,7 @@ package io.github.skippyall.minions.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.fakeplayer.NetHandlerPlayServerFake;
@@ -51,5 +52,12 @@ public class PlayerListMixin {
             return MinionFakePlayer.respawnFake(minecraftServer, serverLevel, gameProfile, clientInformation, minion.isProgrammable());
         }
         return original.call(minecraftServer, serverLevel, gameProfile, clientInformation);
+    }
+
+    @WrapOperation(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V"))
+    public void noLoginMessage(PlayerManager instance, Text message, boolean overlay, Operation<Void> original, @Local(argsOnly = true) ServerPlayerEntity player) {
+        if(!(player instanceof MinionFakePlayer)) {
+            original.call(instance, message, overlay);
+        }
     }
 }
