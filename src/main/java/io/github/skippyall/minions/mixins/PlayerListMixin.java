@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.mixins;
 
+import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -20,6 +21,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mixin(PlayerManager.class)
 public class PlayerListMixin {
@@ -56,5 +61,12 @@ public class PlayerListMixin {
         if(!(player instanceof MinionFakePlayer)) {
             original.call(instance, message, overlay);
         }
+    }
+
+    @ModifyReceiver(method = "checkCanJoin", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
+    public List<ServerPlayerEntity> noMinionCounting(List<ServerPlayerEntity> instance) {
+        return instance.stream()
+                .filter(player -> !(player instanceof MinionFakePlayer))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

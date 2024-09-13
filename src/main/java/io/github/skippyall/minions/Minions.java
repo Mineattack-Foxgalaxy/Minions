@@ -1,12 +1,16 @@
 package io.github.skippyall.minions;
 
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
+import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionPersistentState;
+import io.github.skippyall.minions.module.Modules;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
@@ -20,6 +24,7 @@ import java.util.List;
 public class Minions implements ModInitializer {
     public static final String MOD_ID = "minions";
     public static final MinionItem MINION_ITEM = Registry.register(Registries.ITEM, Identifier.of(MOD_ID, "minion"), new MinionItem(false));
+    public static final SimplePolymerItem BASIC_UPGRADE_BASE = Registry.register(Registries.ITEM, Identifier.of(MOD_ID, "basic_upgrade_base"), new SimplePolymerItem(new Item.Settings(), Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE));
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -44,6 +49,8 @@ public class Minions implements ModInitializer {
                 executeOnNextTick.clear();
             });
         });
+
+        Modules.register();
     }
 
     private static synchronized void exec(Runnable run) {

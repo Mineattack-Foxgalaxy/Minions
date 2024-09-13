@@ -5,6 +5,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.github.skippyall.minions.mixins.EntityAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -167,12 +169,13 @@ public class EntityPlayerActionPack
 
     public EntityPlayerActionPack mount(boolean onlyRideables)
     {
+
         //test what happens
         List<Entity> entities;
         if (onlyRideables)
         {
             entities = player.getWorld().getOtherEntities(player, player.getBoundingBox().expand(3.0D, 1.0D, 3.0D),
-                    e -> e instanceof MinecartEntity || e instanceof BoatEntity || e instanceof AbstractHorseEntity);
+                    e -> (e instanceof MinecartEntity || e instanceof BoatEntity || e instanceof AbstractHorseEntity) && ((EntityAccessor)e).invokeCanAddPassenger(player));
         }
         else
         {
@@ -198,7 +201,7 @@ public class EntityPlayerActionPack
         if (closest instanceof AbstractHorseEntity && onlyRideables)
             ((AbstractHorseEntity) closest).interactMob(player, Hand.MAIN_HAND);
         else
-            player.startRiding(closest,true);
+            player.startRiding(closest, !onlyRideables);
         return this;
     }
     public EntityPlayerActionPack dismount()

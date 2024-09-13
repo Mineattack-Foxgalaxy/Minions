@@ -7,9 +7,9 @@ import net.minecraft.server.world.ChunkTicketManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(value = ChunkTicketManager.class, remap = false)
+@Mixin(value = ChunkTicketManager.class)
 public class ChunkTicketManagerFixMixin {
-    @WrapOperation(method = "handleChunkLeave", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/ObjectSet;remove(Ljava/lang/Object;)Z"))
+    @WrapOperation(method = "handleChunkLeave", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/ObjectSet;remove(Ljava/lang/Object;)Z", remap = false))
     public boolean filterIfNull(ObjectSet instance, Object o, Operation<Boolean> original) {
         if (instance != null) {
             return original.call(instance, o);
@@ -18,7 +18,7 @@ public class ChunkTicketManagerFixMixin {
         return false;//Unused
     }
 
-    @WrapOperation(method = "handleChunkLeave", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/ObjectSet;isEmpty()Z"))
+    @WrapOperation(method = "handleChunkLeave", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/ObjectSet;isEmpty()Z", remap = false))
     public boolean filterIfNull(ObjectSet instance, Operation<Boolean> original) {
         if (instance != null) {
             return original.call(instance);

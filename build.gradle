@@ -27,7 +27,7 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation include("eu.pb4:polymer-core:${project.polymer_version}")
+    modImplementation "eu.pb4:polymer-core:${project.polymer_version}"
     modImplementation include("eu.pb4:sgui:${project.sgui_version}")
 }
 
@@ -76,7 +76,7 @@ jar {
 // configure the maven publication
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        minions (MavenPublication) {
             from components.java
         }
     }
@@ -87,5 +87,15 @@ publishing {
         // Notice: This block does NOT have the same function as the block in the top level.
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
+        maven {
+            def release = "https://maven.foxgalaxy.de/private-releases"
+            def snapshot = "https://maven.foxgalaxy.de/private-snapshot"
+            url = version.endsWith('SNAPSHOT') ? snapshot : release
+
+            credentials {
+                username = "${maven_user}"
+                password = "${maven_password}"
+            }
+        }
     }
 }

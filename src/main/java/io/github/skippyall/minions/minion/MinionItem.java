@@ -10,6 +10,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.command.DebugMobSpawningCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -17,10 +18,12 @@ import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
 
 public class MinionItem extends Item implements PolymerItem {
+
     private final boolean canProgram;
     public MinionItem(boolean canProgram) {
         super(new Item.Settings());
         this.canProgram  = canProgram;
+
     }
 
     @Override
@@ -39,7 +42,7 @@ public class MinionItem extends Item implements PolymerItem {
     public ActionResult useOnBlock(ItemUsageContext context) {
         String contents = context.getStack().getName().getLiteralString();
         String name;
-        if(contents != null) {
+        if(contents != null && contents.length() <= 16) {
             name = contents;
         } else {
             name = "Minion";

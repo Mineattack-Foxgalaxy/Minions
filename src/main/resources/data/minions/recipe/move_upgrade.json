@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "base": {
+    "item": "minions:basic_upgrade_base"
+  },
+  "addition": {
+    "item": "minecraft:iron_boots"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  },
+  "result": {
+    "id": "minions:move_module"
+  }
+}

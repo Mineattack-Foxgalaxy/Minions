@@ -2,14 +2,22 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     " H ",
-    "SAS",
+    "RAR",
     " L "
   ],
   "key": {
-    "H": "#minions:heads",
-    "S": "minecraft:stick",
-    "A": "minecraft:armor_stand",
-    "L": "minecraft:lodestone"
+    "H": {
+      "tag": "minions:heads"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    },
+    "A": {
+      "item": "minecraft:armor_stand"
+    },
+    "L": {
+      "item":"minecraft:lodestone"
+    }
   },
   "result": {
     "id": "minions:minion",

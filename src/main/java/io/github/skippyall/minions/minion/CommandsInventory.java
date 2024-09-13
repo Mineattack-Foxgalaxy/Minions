@@ -2,24 +2,46 @@ package io.github.skippyall.minions.minion;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import io.github.skippyall.minions.command.Command;
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
-import net.minecraft.item.Items;
+import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+
+import java.util.List;
 
 public class CommandsInventory {
     public static void openServerCommandsInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
-        SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_9X3, player, false);
+        List<Command> commands = minion.getModuleInventory().getAllCommands();
+        int rows = (int) Math.ceil((double) commands.size() / 9.0);
 
-        gui.setSlot(0, new GuiElementBuilder()
-                .setItem(Items.MINECART)
-                .setName(Text.literal("Get into minecart"))
-                .setCallback(() -> {
-                    minion.getMinionActionPack().mount(true);
-                })
-        );
+        if(rows != 0) {
+            boolean paged = false;
+            SimpleGui gui = new SimpleGui(getTypeForRows(rows), player, false);
 
-        gui.open();
+            for (int i = 0; i < commands.size() && i < 54; i++) {
+                Command command = commands.get(i);
+                gui.setSlot(i, new GuiElementBuilder()
+                        .setItem(command.getItemRepresentation())
+                        .setName(command.getName())
+                        .addLoreLine(command.getDescription())
+                        .setCallback(() -> command.onRun(player, minion))
+                );
+            }
+
+            gui.open();
+        }
+    }
+
+    public static ScreenHandlerType<GenericContainerScreenHandler> getTypeForRows(int rows) {
+        return switch (rows) {
+            case 1 -> ScreenHandlerType.GENERIC_9X1;
+            case 2 -> ScreenHandlerType.GENERIC_9X2;
+            case 3 -> ScreenHandlerType.GENERIC_9X3;
+            case 4 -> ScreenHandlerType.GENERIC_9X4;
+            case 5 -> ScreenHandlerType.GENERIC_9X5;
+            case 6 -> ScreenHandlerType.GENERIC_9X6;
+            default -> throw new IllegalStateException("Unexpected value: " + rows);
+        };
     }
 }

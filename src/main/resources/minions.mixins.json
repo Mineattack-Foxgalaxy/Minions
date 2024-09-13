@@ -8,12 +8,15 @@
     "ConnectionMixin",
     "Debug2Mixin",
     "DebugMixin",
+    "EntityAccessor",
     "GameProfileMixin",
     "MinecraftServerMixin",
+    "MobEntityMixin",
     "PlayerListEntryS2CPacket$EntryMixin",
     "PlayerListMixin",
     "ServerPlayerMixin",
-    "ServerPlayNetworkHandlerMixin"
+    "ServerPlayNetworkHandlerMixin",
+    "SpawnHelperMixin"
   ],
   "client": [],
   "server": [],

@@ -7,6 +7,9 @@ import io.github.skippyall.minions.minion.*;
 import io.github.skippyall.minions.mixins.GameProfileMixin;
 import io.github.skippyall.minions.program.runtime.MinionRuntime;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.PistonBlock;
+import net.minecraft.command.EntitySelector;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -23,11 +26,13 @@ import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerTask;
 import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Decoration;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
@@ -319,7 +324,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     @Override
     protected void drop(ServerWorld world, DamageSource damageSource) {
         super.drop(world, damageSource);
-        dropItem(toItemStack(), true, false);
+        dropStack(toItemStack());
     }
 
     private ItemStack toItemStack() {

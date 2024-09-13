@@ -26,7 +26,7 @@ public class DebugMixin {
     @Inject(method = "setPos", at = @At("HEAD"))
     public void debug(double x, double y, double z, CallbackInfo ci) {
         if ((Object) this instanceof MinionFakePlayer) {
-            System.out.println("Set Minion Pos to " + x + " " + y + " " + z);
+            //System.out.println("Set Minion Pos to " + x + " " + y + " " + z);
         }
     }
 }
