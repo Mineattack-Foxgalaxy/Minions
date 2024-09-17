@@ -8,7 +8,6 @@ import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static io.github.skippyall.minions.module.Modules.register;
 

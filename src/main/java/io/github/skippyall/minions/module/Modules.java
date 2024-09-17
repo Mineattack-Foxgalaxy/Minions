@@ -6,12 +6,11 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class Modules {
-    MoveModule MOVE = new MoveModule();
-
     public static void register() {
         ChatModule.registerMe();
         MountModule.registerMe();
         MoveModule.registerMe();
+        MobSpawningModule.registerMe();
     }
 
     public static <T extends Item & ModuleItem> T register(Identifier id, T item) {

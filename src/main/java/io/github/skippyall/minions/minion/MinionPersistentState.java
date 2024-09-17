@@ -1,7 +1,9 @@
 package io.github.skippyall.minions.minion;
 
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.PersistentState;

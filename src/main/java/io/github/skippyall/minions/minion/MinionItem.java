@@ -5,12 +5,14 @@ import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.command.DebugMobSpawningCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -18,12 +20,11 @@ import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
 
 public class MinionItem extends Item implements PolymerItem {
-
     private final boolean canProgram;
+
     public MinionItem(boolean canProgram) {
         super(new Item.Settings());
-        this.canProgram  = canProgram;
-
+        this.canProgram = canProgram;
     }
 
     @Override
@@ -49,9 +50,15 @@ public class MinionItem extends Item implements PolymerItem {
         }
         if(!context.getWorld().isClient) {
             MinionData data = getData(context.getStack());
-            if (data == null) {
-                MinionFakePlayer.createMinion(name, (ServerWorld) context.getWorld(), (ServerPlayerEntity) context.getPlayer(), canProgram, context.getBlockPos().toCenterPos().add(0,0.5,0), 0, 0);
+
+            if(data == null) {
+                data = new MinionData(null, name, null);
+            }
+
+            if (data.uuid == null) {
+                MinionFakePlayer.createMinion(data, (ServerWorld) context.getWorld(), (ServerPlayerEntity) context.getPlayer(), canProgram, context.getBlockPos().toCenterPos().add(0,0.5,0), 0, 0);
             }else {
+                data.name = name;
                 MinionFakePlayer.spawnMinionAt(data, (ServerWorld) context.getWorld(), context.getBlockPos().toCenterPos().add(0,0.5,0), new Vec2f(0, 0));
                 MinionPersistentState.INSTANCE.addMinion(data);
             }

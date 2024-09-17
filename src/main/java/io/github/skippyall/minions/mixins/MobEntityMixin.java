@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class MobEntityMixin {
     @Redirect(method = "checkDespawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getClosestPlayer(Lnet/minecraft/entity/Entity;D)Lnet/minecraft/entity/player/PlayerEntity;"))
     public PlayerEntity checkMobDespawningMinion(World instance, Entity entity, double maxDistance) {
-        return instance.getClosestPlayer(entity.getX(), entity.getY(), entity.getZ(), maxDistance, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(entity1 -> {
+        return instance.getClosestPlayer(entity.getX(), entity.getY(), entity.getZ(), maxDistance, EntityPredicates.EXCEPT_SPECTATOR.and(entity1 -> {
             if(entity1 instanceof ServerPlayerEntity player) {
                 if(player instanceof MinionFakePlayer minion) {
                     return MobSpawningModule.canMinionDespawnMobs(minion);

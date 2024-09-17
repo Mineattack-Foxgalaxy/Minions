@@ -1,27 +1,20 @@
-package io.github.skippyall.minions.minion;
+package io.github.skippyall.minions.gui;
 
-import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.command.Command;
 import io.github.skippyall.minions.module.ModuleItem;
-import io.github.skippyall.minions.module.Modules;
 import io.github.skippyall.minions.program.block.CodeBlock;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.item.Item;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModuleInventory implements ImplementedInventory {
-    private DefaultedList<ItemStack> stacks = DefaultedList.ofSize(27, ItemStack.EMPTY);
-
+public class ModuleInventory extends SimpleInventory {
     public ModuleInventory() {
+        super(27);
     }
 
     @Override
@@ -34,22 +27,26 @@ public class ModuleInventory implements ImplementedInventory {
         return (stack.getCount() <= getMaxCountPerStack()) && stack.getItem() instanceof ModuleItem;
     }
 
-    @Override
-    public DefaultedList<ItemStack> getItems() {
-        return stacks;
-    }
-
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        Inventories.readNbt(nbt, stacks, lookup);
+        Inventories.readNbt(nbt, heldStacks, lookup);
     }
 
     public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        return Inventories.writeNbt(nbt, stacks, lookup);
+        return Inventories.writeNbt(nbt, heldStacks, lookup);
+    }
+
+    public boolean hasModule(ModuleItem module) {
+        for(ItemStack stack : heldStacks) {
+            if(stack.getItem() instanceof ModuleItem module2 && module2 == module) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<ModuleItem> getModuleItems() {
         ArrayList<ModuleItem> modules = new ArrayList<>();
-        for(ItemStack stack : stacks) {
+        for(ItemStack stack : heldStacks) {
             if(stack.getItem() instanceof ModuleItem module) {
                 modules.add(module);
             }
@@ -59,7 +56,7 @@ public class ModuleInventory implements ImplementedInventory {
 
     public List<Command> getAllCommands() {
         ArrayList<Command> commands = new ArrayList<>();
-        for(ItemStack stack : stacks) {
+        for(ItemStack stack : heldStacks) {
             if(stack.getItem() instanceof ModuleItem module) {
                 commands.addAll(module.getCommands());
             }
@@ -69,7 +66,7 @@ public class ModuleInventory implements ImplementedInventory {
 
     public List<CodeBlock<?,?>> getAllCodeBlocks() {
         ArrayList<CodeBlock<?,?>> commands = new ArrayList<>();
-        for(ItemStack stack : stacks) {
+        for(ItemStack stack : heldStacks) {
             if(stack.getItem() instanceof ModuleItem module) {
                 commands.addAll(module.getCodeBlocks());
             }

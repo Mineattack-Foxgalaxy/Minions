@@ -1,0 +1,10 @@
+{
+  "minions.gui.main.commands": "Commands",
+  "minions.gui.main.programming": "Programming",
+  "minions.gui.main.modules": "Modules",
+  "minions.gui.main.inventory": "Inventory",
+  "minions.gui.inventory.title": "%s's Inventory",
+  "minions.gui.module_commands.title": "Commands",
+  "minions.gui.commands.title": "%s's Commands",
+  "minions.gui.modules.title": "%s's Modules"
+}
