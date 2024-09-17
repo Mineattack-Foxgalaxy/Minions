@@ -1,13 +1,19 @@
 package io.github.skippyall.minions.gui;
 
 import io.github.skippyall.minions.command.Command;
+import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.ModuleItem;
 import io.github.skippyall.minions.program.block.CodeBlock;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +21,10 @@ import java.util.List;
 public class ModuleInventory extends SimpleInventory {
     public ModuleInventory() {
         super(27);
+    }
+
+    public static void openModuleInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
+        player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, player2) -> new ModuleInventoryScreenHandler(syncId, playerInventory, minion.getModuleInventory()), Text.translatable("minions.gui.modules.title", minion.getName())));
     }
 
     @Override

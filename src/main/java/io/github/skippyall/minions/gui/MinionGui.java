@@ -40,7 +40,7 @@ public class MinionGui {
                 .setItem(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
                 .setName(Text.translatable("minions.gui.main.modules"))
                 .setCallback((i, clickType, slotActionType) -> {
-                    openModuleInventory(player, minion);
+                    ModuleInventory.openModuleInventory(player, minion);
                 })
         );
         gui.setSlot(5, new GuiElementBuilder()
@@ -59,10 +59,6 @@ public class MinionGui {
 
     public static void openProgrammingInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
 
-    }
-
-    public static void openModuleInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
-        player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, player2) -> GenericContainerScreenHandler.createGeneric9x3(syncId, playerInventory, minion.getModuleInventory()), Text.translatable("")));
     }
 
     public static void openMinionInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
