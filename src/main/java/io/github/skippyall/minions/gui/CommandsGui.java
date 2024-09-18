@@ -5,7 +5,6 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.command.Command;
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.ModuleItem;
-import net.minecraft.item.Item;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -44,7 +43,7 @@ public class CommandsGui {
                     .setItem(command.getItemRepresentation())
                     .setName(command.getName())
                     .addLoreLine(command.getDescription())
-                    .setCallback(() -> command.onRun(player, minion))
+                    .setCallback(() -> command.execute(player, minion))
             );
         }
 

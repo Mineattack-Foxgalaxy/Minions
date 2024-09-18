@@ -6,5 +6,9 @@
   "minions.gui.inventory.title": "%s's Inventory",
   "minions.gui.module_commands.title": "Commands",
   "minions.gui.commands.title": "%s's Commands",
-  "minions.gui.modules.title": "%s's Modules"
+  "minions.gui.modules.title": "%s's Modules",
+  "minions.command.action.details": "Set how to %s",
+  "minions.command.action.once": "%s once",
+  "minions.command.action.continuous": "%s continuously",
+  "minions.command.action.interval": "%s every x seconds"
 }

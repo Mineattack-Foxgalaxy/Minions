@@ -5,20 +5,17 @@ import net.minecraft.item.Item;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 public class SimpleCommand implements Command {
     private final Text name;
     private final Text description;
     private final Item itemRepresentation;
-    private final BiConsumer<ServerPlayerEntity, MinionFakePlayer> onRun;
+    private final CommandExecutor executor;
 
-    public SimpleCommand(Text name, Text description, Item itemRepresentation, BiConsumer<ServerPlayerEntity, MinionFakePlayer> onRun) {
+    public SimpleCommand(Text name, Text description, Item itemRepresentation, CommandExecutor executor) {
         this.name = name;
         this.description = description;
         this.itemRepresentation = itemRepresentation;
-        this.onRun = onRun;
+        this.executor = executor;
     }
 
     @Override
@@ -37,7 +34,7 @@ public class SimpleCommand implements Command {
     }
 
     @Override
-    public void onRun(ServerPlayerEntity player, MinionFakePlayer minion) {
-        onRun.accept(player, minion);
+    public void execute(ServerPlayerEntity player, MinionFakePlayer minion) {
+        executor.execute(player, minion);
     }
 }
