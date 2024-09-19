@@ -159,6 +159,12 @@ public class EntityPlayerActionPack
         return this;
     }
 
+    public EntityPlayerActionPack stop(ActionType type) {
+        type.stop(player, actions.get(type));
+        actions.remove(type);
+        return this;
+    }
+
 
     public EntityPlayerActionPack stopAll()
     {
