@@ -12,6 +12,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 public class ActionModules {
+    
+    public static ModuleItem makeModule(EntityPlayerActionPack.ActionType actionType, Text actionName, Item vanillaItem, Text name, Text description) {
+        return new SimpleModuleItem(List.of(), List.of(new SimpleCommand(name, description, vanillaItem, detailSelectionExecutor(actionType, actionName))), vanillaItem);
+    }
+    
     public static void executeOnce(EntityPlayerActionPack.ActionType actionType, ServerPlayerEntity player, MinionFakePlayer minion) {
         minion.getMinionActionPack().start(actionType, EntityPlayerActionPack.Action.once());
     }
