@@ -10,7 +10,11 @@ import java.util.List;
 import static io.github.skippyall.minions.module.Modules.register;
 
 public class MobSpawningModule {
-    public static final SimpleModuleItem MOB_SPAWNING_MODULE = register(Identifier.of(Minions.MOD_ID, "mob_spawning_module"), new SimpleModuleItem(List.of(), List.of(), Items.SPAWNER));
+    public static final SimpleModuleItem MOB_SPAWNING_MODULE =
+            register(
+                    Identifier.of(Minions.MOD_ID, "mob_spawning_module"),
+                    new SimpleModuleItem(List.of(), List.of(), Items.SPAWNER)
+            );
 
     public static boolean canMinionSpawnMobs(MinionFakePlayer minion) {
         return minion.getModuleInventory().hasModule(MOB_SPAWNING_MODULE);

@@ -18,6 +18,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public class MinionItem extends Item implements PolymerItem {
     private final boolean canProgram;
@@ -28,13 +29,13 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+    public Item getPolymerItem(ItemStack itemStack, PacketContext player) {
         return Items.ARMOR_STAND;
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack stack, TooltipType tooltipType, RegistryWrapper.WrapperLookup lookup, ServerPlayerEntity player) {
-        ItemStack out = PolymerItemUtils.createItemStack(stack, lookup, player);
+    public ItemStack getPolymerItemStack(ItemStack stack, TooltipType tooltipType, PacketContext player) {
+        ItemStack out = PolymerItemUtils.createItemStack(stack, tooltipType, player);
         out.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
         return out;
     }

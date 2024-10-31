@@ -8,6 +8,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class TextInput {
     public static CompletableFuture<String> inputText(ServerPlayerEntity player, Text title, String defaultText) {
@@ -23,5 +24,24 @@ public class TextInput {
         gui.setDefaultInputValue(defaultText);
         gui.open();
         return future;
+    }
+
+    public static <T> CompletableFuture<T> inputParse(ServerPlayerEntity player, Text title, String defaultValue, Function<String, T> parser, Text failureMessage) {
+        return inputText(player, title, String.valueOf(defaultValue)).thenCompose(string -> {
+            try {
+                return CompletableFuture.completedFuture(parser.apply(string));
+            } catch (Exception e) {
+                player.sendMessage(failureMessage);
+                return CompletableFuture.failedFuture(e);
+            }
+        });
+    }
+
+    public static CompletableFuture<Integer> inputInt(ServerPlayerEntity player, Text title, String defaultValue) {
+        return inputParse(player, title, defaultValue, Integer::parseInt, Text.translatable("minions.command.input.int.fail"));
+    }
+
+    public static CompletableFuture<Float> inputFloat(ServerPlayerEntity player, Text title, String defaultValue) {
+        return inputParse(player, title, defaultValue, Float::parseFloat, Text.translatable("minions.command.input.float.fail"));
     }
 }

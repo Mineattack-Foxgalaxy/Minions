@@ -5,8 +5,7 @@ import io.github.skippyall.minions.command.Command;
 import io.github.skippyall.minions.program.block.CodeBlock;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class SimpleModuleItem extends Item implements PolymerItem, ModuleItem {
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+    public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
         return vanillaItem;
     }
 }

@@ -7,8 +7,14 @@
   "minions.gui.module_commands.title": "Commands",
   "minions.gui.commands.title": "%s's Commands",
   "minions.gui.modules.title": "%s's Modules",
+  "minions.command.input.int.fail": "Not an integer",
+  "minions.command.input.float.fail": "Not a number",
   "minions.command.action.details": "Set how to %s",
   "minions.command.action.once": "%s once",
   "minions.command.action.continuous": "%s continuously",
-  "minions.command.action.interval": "%s every x seconds"
+  "minions.command.action.interval": "%s every x seconds",
+  "minions.command.action.stop": "Stop %s",
+  "minions.command.action.interval.enter": "Enter an interval in seconds",
+  "minions.command.interact.name": "",
+  "minions.command.interact.description": ""
 }

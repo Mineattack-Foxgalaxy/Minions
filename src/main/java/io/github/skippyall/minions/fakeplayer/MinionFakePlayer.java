@@ -24,7 +24,7 @@ import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
-import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPositionSyncS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerTask;
@@ -42,6 +42,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.TeleportTarget;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -78,13 +79,13 @@ public class MinionFakePlayer extends ServerPlayerEntity {
                 instance.programmable = canProgram;
                 instance.fixStartingPosition = () -> instance.refreshPositionAndAngles(pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
                 server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), instance, new ConnectedClientData(profile, 0, instance.getClientOptions(), false));
-                instance.teleport(level, pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
+                instance.teleport(level, pos.x, pos.y, pos.z, Set.of(), (float) yaw, (float) pitch, true);
                 instance.setHealth(20.0F);
                 instance.unsetRemoved();
-                instance.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT).setBaseValue(0.6F);
+                instance.getAttributeInstance(EntityAttributes.STEP_HEIGHT).setBaseValue(0.6F);
                 instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
                 server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
-                server.getPlayerManager().sendToDimension(new EntityPositionS2CPacket(instance), level.getRegistryKey());//instance.dimension);
+                server.getPlayerManager().sendToDimension(EntityPositionSyncS2CPacket.create(instance), level.getRegistryKey());//instance.dimension);
                 //instance.world.getChunkManager(). updatePosition(instance);
                 instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
                 instance.getAbilities().flying = false;
@@ -116,14 +117,14 @@ public class MinionFakePlayer extends ServerPlayerEntity {
                 server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), instance, new ConnectedClientData(profile, 0, instance.getClientOptions(), false));
                 System.out.println(instance.getPos());
                 if(pos != null && rot != null) {
-                    instance.teleport(level, pos.x, pos.y, pos.z, rot.x, rot.y);
+                    instance.teleport(level, pos.x, pos.y, pos.z, Set.of(), rot.x, rot.y, true);
                 }
                 instance.setVelocity(0,0,0);
                 instance.setHealth(20.0F);
                 instance.unsetRemoved();
                 instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
                 server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
-                server.getPlayerManager().sendToDimension(new EntityPositionS2CPacket(instance), level.getRegistryKey());//instance.dimension);
+                server.getPlayerManager().sendToDimension(EntityPositionSyncS2CPacket.create(instance), level.getRegistryKey());//instance.dimension);
                 //instance.world.getChunkManager(). updatePosition(instance);
                 instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
                 instance.getAbilities().flying = false;
@@ -259,7 +260,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     @Override
-    public Entity teleportTo(TeleportTarget target)
+    public ServerPlayerEntity teleportTo(TeleportTarget target)
     {
         super.teleportTo(target);
         if (notInAnyWorld) {
@@ -316,7 +317,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     @Override
     protected void drop(ServerWorld world, DamageSource damageSource) {
         super.drop(world, damageSource);
-        dropStack(toItemStack());
+        dropStack(world, toItemStack());
     }
 
     private ItemStack toItemStack() {

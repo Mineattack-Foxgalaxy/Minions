@@ -82,6 +82,12 @@ public class EntityPlayerActionPack
         return this;
     }
 
+    public EntityPlayerActionPack stop(ActionType type) {
+        Action previous = actions.remove(type);
+        if (previous != null) type.stop(player, previous);
+        return this;
+    }
+
     public EntityPlayerActionPack setSneaking(boolean doSneak)
     {
         sneaking = doSneak;
@@ -314,12 +320,12 @@ public class EntityPlayerActionPack
                                     BlockHitResult blockHit = (BlockHitResult) hit;
                                     BlockPos pos = blockHit.getBlockPos();
                                     Direction side = blockHit.getSide();
-                                    if (pos.getY() < player.getWorld().getTopY() - (side == Direction.UP ? 1 : 0) && world.canPlayerModifyAt(player, pos))
+                                    if (pos.getY() < player.getServerWorld().getTopYInclusive() - (side == Direction.UP ? 1 : 0) && world.canPlayerModifyAt(player, pos))
                                     {
                                         ActionResult result = player.interactionManager.interactBlock(player, world, player.getStackInHand(hand), hand, blockHit);
-                                        if (result.isAccepted())
+                                        if (result instanceof ActionResult.Success success)
                                         {
-                                            if (result.shouldSwingHand()) player.swingHand(hand);
+                                            if (success.swingSource() == ActionResult.SwingSource.SERVER) player.swingHand(hand);
                                             ap.itemUseCooldown = 3;
                                             return true;
                                         }
@@ -402,7 +408,7 @@ public class EntityPlayerActionPack
                         boolean blockBroken = false;
                         if (player.interactionManager.getGameMode().isCreative())
                         {
-                            player.interactionManager.processBlockBreakingAction(pos, PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, side, player.getWorld().getTopY(), -1);
+                            player.interactionManager.processBlockBreakingAction(pos, PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, side, player.getWorld().getTopYInclusive(), -1);
                             ap.blockHitDelay = 5;
                             blockBroken = true;
                         }
@@ -410,9 +416,9 @@ public class EntityPlayerActionPack
                         {
                             if (ap.currentBlock != null)
                             {
-                                player.interactionManager.processBlockBreakingAction(ap.currentBlock, PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, side, player.getWorld().getTopY(), -1);
+                                player.interactionManager.processBlockBreakingAction(ap.currentBlock, PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, side, player.getWorld().getTopYInclusive(), -1);
                             }
-                            player.interactionManager.processBlockBreakingAction(pos, PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, side, player.getWorld().getTopY(), -1);
+                            player.interactionManager.processBlockBreakingAction(pos, PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, side, player.getWorld().getTopYInclusive(), -1);
                             boolean notAir = !state.isAir();
                             if (notAir && ap.curBlockDamageMP == 0)
                             {
@@ -435,7 +441,7 @@ public class EntityPlayerActionPack
                             ap.curBlockDamageMP += state.calcBlockBreakingDelta(player, player.getWorld(), pos);
                             if (ap.curBlockDamageMP >= 1)
                             {
-                                player.interactionManager.processBlockBreakingAction(pos, PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, side, player.getWorld().getTopY(), -1);
+                                player.interactionManager.processBlockBreakingAction(pos, PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, side, player.getWorld().getTopYInclusive(), -1);
                                 ap.currentBlock = null;
                                 ap.blockHitDelay = 5;
                                 blockBroken = true;
@@ -457,7 +463,7 @@ public class EntityPlayerActionPack
                 EntityPlayerActionPack ap = ((ServerPlayerInterface) player).getActionPack();
                 if (ap.currentBlock == null) return;
                 player.getWorld().setBlockBreakingInfo(-1, ap.currentBlock, -1);
-                player.interactionManager.processBlockBreakingAction(ap.currentBlock, PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, Direction.DOWN, player.getWorld().getTopY(), -1);
+                player.interactionManager.processBlockBreakingAction(ap.currentBlock, PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, Direction.DOWN, player.getWorld().getTopYInclusive(), -1);
                 ap.currentBlock = null;
             }
         },

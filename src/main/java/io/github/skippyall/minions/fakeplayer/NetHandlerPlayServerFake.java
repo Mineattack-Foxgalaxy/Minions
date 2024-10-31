@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.fakeplayer;
 
+import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
@@ -33,9 +34,9 @@ public class NetHandlerPlayServerFake extends ServerPlayNetworkHandler
     }
 
     @Override
-    public void requestTeleport(double d, double e, double f, float g, float h, Set<PositionFlag> set)
+    public void requestTeleport(PlayerPosition pos, Set<PositionFlag> set)
     {
-        super.requestTeleport(d, e, f, g, h, set);
+        super.requestTeleport(pos, set);
         if (player.getServerWorld().getPlayerByUuid(player.getUuid()) != null) {
             syncWithPlayerPosition();
             player.getServerWorld().getChunkManager().updatePosition(player);
