@@ -14,8 +14,8 @@ public class SimpleModuleItem extends Item implements PolymerItem, ModuleItem {
     private final List<Command> commands;
     private final Item vanillaItem;
 
-    public SimpleModuleItem(List<CodeBlock<?,?>> codeBlocks, List<Command> commands, Item vanillaItem) {
-        super(new Item.Settings().maxCount(1));
+    public SimpleModuleItem(List<CodeBlock<?,?>> codeBlocks, List<Command> commands, Settings settings, Item vanillaItem) {
+        super(settings.maxCount(1));
         this.codeBlocks = codeBlocks;
         this.commands = commands;
         this.vanillaItem = vanillaItem;

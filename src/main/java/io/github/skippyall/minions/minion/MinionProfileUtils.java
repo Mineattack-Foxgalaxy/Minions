@@ -61,11 +61,20 @@ public class MinionProfileUtils {
     }
 
     public static GameProfile makeNewMinionProfile(@Nullable UUID uuidMinion, String username, @Nullable GameProfile skinProfile) {
-        GameProfile newProfile = new GameProfile(uuidMinion != null ? uuidMinion : UUID.randomUUID(), username);
+        if(uuidMinion == null) {
+            uuidMinion = UUID.randomUUID();
+        }
+        MinionPersistentState.INSTANCE.addMinionUUID(uuidMinion);
+
+        GameProfile newProfile = new GameProfile(uuidMinion, username);
         if (skinProfile != null) {
             newProfile.getProperties().putAll(skinProfile.getProperties());
         }
         LOGGER.info("Minion Profile: {}", newProfile);
         return newProfile;
+    }
+
+    public static boolean isMinion(UUID uuid) {
+        return MinionPersistentState.INSTANCE.isMinion(uuid);
     }
 }

@@ -18,7 +18,8 @@ public class MinionPersistentState extends PersistentState {
 
     public static MinionPersistentState INSTANCE;
 
-    private List<MinionData> minionData = new ArrayList<>();
+    private final List<MinionData> minionData = new ArrayList<>();
+    private final List<UUID> minionUuids = new ArrayList<>();
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
@@ -27,6 +28,14 @@ public class MinionPersistentState extends PersistentState {
             list.add(data.writeNbt());
         }
         nbt.put("minions", list);
+
+        NbtList uuids = new NbtList();
+        for(UUID uuid : minionUuids) {
+            NbtCompound compound = new NbtCompound();
+            compound.putUuid("uuid", uuid);
+            uuids.add(compound);
+        }
+        nbt.put("uuids", uuids);
         return nbt;
     }
 
@@ -36,7 +45,18 @@ public class MinionPersistentState extends PersistentState {
         for(NbtElement element : list) {
             instance.addMinion(MinionData.readNbt((NbtCompound) element));
         }
+
+        NbtList uuids = compound.getList("uuids", NbtElement.COMPOUND_TYPE);
+        for(NbtElement element : list) {
+            instance.minionUuids.add(((NbtCompound) element).getUuid("uuid"));
+        }
         return instance;
+    }
+
+    public void addMinionUUID(UUID uuid) {
+        if(!minionUuids.contains(uuid)) {
+            minionUuids.add(uuid);
+        }
     }
 
     public void addMinion(MinionFakePlayer minion) {
@@ -44,7 +64,7 @@ public class MinionPersistentState extends PersistentState {
     }
 
     public void addMinion(MinionData data) {
-        System.out.println("add Minion " + data.name);
+        System.out.println("add Minion " + data.name());
         minionData.add(data);
         markDirty();
     }
@@ -56,7 +76,7 @@ public class MinionPersistentState extends PersistentState {
     public void removeMinion(UUID minionUUID) {
         MinionData removal = null;
         for (MinionData data : minionData) {
-            if (data.uuid.equals(minionUUID)) {
+            if (data.uuid().equals(minionUUID)) {
                 removal = data;
             }
         }
@@ -68,6 +88,10 @@ public class MinionPersistentState extends PersistentState {
 
     public List<MinionData> getMinionData() {
         return minionData;
+    }
+
+    public boolean isMinion(UUID uuid) {
+        return minionUuids.contains(uuid);
     }
 
     public static void create(MinecraftServer server) {

@@ -10,9 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -20,11 +17,13 @@ import net.minecraft.util.math.Vec2f;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
+import java.util.Optional;
+
 public class MinionItem extends Item implements PolymerItem {
     private final boolean canProgram;
 
-    public MinionItem(boolean canProgram) {
-        super(new Item.Settings());
+    public MinionItem(Settings settings, boolean canProgram) {
+        super(settings);
         this.canProgram = canProgram;
     }
 
@@ -53,13 +52,13 @@ public class MinionItem extends Item implements PolymerItem {
             MinionData data = getData(context.getStack());
 
             if(data == null) {
-                data = new MinionData(null, name, null);
+                data = new MinionData(null, name, Optional.empty());
             }
 
-            if (data.uuid == null) {
+            if (data.uuid() == null) {
                 MinionFakePlayer.createMinion(data, (ServerWorld) context.getWorld(), (ServerPlayerEntity) context.getPlayer(), canProgram, context.getBlockPos().toCenterPos().add(0,0.5,0), 0, 0);
             }else {
-                data.name = name;
+                data = data.withName(name);
                 MinionFakePlayer.spawnMinionAt(data, (ServerWorld) context.getWorld(), context.getBlockPos().toCenterPos().add(0,0.5,0), new Vec2f(0, 0));
                 MinionPersistentState.INSTANCE.addMinion(data);
             }
@@ -69,18 +68,12 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     public static void setData(MinionData data, ItemStack item) {
-        NbtCompound nbt = item.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
-        nbt.put("data", data.writeNbt());
-        item.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+        item.set(MinionData.COMPONENT, data);
     }
 
     @Nullable
     public static MinionData getData(ItemStack item) {
-        NbtCompound nbt = item.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt();
-        if (nbt.getType("data") == NbtElement.COMPOUND_TYPE) {
-            return MinionData.readNbt(nbt.getCompound("data"));
-        }
-        return null;
+        return item.get(MinionData.COMPONENT);
     }
 
     public static boolean containsData(ItemStack item) {

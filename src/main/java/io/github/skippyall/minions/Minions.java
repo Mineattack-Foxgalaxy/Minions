@@ -3,6 +3,7 @@ package io.github.skippyall.minions;
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.module.Modules;
@@ -11,8 +12,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -23,8 +27,11 @@ import java.util.List;
 
 public class Minions implements ModInitializer {
     public static final String MOD_ID = "minions";
-    public static final MinionItem MINION_ITEM = Registry.register(Registries.ITEM, Identifier.of(MOD_ID, "minion"), new MinionItem(false));
-    public static final SimplePolymerItem BASIC_UPGRADE_BASE = Registry.register(Registries.ITEM, Identifier.of(MOD_ID, "basic_upgrade_base"), new SimplePolymerItem(new Item.Settings(), Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE));
+
+    private static final Identifier MINION_ITEM_ID = Identifier.of(MOD_ID, "minion");
+    public static final MinionItem MINION_ITEM = Registry.register(Registries.ITEM, Identifier.of(MOD_ID, "minion"), new MinionItem(new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, MINION_ITEM_ID)),false));
+    private static final Identifier BASIC_UPGRADE_BASE_ID = Identifier.of(MOD_ID, "basic_upgrade_base");
+    public static final SimplePolymerItem BASIC_UPGRADE_BASE = Registry.register(Registries.ITEM, BASIC_UPGRADE_BASE_ID, new SimplePolymerItem(new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, BASIC_UPGRADE_BASE_ID)), Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE));
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -32,12 +39,13 @@ public class Minions implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        MinionData.register();
         LOGGER.debug("Add Customthing");
         PolymerEntityUtils.registerType();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             MinionPersistentState.create(server);
             MinionPersistentState.INSTANCE.getMinionData().forEach(data -> {
-                System.out.println("spawn Minion " + data.name);
+                System.out.println("spawn Minion " + data.name());
                 MinionFakePlayer.spawnMinionAt(data, server.getOverworld(), null, null);
             });
         });

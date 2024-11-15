@@ -6,18 +6,10 @@
     " L "
   ],
   "key": {
-    "H": {
-      "tag": "minecraft:skulls"
-    },
-    "R": {
-      "item": "minecraft:redstone_torch"
-    },
-    "A": {
-      "item": "minecraft:armor_stand"
-    },
-    "L": {
-      "item":"minecraft:lodestone"
-    }
+    "H": "#minecraft:skulls",
+    "R": "minecraft:redstone_torch",
+    "A": "minecraft:armor_stand",
+    "L": "minecraft:lodestone"
   },
   "result": {
     "id": "minions:minion",

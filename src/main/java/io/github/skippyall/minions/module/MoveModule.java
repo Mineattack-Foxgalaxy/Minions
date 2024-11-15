@@ -41,15 +41,13 @@ public class MoveModule {
 
     public static final SimpleModuleItem MOVE_MODULE =
             register(Identifier.of(Minions.MOD_ID, "move_module"),
-                    new SimpleModuleItem(
-                            List.of(),
-                            List.of(
-                                    WALK_COMMAND,
-                                    TURN_RIGHT_COMMAND,
-                                    TURN_LEFT_COMMAND
-                            ),
-                            Items.IRON_BOOTS
-                    )
+                    List.of(),
+                    List.of(
+                            WALK_COMMAND,
+                            TURN_RIGHT_COMMAND,
+                            TURN_LEFT_COMMAND
+                    ),
+                    Items.IRON_BOOTS
             );
 
     public static void registerMe() {}

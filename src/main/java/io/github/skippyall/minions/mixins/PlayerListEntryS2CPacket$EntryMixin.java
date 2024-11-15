@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(PlayerListS2CPacket.Entry.class)
 public class PlayerListEntryS2CPacket$EntryMixin {
-    @ModifyArg(method = "<init>(Lnet/minecraft/server/network/ServerPlayerEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/PlayerListS2CPacket$Entry;<init>(Ljava/util/UUID;Lcom/mojang/authlib/GameProfile;ZILnet/minecraft/world/GameMode;Lnet/minecraft/text/Text;Lnet/minecraft/network/encryption/PublicPlayerSession$Serialized;)V"))
+    @ModifyArg(method = "<init>(Lnet/minecraft/server/network/ServerPlayerEntity;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/PlayerListS2CPacket$Entry;<init>(Ljava/util/UUID;Lcom/mojang/authlib/GameProfile;ZILnet/minecraft/world/GameMode;Lnet/minecraft/text/Text;ILnet/minecraft/network/encryption/PublicPlayerSession$Serialized;)V"))
     private static boolean removeMinionFromTabList(boolean original, @Local(argsOnly = true) ServerPlayerEntity player) {
         if(player instanceof MinionFakePlayer) {
             return false;

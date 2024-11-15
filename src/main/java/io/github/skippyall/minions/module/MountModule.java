@@ -27,14 +27,12 @@ public class MountModule {
 
     public static final SimpleModuleItem MOUNT_MODULE =
             register(Identifier.of(Minions.MOD_ID, "mount_module"),
-                    new SimpleModuleItem(
-                            List.of(),
-                            List.of(
-                                    MOUNT_COMMAND,
-                                    DISMOUNT_COMMAND
-                            ),
-                            Items.MINECART
-                    )
+                    List.of(),
+                    List.of(
+                            MOUNT_COMMAND,
+                            DISMOUNT_COMMAND
+                    ),
+                    Items.MINECART
             );
 
     public static void registerMe() {
