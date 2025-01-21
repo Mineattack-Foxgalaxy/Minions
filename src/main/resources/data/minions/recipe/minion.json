@@ -3,13 +3,13 @@
   "pattern": [
     " H ",
     "RAR",
-    " L "
+    " N "
   ],
   "key": {
     "H": "#minecraft:skulls",
     "R": "minecraft:redstone_torch",
     "A": "minecraft:armor_stand",
-    "L": "minecraft:lodestone"
+    "N": "minecraft:netherite_ingot"
   },
   "result": {
     "id": "minions:minion",

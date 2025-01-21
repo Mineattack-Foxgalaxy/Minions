@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.module;
 
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 

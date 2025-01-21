@@ -7,6 +7,7 @@
   "minions.gui.module_commands.title": "Commands",
   "minions.gui.commands.title": "%s's Commands",
   "minions.gui.modules.title": "%s's Modules",
+
   "minions.command.input.int.fail": "Not an integer",
   "minions.command.input.float.fail": "Not a number",
   "minions.command.action.details": "Set how to %s",
@@ -15,6 +16,19 @@
   "minions.command.action.interval": "%s every x seconds",
   "minions.command.action.stop": "Stop %s",
   "minions.command.action.interval.enter": "Enter an interval in seconds",
-  "minions.command.interact.name": "",
-  "minions.command.interact.description": ""
+  "minions.command.interact.name": "Interact",
+  "minions.command.interact.description": "Use and place blocks",
+  "minions.command.attack.name": "Attack",
+  "minions.command.attack.description": "Attack and mine blocks",
+
+  "item.minions.attack_module": "Attack Module",
+  "item.minions.interact_module": "Interact Module",
+  "item.minions.mob_spawning_module": "Mob Spawning Module",
+  "item.minions.mount_module": "Mount Module",
+  "item.minions.move_module": "Move Module",
+  "item.minions.minion": "Minion",
+  "item.minions.basic_upgrade_base": "Basic Upgrade Base",
+  "item.minions.advanced_upgrade_base": "Advanced Upgrade Base",
+
+  "minions.minion_item.tooltip": "Name: %s"
 }

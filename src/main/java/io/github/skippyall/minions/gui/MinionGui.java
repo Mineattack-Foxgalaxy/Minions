@@ -2,11 +2,9 @@ package io.github.skippyall.minions.gui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.item.Items;
-import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -31,7 +29,7 @@ public class MinionGui {
             gui.setSlot(4, new GuiElementBuilder()
                     .setItem(Items.REDSTONE)
                     .setName(Text.translatable("minions.gui.main.programming"))
-                    .setCallback((i, clickType, slotActionType) -> {
+                    .setCallback(() -> {
                         openProgrammingInventory(player, minion);
                     })
             );
@@ -39,15 +37,22 @@ public class MinionGui {
         gui.setSlot(3, new GuiElementBuilder()
                 .setItem(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
                 .setName(Text.translatable("minions.gui.main.modules"))
-                .setCallback((i, clickType, slotActionType) -> {
+                .setCallback(() -> {
                     ModuleInventory.openModuleInventory(player, minion);
                 })
         );
         gui.setSlot(5, new GuiElementBuilder()
                 .setItem(Items.CHEST)
                 .setName(Text.translatable("minions.gui.main.inventory"))
-                .setCallback((i, clickType, slotActionType) -> {
+                .setCallback(() -> {
                     openMinionInventory(player, minion);
+                })
+        );
+        gui.setSlot(7, new GuiElementBuilder()
+                .setItem(Items.BARRIER)
+                .setName(Text.translatable("minions.gui.main.pickup"))
+                .setCallback(() -> {
+                    minion.kill(minion.getServerWorld());
                 })
         );
         gui.open();

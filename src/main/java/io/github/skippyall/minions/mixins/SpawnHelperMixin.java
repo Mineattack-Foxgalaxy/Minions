@@ -1,6 +1,6 @@
 package io.github.skippyall.minions.mixins;
 
-import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.MobSpawningModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;

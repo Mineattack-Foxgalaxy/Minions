@@ -1,4 +1,5 @@
-package io.github.skippyall.minions.fakeplayer;
+//code from https://github.com/gnembon/fabric-carpet
+package io.github.skippyall.minions.minion.fakeplayer;
 
 import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.network.ClientConnection;

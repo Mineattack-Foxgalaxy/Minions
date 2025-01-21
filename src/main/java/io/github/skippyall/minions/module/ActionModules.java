@@ -3,8 +3,8 @@ package io.github.skippyall.minions.module;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.command.CommandExecutor;
-import io.github.skippyall.minions.fakeplayer.EntityPlayerActionPack;
-import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.input.TextInput;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
@@ -51,11 +51,12 @@ public class ActionModules {
                     .setName(Text.translatable("minions.command.action.interval", actionName))
                     .setCallback(() -> executeInterval(actionType, player, minion))
             );
-            gui.setSlot(3, new GuiElementBuilder()
+            gui.setSlot(4, new GuiElementBuilder()
                     .setItem(Items.BARRIER)
                     .setName(Text.translatable("minions.command.action.stop", actionName))
                     .setCallback(() -> executeStop(actionType, player, minion))
             );
+            gui.open();
         };
     }
 }

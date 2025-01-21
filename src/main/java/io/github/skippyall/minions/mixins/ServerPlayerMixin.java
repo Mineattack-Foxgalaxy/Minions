@@ -1,8 +1,8 @@
 package io.github.skippyall.minions.mixins;
 
 import com.mojang.authlib.GameProfile;
-import io.github.skippyall.minions.fakeplayer.EntityPlayerActionPack;
-import io.github.skippyall.minions.fakeplayer.ServerPlayerInterface;
+import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
+import io.github.skippyall.minions.minion.fakeplayer.ServerPlayerInterface;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;

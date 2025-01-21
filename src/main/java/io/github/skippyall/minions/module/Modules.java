@@ -17,6 +17,8 @@ public class Modules {
         MountModule.registerMe();
         MoveModule.registerMe();
         MobSpawningModule.registerMe();
+        InteractModule.registerMe();
+        AttackModule.registerMe();
     }
 
     public static <T extends Item & ModuleItem> T register(Identifier id, T item) {

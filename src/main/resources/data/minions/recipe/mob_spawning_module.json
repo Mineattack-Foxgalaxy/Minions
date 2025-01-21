@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "base": "minions:basic_upgrade_base",
+  "addition": "minecraft:rotten_flesh",
+  "template": "minecraft:netherite_upgrade_smithing_template",
+  "result": {
+    "id": "minions:mob_spawning_module"
+  }
+}

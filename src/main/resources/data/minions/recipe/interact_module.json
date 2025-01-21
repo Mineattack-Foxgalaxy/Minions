@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "base": "minions:advanced_upgrade_base",
+  "addition": "minecraft:lever",
+  "template": "minecraft:netherite_upgrade_smithing_template",
+  "result": {
+    "id": "minions:interact_module"
+  }
+}

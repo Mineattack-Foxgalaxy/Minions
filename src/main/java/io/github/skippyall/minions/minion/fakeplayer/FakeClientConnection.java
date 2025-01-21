@@ -1,11 +1,11 @@
-package io.github.skippyall.minions.fakeplayer;
+//code from https://github.com/gnembon/fabric-carpet
+package io.github.skippyall.minions.minion.fakeplayer;
 
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.listener.PacketListener;
-import net.minecraft.text.Text;
 
 public class FakeClientConnection extends ClientConnection {
     public FakeClientConnection(NetworkSide p)

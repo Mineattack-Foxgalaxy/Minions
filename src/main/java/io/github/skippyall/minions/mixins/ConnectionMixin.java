@@ -1,6 +1,7 @@
+//code from https://github.com/gnembon/fabric-carpet
 package io.github.skippyall.minions.mixins;
 
-import io.github.skippyall.minions.fakeplayer.ClientConnectionInterface;
+import io.github.skippyall.minions.minion.fakeplayer.ClientConnectionInterface;
 import io.netty.channel.Channel;
 import net.minecraft.network.ClientConnection;
 import org.spongepowered.asm.mixin.Mixin;

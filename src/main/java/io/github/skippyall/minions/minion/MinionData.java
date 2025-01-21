@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import eu.pb4.polymer.core.api.other.PolymerComponent;
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.component.ComponentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;

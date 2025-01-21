@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;

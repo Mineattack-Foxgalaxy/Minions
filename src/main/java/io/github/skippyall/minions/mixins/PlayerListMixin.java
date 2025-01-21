@@ -1,3 +1,4 @@
+//partially code from https://github.com/gnembon/fabric-carpet
 package io.github.skippyall.minions.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReceiver;
@@ -5,8 +6,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
-import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.fakeplayer.NetHandlerPlayServerFake;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.minion.fakeplayer.NetHandlerPlayServerFake;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;

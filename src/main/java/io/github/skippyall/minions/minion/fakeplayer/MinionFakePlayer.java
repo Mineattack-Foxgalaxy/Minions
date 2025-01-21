@@ -1,4 +1,5 @@
-package io.github.skippyall.minions.fakeplayer;
+//partially code from https://github.com/gnembon/fabric-carpet
+package io.github.skippyall.minions.minion.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import io.github.skippyall.minions.Minions;
@@ -46,6 +47,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class MinionFakePlayer extends ServerPlayerEntity {
     public Runnable fixStartingPosition = () -> {};
@@ -59,43 +62,26 @@ public class MinionFakePlayer extends ServerPlayerEntity {
 
     private UUID skinUuid = null;
 
-    public static void createMinion(MinionData data, ServerWorld level, ServerPlayerEntity owner, boolean canProgram, Vec3d pos, double yaw, double pitch) {
-        MinecraftServer server = level.getServer();
+    public static void createMinion(MinionData data, ServerWorld level, ServerPlayerEntity owner, boolean canProgram, Vec3d pos, Vec2f rot) {
+        spawnMinion(data, level, pos, rot,
+                (minion, skinProfile) -> {
+                    if (skinProfile != null) {
+                        minion.skinUuid = skinProfile.getId();
+                    }
 
-        CompletableFuture<GameProfile> future;
-        if(data.skinUuid().isPresent()) {
-            future = MinionProfileUtils.getSkinOwnerProfile(server, data.skinUuid().get());
-        } else {
-            future = MinionProfileUtils.lookupSkinOwnerProfile(server, data.name());
-        }
-
-        future.thenAccept(skinProfile -> {
-            GameProfile profile = MinionProfileUtils.makeNewMinionProfile(null, data.name(), skinProfile);
-            Minions.addExecuteOnNextTick(() -> {
-                MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, SyncedClientOptions.createDefault());
-                if(skinProfile != null) {
-                    instance.skinUuid = skinProfile.getId();
+                    minion.programmable = canProgram;
+                },
+                minion -> {
+                    MinionPersistentState.INSTANCE.addMinion(minion);
                 }
-
-                instance.programmable = canProgram;
-                instance.fixStartingPosition = () -> instance.refreshPositionAndAngles(pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
-                server.getPlayerManager().onPlayerConnect(new FakeClientConnection(NetworkSide.SERVERBOUND), instance, new ConnectedClientData(profile, 0, instance.getClientOptions(), false));
-                instance.teleport(level, pos.x, pos.y, pos.z, Set.of(), (float) yaw, (float) pitch, true);
-                instance.setHealth(20.0F);
-                instance.unsetRemoved();
-                instance.getAttributeInstance(EntityAttributes.STEP_HEIGHT).setBaseValue(0.6F);
-                instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
-                server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
-                server.getPlayerManager().sendToDimension(EntityPositionSyncS2CPacket.create(instance), level.getRegistryKey());//instance.dimension);
-                //instance.world.getChunkManager(). updatePosition(instance);
-                instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
-                instance.getAbilities().flying = false;
-                MinionPersistentState.INSTANCE.addMinion(instance);
-            });
-        });
+        );
     }
 
     public static void spawnMinionAt(MinionData data, ServerWorld level, @Nullable Vec3d pos, @Nullable Vec2f rot) {
+        spawnMinion(data, level, pos, rot, (minion, skinProfile) -> {}, minion -> {});
+    }
+
+    public static void spawnMinion(MinionData data, ServerWorld level, @Nullable Vec3d pos, @Nullable Vec2f rot, BiConsumer<MinionFakePlayer, GameProfile> beforeSpawn, Consumer<MinionFakePlayer> afterSpawn) {
         MinecraftServer server = level.getServer();
 
         CompletableFuture<GameProfile> future;
@@ -109,6 +95,8 @@ public class MinionFakePlayer extends ServerPlayerEntity {
             GameProfile profile = MinionProfileUtils.makeNewMinionProfile(data.uuid(), data.name(), skinProfile);
             Minions.addExecuteOnNextTick(() -> {
                 MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, SyncedClientOptions.createDefault());
+                beforeSpawn.accept(instance, skinProfile);
+
                 if(pos != null && rot != null) {
                     instance.fixStartingPosition = () -> instance.refreshPositionAndAngles(pos.x, pos.y, pos.z, rot.x, rot.y);
                 }
@@ -120,12 +108,15 @@ public class MinionFakePlayer extends ServerPlayerEntity {
                 instance.setVelocity(0,0,0);
                 instance.setHealth(20.0F);
                 instance.unsetRemoved();
+                instance.getAttributeInstance(EntityAttributes.STEP_HEIGHT).setBaseValue(0.6F);
                 instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
                 server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
                 server.getPlayerManager().sendToDimension(EntityPositionSyncS2CPacket.create(instance), level.getRegistryKey());//instance.dimension);
                 //instance.world.getChunkManager(). updatePosition(instance);
                 instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
                 instance.getAbilities().flying = false;
+
+                afterSpawn.accept(instance);
             });
         });
     }
@@ -313,9 +304,9 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     @Override
-    protected void drop(ServerWorld world, DamageSource damageSource) {
+    public void drop(ServerWorld world, DamageSource damageSource) {
         super.drop(world, damageSource);
-        dropStack(world, toItemStack());
+        dropStack(world, toItemStack()).setNeverDespawn();
     }
 
     private ItemStack toItemStack() {

@@ -1,6 +1,6 @@
 package io.github.skippyall.minions.minion;
 
-import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -47,7 +47,7 @@ public class MinionPersistentState extends PersistentState {
         }
 
         NbtList uuids = compound.getList("uuids", NbtElement.COMPOUND_TYPE);
-        for(NbtElement element : list) {
+        for(NbtElement element : uuids) {
             instance.minionUuids.add(((NbtCompound) element).getUuid("uuid"));
         }
         return instance;

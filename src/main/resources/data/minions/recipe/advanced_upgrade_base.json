@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DND",
+    "NBN",
+    "DND"
+  ],
+  "key": {
+    "D": "minecraft:diamond",
+    "N": "minecraft:netherite_scrap",
+    "B": "minions:basic_upgrade_base"
+  },
+  "result": {
+    "id": "minions:advanced_upgrade_base",
+    "count": 1
+  }
+}

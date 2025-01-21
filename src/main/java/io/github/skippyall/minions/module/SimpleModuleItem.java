@@ -1,24 +1,20 @@
 package io.github.skippyall.minions.module;
 
-import eu.pb4.polymer.core.api.item.PolymerItem;
+import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import io.github.skippyall.minions.command.Command;
 import io.github.skippyall.minions.program.block.CodeBlock;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
 
-public class SimpleModuleItem extends Item implements PolymerItem, ModuleItem {
+public class SimpleModuleItem extends SimplePolymerItem implements ModuleItem {
     private final List<CodeBlock<?,?>> codeBlocks;
     private final List<Command> commands;
-    private final Item vanillaItem;
 
     public SimpleModuleItem(List<CodeBlock<?,?>> codeBlocks, List<Command> commands, Settings settings, Item vanillaItem) {
-        super(settings.maxCount(1));
+        super(settings.maxCount(1), vanillaItem);
         this.codeBlocks = codeBlocks;
         this.commands = commands;
-        this.vanillaItem = vanillaItem;
     }
 
     @Override
@@ -29,10 +25,5 @@ public class SimpleModuleItem extends Item implements PolymerItem, ModuleItem {
     @Override
     public List<Command> getCommands() {
         return commands;
-    }
-
-    @Override
-    public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
-        return vanillaItem;
     }
 }

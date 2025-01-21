@@ -1,10 +1,6 @@
 package io.github.skippyall.minions.program.runtime;
 
-import io.github.skippyall.minions.fakeplayer.MinionFakePlayer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 
 public class MinionRuntime extends ProgramRuntime {
     private final MinionFakePlayer minion;

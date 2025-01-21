@@ -18,7 +18,10 @@ public class TextInput {
         gui.setSlot(AnvilScreenHandler.OUTPUT_ID, new GuiElementBuilder()
                 .setItem(Items.EMERALD_BLOCK)
                 .setName(Text.literal("OK"))
-                .setCallback(() -> future.complete(gui.getInput()))
+                .setCallback(() -> {
+                    gui.close();
+                    future.complete(gui.getInput());
+                })
         );
         gui.setTitle(title);
         gui.setDefaultInputValue(defaultText);
