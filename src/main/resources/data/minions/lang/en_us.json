@@ -7,6 +7,7 @@
   "minions.gui.module_commands.title": "Commands",
   "minions.gui.commands.title": "%s's Commands",
   "minions.gui.modules.title": "%s's Modules",
+  "minions.gui.ok": "OK",
 
   "minions.command.input.int.fail": "Not an integer",
   "minions.command.input.float.fail": "Not a number",

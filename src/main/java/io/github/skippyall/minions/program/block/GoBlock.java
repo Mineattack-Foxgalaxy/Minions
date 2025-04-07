@@ -19,7 +19,7 @@ public class GoBlock extends CodeBlock<Void, Tuple2<Float, Float>> {
     public Void execute(ProgramRuntime runtime, Tuple2<Float, Float> args, Statement<Void, Tuple2<Float, Float>>.Run run) {
         if(runtime instanceof MinionRuntime minionRuntime) {
             MinionFakePlayer minion = minionRuntime.getMinion();
-            EntityPlayerActionPack action = ((ServerPlayerInterface) minion).getActionPack();
+            EntityPlayerActionPack action = ((ServerPlayerInterface) minion).minions$getActionPack();
             minion.moveForward(args.v0());
             minion.moveSideways(args.v1());
         }

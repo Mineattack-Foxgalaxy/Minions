@@ -1,6 +1,5 @@
 package io.github.skippyall.minions.minion;
 
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -9,8 +8,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class MinionPersistentState extends PersistentState {
@@ -18,24 +17,24 @@ public class MinionPersistentState extends PersistentState {
 
     public static MinionPersistentState INSTANCE;
 
-    private final List<MinionData> minionData = new ArrayList<>();
-    private final List<UUID> minionUuids = new ArrayList<>();
+    private final Map<UUID, MinionData> minionData = new HashMap<>();
+    //private final List<UUID> minionUuids = new ArrayList<>();
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         NbtList list = new NbtList();
-        for(MinionData data : minionData) {
+        for(MinionData data : minionData.values()) {
             list.add(data.writeNbt());
         }
         nbt.put("minions", list);
 
-        NbtList uuids = new NbtList();
+        /*NbtList uuids = new NbtList();
         for(UUID uuid : minionUuids) {
             NbtCompound compound = new NbtCompound();
             compound.putUuid("uuid", uuid);
             uuids.add(compound);
         }
-        nbt.put("uuids", uuids);
+        nbt.put("uuids", uuids);*/
         return nbt;
     }
 
@@ -43,55 +42,54 @@ public class MinionPersistentState extends PersistentState {
         NbtList list = compound.getList("minions", NbtElement.COMPOUND_TYPE);
         MinionPersistentState instance = new MinionPersistentState();
         for(NbtElement element : list) {
-            instance.addMinion(MinionData.readNbt((NbtCompound) element));
+            if(element instanceof NbtCompound compound1) {
+                MinionData data = MinionData.readNbt((NbtCompound) element);
+                instance.minionData.put(data.uuid(), data);
+            }
         }
 
-        NbtList uuids = compound.getList("uuids", NbtElement.COMPOUND_TYPE);
+        /*NbtList uuids = compound.getList("uuids", NbtElement.COMPOUND_TYPE);
         for(NbtElement element : uuids) {
             instance.minionUuids.add(((NbtCompound) element).getUuid("uuid"));
-        }
+        }*/
         return instance;
     }
 
-    public void addMinionUUID(UUID uuid) {
+    /*public void addMinionUUID(UUID uuid) {
         if(!minionUuids.contains(uuid)) {
             minionUuids.add(uuid);
         }
-    }
-
-    public void addMinion(MinionFakePlayer minion) {
-        addMinion(MinionData.fromMinion(minion));
-    }
+    }*/
 
     public void addMinion(MinionData data) {
         System.out.println("add Minion " + data.name());
-        minionData.add(data);
+        minionData.put(data.uuid(), data);
         markDirty();
     }
 
-    public void removeMinion(MinionFakePlayer minionData) {
-        removeMinion(minionData.getUuid());
+    public void removeMinion(MinionData minionData) {
+        removeMinion(minionData.uuid());
     }
 
     public void removeMinion(UUID minionUUID) {
-        MinionData removal = null;
-        for (MinionData data : minionData) {
-            if (data.uuid().equals(minionUUID)) {
-                removal = data;
-            }
-        }
-        if (removal != null) {
-            minionData.remove(removal);
-        }
+        minionData.remove(minionUUID);
         markDirty();
     }
 
-    public List<MinionData> getMinionData() {
+    public MinionData getMinionData(UUID uuid) {
+        return minionData.get(uuid);
+    }
+
+    public Map<UUID, MinionData> getMinionData() {
         return minionData;
     }
 
+    public void updateMinionData(MinionData data) {
+        minionData.put(data.uuid(), data);
+    }
+
     public boolean isMinion(UUID uuid) {
-        return minionUuids.contains(uuid);
+        return minionData.containsKey(uuid);
     }
 
     public static void create(MinecraftServer server) {

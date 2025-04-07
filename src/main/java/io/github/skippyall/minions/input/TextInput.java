@@ -10,41 +10,68 @@ import net.minecraft.text.Text;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public class TextInput {
-    public static CompletableFuture<String> inputText(ServerPlayerEntity player, Text title, String defaultText) {
-        CompletableFuture<String> future = new CompletableFuture<>();
+public class TextInput<T> extends AnvilInputGui {
+    private final GuiElementBuilder valid = new GuiElementBuilder()
+            .setItem(Items.EMERALD_BLOCK)
+            .setName(Text.literal("OK"))
+            .setCallback(this::onConfirm);
 
-        AnvilInputGui gui = new AnvilInputGui(player, false);
-        gui.setSlot(AnvilScreenHandler.OUTPUT_ID, new GuiElementBuilder()
-                .setItem(Items.EMERALD_BLOCK)
-                .setName(Text.literal("OK"))
-                .setCallback(() -> {
-                    gui.close();
-                    future.complete(gui.getInput());
-                })
-        );
-        gui.setTitle(title);
-        gui.setDefaultInputValue(defaultText);
-        gui.open();
+    private final GuiElementBuilder invalid = new GuiElementBuilder()
+            .setItem(Items.REDSTONE_BLOCK);
+    private final Function<String, Result<T, Text>> parser;
+    private final CompletableFuture<T> future;
+    private Result<T, Text> result;
+
+    public TextInput(ServerPlayerEntity player, Text title, String defaultValue, Function<String, Result<T, Text>> parser, CompletableFuture<T> future) {
+        super(player, false);
+        setTitle(title);
+        setDefaultInputValue(defaultValue);
+        this.parser = parser;
+        this.future = future;
+
+        updateConfirmButton(defaultValue);
+    }
+
+    public static <T> CompletableFuture<T> input(ServerPlayerEntity player, Text title, String defaultValue, Function<String, Result<T, Text>> parser) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        new TextInput<>(player, title, defaultValue, parser, future).open();
         return future;
     }
 
-    public static <T> CompletableFuture<T> inputParse(ServerPlayerEntity player, Text title, String defaultValue, Function<String, T> parser, Text failureMessage) {
-        return inputText(player, title, String.valueOf(defaultValue)).thenCompose(string -> {
-            try {
-                return CompletableFuture.completedFuture(parser.apply(string));
-            } catch (Exception e) {
-                player.sendMessage(failureMessage);
-                return CompletableFuture.failedFuture(e);
-            }
-        });
-    }
-
     public static CompletableFuture<Integer> inputInt(ServerPlayerEntity player, Text title, String defaultValue) {
-        return inputParse(player, title, defaultValue, Integer::parseInt, Text.translatable("minions.command.input.int.fail"));
+        return input(player, title, defaultValue, string -> Result.wrapCustomError(() -> Integer.valueOf(string), Text.translatable("minions.command.input.int.fail")));
     }
 
     public static CompletableFuture<Float> inputFloat(ServerPlayerEntity player, Text title, String defaultValue) {
-        return inputParse(player, title, defaultValue, Float::parseFloat, Text.translatable("minions.command.input.float.fail"));
+        return input(player, title, defaultValue, string -> Result.wrapCustomError(() -> Float.valueOf(string), Text.translatable("minions.command.input.float.fail")));
+    }
+
+    @Override
+    public void onInput(String input) {
+        updateConfirmButton(input);
+    }
+
+    public void updateConfirmButton(String input) {
+        result = parser.apply(input);
+        if(result.isSuccess()) {
+            setSlot(AnvilScreenHandler.OUTPUT_ID, valid);
+        } else {
+            Text text = result.getErrorOrThrow();
+            setSlot(AnvilScreenHandler.OUTPUT_ID, invalid.setName(text));
+        }
+    }
+
+    @Override
+    public void onClose() {
+        if(!future.isDone()) {
+            future.cancel(false);
+        }
+    }
+
+    public void onConfirm() {
+        result.ifSuccess(success -> {
+            future.complete(success);
+            close();
+        });
     }
 }

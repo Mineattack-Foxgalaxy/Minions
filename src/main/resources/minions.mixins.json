@@ -7,6 +7,7 @@
     "ChunkTicketManagerFixMixin",
     "ConnectionMixin",
     "EntityAccessor",
+    "EntityViewMixin",
     "MinecraftServerMixin",
     "MobEntityMixin",
     "PlayerListEntryS2CPacket$EntryMixin",

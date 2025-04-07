@@ -2,8 +2,12 @@ package io.github.skippyall.minions.minion;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.ProfileResult;
+import io.github.skippyall.minions.input.Result;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
+import net.minecraft.util.StringHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -13,6 +17,8 @@ import java.util.concurrent.ForkJoinPool;
 import static io.github.skippyall.minions.Minions.LOGGER;
 
 public class MinionProfileUtils {
+    public static final String PREFIX = "#";
+
     public static CompletableFuture<@Nullable GameProfile> lookupSkinOwnerProfile(MinecraftServer server, String username) {
         CompletableFuture<GameProfile> future = new CompletableFuture<>();
 
@@ -60,18 +66,29 @@ public class MinionProfileUtils {
         return future;
     }
 
-    public static GameProfile makeNewMinionProfile(@Nullable UUID uuidMinion, String username, @Nullable GameProfile skinProfile) {
+    public static GameProfile makeNewMinionProfile(UUID uuidMinion, String username, PropertyMap skin) {
         if(uuidMinion == null) {
             uuidMinion = UUID.randomUUID();
         }
-        MinionPersistentState.INSTANCE.addMinionUUID(uuidMinion);
 
         GameProfile newProfile = new GameProfile(uuidMinion, username);
-        if (skinProfile != null) {
-            newProfile.getProperties().putAll(skinProfile.getProperties());
+        if (skin != null) {
+            newProfile.getProperties().putAll(skin);
         }
         LOGGER.info("Minion Profile: {}", newProfile);
         return newProfile;
+    }
+
+    public static Result<String, Text> checkMinionName(String name) {
+        if(StringHelper.isValidPlayerName(PREFIX + name)) {
+            return new Result.Success<>(name);
+        } else {
+            return new Result.Error<>(Text.translatable("minions.generic.minion_name_too_long"));
+        }
+    }
+
+    public static boolean isValidMinionName(String name) {
+        return checkMinionName(name).isSuccess();
     }
 
     public static boolean isMinion(UUID uuid) {
