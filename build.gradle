@@ -17,6 +17,18 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
     maven { url 'https://maven.nucleoid.xyz' }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -30,6 +42,8 @@ dependencies {
     modImplementation "eu.pb4:polymer-core:${project.polymer_version}"
     modImplementation include("eu.pb4:sgui:${project.sgui_version}")
     modImplementation include("xyz.nucleoid:server-translations-api:${project.server_translations_version}")
+
+    modCompileOnly "maven.modrinth:universal-graves:${project.universal_graves_version}"
 }
 
 processResources {

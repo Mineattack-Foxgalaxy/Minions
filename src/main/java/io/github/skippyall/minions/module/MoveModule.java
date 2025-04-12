@@ -39,13 +39,33 @@ public class MoveModule {
                             .thenAccept(degrees -> minion.getMinionActionPack().turn(-degrees, 0))
             );
 
+    public static final SimpleCommand TURN_UP_COMMAND =
+            new SimpleCommand(
+                    Text.literal("Turn Up"),
+                    Text.literal("Turn a specific amount of degrees up"),
+                    Items.COMPASS,
+                    (player, minion) -> TextInput.inputFloat(player, Text.literal("Degrees"), "90")
+                            .thenAccept(degrees -> minion.getMinionActionPack().turn(0, -degrees))
+            );
+
+    public static final SimpleCommand TURN_DOWN_COMMAND =
+            new SimpleCommand(
+                    Text.literal("Turn Down"),
+                    Text.literal("Turn a specific amount of degrees down"),
+                    Items.COMPASS,
+                    (player, minion) -> TextInput.inputFloat(player, Text.literal("Degrees"), "90")
+                            .thenAccept(degrees -> minion.getMinionActionPack().turn(0, degrees))
+            );
+
     public static final SimpleModuleItem MOVE_MODULE =
             register(Identifier.of(Minions.MOD_ID, "move_module"),
                     List.of(),
                     List.of(
                             WALK_COMMAND,
                             TURN_RIGHT_COMMAND,
-                            TURN_LEFT_COMMAND
+                            TURN_LEFT_COMMAND,
+                            TURN_UP_COMMAND,
+                            TURN_DOWN_COMMAND
                     ),
                     Items.IRON_BOOTS
             );
