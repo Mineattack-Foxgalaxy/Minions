@@ -19,6 +19,7 @@
   "mixins": [
     "minions.mixins.json"
   ],
+  "accessWidener" : "minions.accesswidener",
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
