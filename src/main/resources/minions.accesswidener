@@ -1,0 +1,4 @@
+accessWidener v2 named
+
+accessible class net/minecraft/server/world/ChunkTicketManager$DistanceFromNearestPlayerTracker
+accessible method net/minecraft/server/world/ChunkTicketManager$DistanceFromNearestPlayerTracker <init> (Lnet/minecraft/server/world/ChunkTicketManager;I)V
