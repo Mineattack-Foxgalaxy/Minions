@@ -30,17 +30,17 @@ public abstract class ChunkTicketManager$DistanceFromNearestPlayerTrackerMixin e
     @Shadow protected abstract boolean isPlayerInChunk(long chunkPos);
 
     @Unique
-    boolean minionless, target;
+    boolean minions$minionless, minions$target;
 
     @Inject(method = "isPlayerInChunk", at = @At("RETURN"), cancellable = true)
-    public void filterMinions(long chunkPos, CallbackInfoReturnable<Boolean> cir) {
-        if (minionless) {
-            cir.setReturnValue(isRealPlayerInChunk(chunkPos));
+    public void minions$filterMinions(long chunkPos, CallbackInfoReturnable<Boolean> cir) {
+        if (minions$minionless) {
+            cir.setReturnValue(minions$isRealPlayerInChunk(chunkPos));
         }
     }
 
-    @Unique
-    public boolean isRealPlayerInChunk(long chunkPos) {
+    @Override
+    public boolean minions$isRealPlayerInChunk(long chunkPos) {
         ObjectSet<ServerPlayerEntity> players = ((ChunkTicketManagerAccessor)field_17462).getPlayers(chunkPos);
         boolean contains = false;
         if(players != null) {
@@ -55,27 +55,27 @@ public abstract class ChunkTicketManager$DistanceFromNearestPlayerTrackerMixin e
     }
 
     @Inject(method = "updateLevels", at = @At("HEAD"))
-    public void sync(CallbackInfo info) {
-        if (target) {
+    public void minions$sync(CallbackInfo info) {
+        if (minions$target) {
             ((ChunkTicketManagerAccessor)field_17462).getMinionless().updateLevels();
         }
     }
 
     @Override
     public void minions$updateLevel(long chunkPos, int distance, boolean decrease, CallbackInfo info) {
-        if (target && (distance != 0 || isRealPlayerInChunk(chunkPos))) {
+        if (minions$target && (distance == Integer.MAX_VALUE || minions$isRealPlayerInChunk(chunkPos))) {
             ((ChunkTicketManagerAccessor)field_17462).getMinionless().updateLevel(chunkPos, distance, decrease);
         }
     }
 
     @Override
     public void minions$markAsMinionless() {
-        minionless = true;
+        minions$minionless = true;
     }
 
     @Override
     public void minions$markAsTarget() {
-        target = true;
+        minions$target = true;
     }
 
     @Override
