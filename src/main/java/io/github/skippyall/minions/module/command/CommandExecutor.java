@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.command;
+package io.github.skippyall.minions.module.command;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.server.network.ServerPlayerEntity;

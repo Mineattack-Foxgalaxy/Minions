@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.module;
 
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.command.SimpleCommand;
+import io.github.skippyall.minions.module.command.SimpleCommand;
 import io.github.skippyall.minions.input.TextInput;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
@@ -56,6 +56,8 @@ public class MoveModule {
                     (player, minion) -> TextInput.inputFloat(player, Text.literal("Degrees"), "90")
                             .thenAccept(degrees -> minion.getMinionActionPack().turn(0, degrees))
             );
+
+
 
     public static final SimpleModuleItem MOVE_MODULE =
             register(Identifier.of(Minions.MOD_ID, "move_module"),

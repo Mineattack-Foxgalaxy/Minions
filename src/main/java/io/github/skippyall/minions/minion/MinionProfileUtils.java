@@ -2,8 +2,14 @@ package io.github.skippyall.minions.minion;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.ProfileResult;
+import com.mojang.brigadier.StringReader;
+import io.github.skippyall.minions.input.Result;
+import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
+import net.minecraft.util.StringHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -13,65 +19,49 @@ import java.util.concurrent.ForkJoinPool;
 import static io.github.skippyall.minions.Minions.LOGGER;
 
 public class MinionProfileUtils {
-    public static CompletableFuture<@Nullable GameProfile> lookupSkinOwnerProfile(MinecraftServer server, String username) {
-        CompletableFuture<GameProfile> future = new CompletableFuture<>();
+    public static final String PREFIX = "+";
 
-        ForkJoinPool.commonPool().execute(() -> {
-            try {
-                server.getGameProfileRepo().findProfilesByNames(new String[]{username}, new ProfileLookupCallback() {
-                    @Override
-                    public void onProfileLookupSucceeded(GameProfile found) {
-                        LOGGER.info("SkinProfile: {}", found);
-                        try {
-                            getSkinOwnerProfile(server, found.getId()).thenAccept(future::complete);
-                        } catch (Throwable ex) {
-                            LOGGER.warn("Exception during Game Profile creation", ex);
-                        }
-                    }
-
-                    @Override
-                    public void onProfileLookupFailed(String profileName, Exception exception) {
-                        LOGGER.warn("Lookup Error: ", exception);
-                        future.complete(null);
-                    }
-                });
-            } catch (Throwable e) {
-                LOGGER.warn("Failed to get UUID for username " + username, e);
-                future.complete(null);
-            }
-        });
-
-        return future;
-    }
-
-    public static CompletableFuture<@Nullable GameProfile> getSkinOwnerProfile(MinecraftServer server, @Nullable UUID uuid) {
-        CompletableFuture<GameProfile> future = new CompletableFuture<>();
-        future.completeAsync(() -> {
-            GameProfile profile = null;
-            if(uuid != null) {
-                ProfileResult result = server.getSessionService().fetchProfile(uuid, true);
-                if (result != null) {
-                    profile = result.profile();
-                    LOGGER.info("Full SkinProfile: {}", profile);
-                }
-            }
-            return profile;
-        });
-        return future;
-    }
-
-    public static GameProfile makeNewMinionProfile(@Nullable UUID uuidMinion, String username, @Nullable GameProfile skinProfile) {
+    public static GameProfile makeNewMinionProfile(UUID uuidMinion, String username, PropertyMap skin) {
         if(uuidMinion == null) {
             uuidMinion = UUID.randomUUID();
         }
-        MinionPersistentState.INSTANCE.addMinionUUID(uuidMinion);
 
         GameProfile newProfile = new GameProfile(uuidMinion, username);
-        if (skinProfile != null) {
-            newProfile.getProperties().putAll(skinProfile.getProperties());
+        if (skin != null) {
+            newProfile.getProperties().putAll(skin);
         }
         LOGGER.info("Minion Profile: {}", newProfile);
         return newProfile;
+    }
+
+    public static Result<String, Text> checkMinionNameWithoutPrefix(String name) {
+        for(char c : name.toCharArray()) {
+            if(!StringReader.isAllowedInUnquotedString(c)) {
+                return new Result.Error<>(Text.translatable("minions.generic.name.invalid_char"));
+            }
+        }
+
+        if((PREFIX + name).length() > 16)  {
+            return new Result.Error<>(Text.translatable("minions.generic.name.too_long"));
+        }
+
+        if(!StringHelper.isValidPlayerName(PREFIX + name)) {
+            return new Result.Error<>(Text.translatable("minions.generic.name.invalid"));
+        }
+
+        if(MinionPersistentState.INSTANCE.isMinionNameTaken(PREFIX + name)) {
+            return new Result.Error<>(Text.translatable("minions.generic.name.taken"));
+        }
+
+        return new Result.Success<>(name);
+    }
+
+    public static String newDefaultMinionName() {
+        int i = 0;
+        while (MinionPersistentState.INSTANCE.isMinionNameTaken("+Minion" + i)) {
+            i++;
+        }
+        return "+Minion" + i;
     }
 
     public static boolean isMinion(UUID uuid) {

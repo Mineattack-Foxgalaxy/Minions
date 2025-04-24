@@ -3,5 +3,5 @@ package io.github.skippyall.minions.minion.fakeplayer;
 
 public interface ServerPlayerInterface
 {
-    EntityPlayerActionPack getActionPack();
+    EntityPlayerActionPack minions$getActionPack();
 }

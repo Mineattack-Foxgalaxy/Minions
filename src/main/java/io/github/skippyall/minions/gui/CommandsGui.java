@@ -2,7 +2,7 @@ package io.github.skippyall.minions.gui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import io.github.skippyall.minions.command.Command;
+import io.github.skippyall.minions.module.command.Command;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.ModuleItem;
 import net.minecraft.screen.ScreenHandlerType;

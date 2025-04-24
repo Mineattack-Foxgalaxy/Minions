@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.module;
 
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
-import io.github.skippyall.minions.command.Command;
+import io.github.skippyall.minions.module.command.Command;
 import io.github.skippyall.minions.program.block.CodeBlock;
 import net.minecraft.item.Item;
 

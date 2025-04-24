@@ -1,6 +1,5 @@
 package io.github.skippyall.minions.minion;
 
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -9,8 +8,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class MinionPersistentState extends PersistentState {
@@ -18,24 +17,16 @@ public class MinionPersistentState extends PersistentState {
 
     public static MinionPersistentState INSTANCE;
 
-    private final List<MinionData> minionData = new ArrayList<>();
-    private final List<UUID> minionUuids = new ArrayList<>();
+    private final Map<UUID, MinionData> minionData = new HashMap<>();
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         NbtList list = new NbtList();
-        for(MinionData data : minionData) {
+        for(MinionData data : minionData.values()) {
             list.add(data.writeNbt());
         }
         nbt.put("minions", list);
 
-        NbtList uuids = new NbtList();
-        for(UUID uuid : minionUuids) {
-            NbtCompound compound = new NbtCompound();
-            compound.putUuid("uuid", uuid);
-            uuids.add(compound);
-        }
-        nbt.put("uuids", uuids);
         return nbt;
     }
 
@@ -43,55 +34,33 @@ public class MinionPersistentState extends PersistentState {
         NbtList list = compound.getList("minions", NbtElement.COMPOUND_TYPE);
         MinionPersistentState instance = new MinionPersistentState();
         for(NbtElement element : list) {
-            instance.addMinion(MinionData.readNbt((NbtCompound) element));
-        }
-
-        NbtList uuids = compound.getList("uuids", NbtElement.COMPOUND_TYPE);
-        for(NbtElement element : uuids) {
-            instance.minionUuids.add(((NbtCompound) element).getUuid("uuid"));
+            if(element instanceof NbtCompound compound1) {
+                MinionData data = MinionData.readNbt(compound1);
+                instance.minionData.put(data.uuid(), data);
+            }
         }
         return instance;
     }
 
-    public void addMinionUUID(UUID uuid) {
-        if(!minionUuids.contains(uuid)) {
-            minionUuids.add(uuid);
-        }
+    public MinionData getMinionData(UUID uuid) {
+        return minionData.get(uuid);
     }
 
-    public void addMinion(MinionFakePlayer minion) {
-        addMinion(MinionData.fromMinion(minion));
-    }
-
-    public void addMinion(MinionData data) {
-        System.out.println("add Minion " + data.name());
-        minionData.add(data);
-        markDirty();
-    }
-
-    public void removeMinion(MinionFakePlayer minionData) {
-        removeMinion(minionData.getUuid());
-    }
-
-    public void removeMinion(UUID minionUUID) {
-        MinionData removal = null;
-        for (MinionData data : minionData) {
-            if (data.uuid().equals(minionUUID)) {
-                removal = data;
-            }
-        }
-        if (removal != null) {
-            minionData.remove(removal);
-        }
-        markDirty();
-    }
-
-    public List<MinionData> getMinionData() {
+    public Map<UUID, MinionData> getMinionData() {
         return minionData;
     }
 
+    public void updateMinionData(MinionData data) {
+        minionData.put(data.uuid(), data);
+        markDirty();
+    }
+
     public boolean isMinion(UUID uuid) {
-        return minionUuids.contains(uuid);
+        return minionData.containsKey(uuid);
+    }
+
+    public boolean isMinionNameTaken(String name) {
+        return minionData.values().stream().anyMatch(data -> data.name().equals(name));
     }
 
     public static void create(MinecraftServer server) {

@@ -299,7 +299,7 @@ public class EntityPlayerActionPack
                     @Override
                     boolean execute(ServerPlayerEntity player, Action action)
                     {
-                        EntityPlayerActionPack ap = ((ServerPlayerInterface) player).getActionPack();
+                        EntityPlayerActionPack ap = ((ServerPlayerInterface) player).minions$getActionPack();
                         if (ap.itemUseCooldown > 0)
                         {
                             ap.itemUseCooldown--;
@@ -368,7 +368,7 @@ public class EntityPlayerActionPack
                     @Override
                     void inactiveTick(ServerPlayerEntity player, Action action)
                     {
-                        EntityPlayerActionPack ap = ((ServerPlayerInterface) player).getActionPack();
+                        EntityPlayerActionPack ap = ((ServerPlayerInterface) player).minions$getActionPack();
                         ap.itemUseCooldown = 0;
                         player.stopUsingItem();
                     }
@@ -390,7 +390,7 @@ public class EntityPlayerActionPack
                         return true;
                     }
                     case BLOCK: {
-                        EntityPlayerActionPack ap = ((ServerPlayerInterface) player).getActionPack();
+                        EntityPlayerActionPack ap = ((ServerPlayerInterface) player).minions$getActionPack();
                         if (ap.blockHitDelay > 0)
                         {
                             ap.blockHitDelay--;
@@ -461,7 +461,7 @@ public class EntityPlayerActionPack
             @Override
             void inactiveTick(ServerPlayerEntity player, Action action)
             {
-                EntityPlayerActionPack ap = ((ServerPlayerInterface) player).getActionPack();
+                EntityPlayerActionPack ap = ((ServerPlayerInterface) player).minions$getActionPack();
                 if (ap.currentBlock == null) return;
                 player.getWorld().setBlockBreakingInfo(-1, ap.currentBlock, -1);
                 player.interactionManager.processBlockBreakingAction(ap.currentBlock, PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, Direction.DOWN, player.getWorld().getTopYInclusive(), -1);
