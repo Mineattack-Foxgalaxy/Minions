@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.command;
+package io.github.skippyall.minions.module.command;
 
 import net.minecraft.item.Item;
 import net.minecraft.text.Text;

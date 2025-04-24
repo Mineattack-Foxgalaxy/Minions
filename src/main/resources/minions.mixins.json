@@ -7,6 +7,8 @@
     "ChunkTicketManagerFixMixin",
     "ConnectionMixin",
     "EntityAccessor",
+    "GraveCompatMixin",
+    "EntityViewMixin",
     "MinecraftServerMixin",
     "MobEntityMixin",
     "PlayerListEntryS2CPacket$EntryMixin",
@@ -14,7 +16,12 @@
     "ServerPlayerMixin",
     "ServerPlayNetworkHandlerMixin",
     "SleepManagerMixin",
-    "SpawnHelperMixin"
+    "SpawnHelperMixin",
+    "antimobcap.ChunkPosDistanceLevelPropagatorMixin",
+    "antimobcap.ChunkTicketManager$DistanceFromNearestPlayerTrackerMixin",
+    "antimobcap.ChunkTicketManagerMixin",
+    "antimobcap.ServerChunkManagerAccessor",
+    "antimobcap.ServerChunkManagerMixin"
   ],
   "client": [],
   "server": [],

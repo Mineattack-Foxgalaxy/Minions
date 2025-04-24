@@ -18,7 +18,7 @@ public abstract class ServerPlayerMixin implements ServerPlayerInterface {
     @Unique
     public EntityPlayerActionPack actionPack;
     @Override
-    public EntityPlayerActionPack getActionPack()
+    public EntityPlayerActionPack minions$getActionPack()
     {
         return actionPack;
     }
