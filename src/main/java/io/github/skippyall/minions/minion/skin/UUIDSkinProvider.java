@@ -1,51 +1,32 @@
 package io.github.skippyall.minions.minion.skin;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.skippyall.minions.input.TextInput;
 import io.github.skippyall.minions.minion.MinionProfileUtils;
+import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.dynamic.Codecs;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class UUIDSkinProvider extends CachedSkinProvider {
-    public static final Codec<UUIDSkinProvider> CODEC = RecordCodecBuilder.create(instance ->
-            instance.group(
-                    Codecs.GAME_PROFILE_PROPERTY_MAP.optionalFieldOf("cache", null).forGetter(CachedSkinProvider::getCache),
-                    Uuids.CODEC.fieldOf("uuid").forGetter(UUIDSkinProvider::getUuid)
-            ).apply(instance, UUIDSkinProvider::new));
-
-    private final UUID uuid;
-
-    public UUIDSkinProvider(UUID uuid) {
-        this(null, uuid);
-    }
-
-    public UUIDSkinProvider(PropertyMap cache, UUID uuid) {
-        super(cache);
-        this.uuid = uuid;
-    }
-
-    public UUID getUuid() {
-        return uuid;
+public class UUIDSkinProvider implements SkinProvider {
+    @Override
+    public CompletableFuture<Optional<PropertyMap>> openSkinMenu(ServerPlayerEntity player) {
+        return TextInput.inputString(player, Text.translatable("minions.gui.look.skin.uuid.title"), "")
+                .thenCompose(uuidString -> SkullBlockEntity.fetchProfileByUuid(UUID.fromString(uuidString)))
+                .thenApply(gameProfile -> gameProfile.map(GameProfile::getProperties));
     }
 
     @Override
-    public CompletableFuture<PropertyMap> fetchSkin(MinecraftServer server) {
-        return MinionProfileUtils.getSkinOwnerProfile(server, uuid).thenApply(gameProfile -> {
-            if (gameProfile != null) {
-                return gameProfile.getProperties();
-            } else {
-                return null;
-            }
-        });
-    }
-
-    @Override
-    public Codec<? extends SkinProvider> getCodec() {
-        return CODEC;
+    public Text getDisplayName() {
+        return Text.translatable("minions.gui.look.skin.uuid");
     }
 }

@@ -6,8 +6,8 @@ import io.github.skippyall.minions.input.TextInput;
 import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionProfileUtils;
-import net.minecraft.block.PlayerSkullBlock;
-import net.minecraft.block.entity.SkullBlockEntity;
+import io.github.skippyall.minions.minion.skin.SkinProvider;
+import io.github.skippyall.minions.minion.skin.SkinProviders;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.item.ItemStack;
@@ -20,10 +20,18 @@ import java.util.Optional;
 
 public class MinionLookGui extends SimpleGui {
     private ItemStack minionItem;
+    private SkinProvider currentSkinProvider;
 
     public MinionLookGui(ServerPlayerEntity player, ItemStack minionItem) {
         super(ScreenHandlerType.GENERIC_9X3, player, false);
         this.minionItem = minionItem;
+        this.currentSkinProvider = SkinProviders.NAME;
+    }
+
+    public void update() {
+        updateName();
+        updateSkin();
+        updateSkinProvider();
     }
 
     private void updateName() {
@@ -37,45 +45,50 @@ public class MinionLookGui extends SimpleGui {
     }
 
     private void updateSkin() {
-        setSlot(16, new GuiElementBuilder()
+        GuiElementBuilder builder = new GuiElementBuilder()
                 .setItem(Items.PLAYER_HEAD)
-        );
-
-        getData().getSkin(player.server).thenAccept(skin -> {
-            setSlot(16, new GuiElementBuilder()
-                    .setItem(Items.PLAYER_HEAD)
-                    .setComponent(DataComponentTypes.PROFILE, new ProfileComponent(Optional.empty(), Optional.empty(), skin))
-                    .setCallback(this::cycleSkinProvider)
-            );
-        });
+                .setCallback(() -> currentSkinProvider.openSkinMenu(player).thenAccept(skin -> {
+                    MinionItem.setData(getData().withSkin(skin), minionItem);
+                }));
+        if(MinionItem.getData(minionItem) != null && MinionItem.getData(minionItem).skin().isPresent()) {
+            builder.setComponent(DataComponentTypes.PROFILE, new ProfileComponent(Optional.empty(), Optional.empty(), getData().skin().get()));
+        }
+        setSlot(16, builder);
     }
 
     private void cycleSkinProvider() {
+        int currentId = SkinProviders.SKIN_PROVIDERS.getRawId(currentSkinProvider);
+        currentId++;
+        if(SkinProviders.SKIN_PROVIDERS.size() == currentId) {
+            currentId = 0;
+        }
 
+        currentSkinProvider = SkinProviders.SKIN_PROVIDERS.get(currentId);
+        updateSkinProvider();
     }
 
     private void updateSkinProvider() {
         setSlot(25, new GuiElementBuilder()
                 .setItem(Items.GREEN_STAINED_GLASS_PANE)
-                .setComponent(DataComponentTypes.CUSTOM_NAME, Text.literal())
+                .setComponent(DataComponentTypes.CUSTOM_NAME, currentSkinProvider.getDisplayName())
+                .setCallback(this::cycleSkinProvider)
         );
-        updateSkin();
     }
 
     private MinionData getData() {
-        return MinionItem.getData(minionItem);
+        return MinionItem.getDataOrDefault(minionItem);
     }
 
     public static void open(ServerPlayerEntity player, ItemStack minionItem) {
         MinionLookGui gui = new MinionLookGui(player, minionItem);
-
+        gui.update();
         gui.open();
     }
 
     public void openRenameGui(ServerPlayerEntity player, ItemStack minionItem) {
-        TextInput.input(player, Text.translatable("minions.gui.look.rename.title"), "Minion", MinionProfileUtils::checkMinionName)
+        TextInput.inputSync(player, Text.translatable("minions.gui.look.rename.title"), "Minion", MinionProfileUtils::checkMinionNameWithoutPrefix)
                 .thenAccept(name -> {
-                    MinionItem.setData(MinionItem.getDataOrDefault(minionItem).withName(name), minionItem);
+                    MinionItem.setData(getData().withName(MinionProfileUtils.PREFIX + name), minionItem);
                     open();
                 });
     }

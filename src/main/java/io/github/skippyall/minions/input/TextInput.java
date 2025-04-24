@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class TextInput<T> extends AnvilInputGui {
     private final GuiElementBuilder valid = new GuiElementBuilder()
@@ -18,11 +19,11 @@ public class TextInput<T> extends AnvilInputGui {
 
     private final GuiElementBuilder invalid = new GuiElementBuilder()
             .setItem(Items.REDSTONE_BLOCK);
-    private final Function<String, Result<T, Text>> parser;
+    private final Function<String, CompletableFuture<Result<T, Text>>> parser;
     private final CompletableFuture<T> future;
     private Result<T, Text> result;
 
-    public TextInput(ServerPlayerEntity player, Text title, String defaultValue, Function<String, Result<T, Text>> parser, CompletableFuture<T> future) {
+    public TextInput(ServerPlayerEntity player, Text title, String defaultValue, Function<String, CompletableFuture<Result<T, Text>>> parser, CompletableFuture<T> future) {
         super(player, false);
         setTitle(title);
         setDefaultInputValue(defaultValue);
@@ -32,18 +33,26 @@ public class TextInput<T> extends AnvilInputGui {
         updateConfirmButton(defaultValue);
     }
 
-    public static <T> CompletableFuture<T> input(ServerPlayerEntity player, Text title, String defaultValue, Function<String, Result<T, Text>> parser) {
+    public static <T> CompletableFuture<T> inputSync(ServerPlayerEntity player, Text title, String defaultValue, Function<String, Result<T, Text>> parser) {
+        return input(player, title, defaultValue, (String string) -> CompletableFuture.completedFuture(parser.apply(string)));
+    }
+
+    public static <T> CompletableFuture<T> input(ServerPlayerEntity player, Text title, String defaultValue, Function<String, CompletableFuture<Result<T, Text>>> parser) {
         CompletableFuture<T> future = new CompletableFuture<>();
         new TextInput<>(player, title, defaultValue, parser, future).open();
         return future;
     }
 
+    public static CompletableFuture<String> inputString(ServerPlayerEntity player, Text title, String defaultValue) {
+        return inputSync(player, title, defaultValue, Result.Success::new);
+    }
+
     public static CompletableFuture<Integer> inputInt(ServerPlayerEntity player, Text title, String defaultValue) {
-        return input(player, title, defaultValue, string -> Result.wrapCustomError(() -> Integer.valueOf(string), Text.translatable("minions.command.input.int.fail")));
+        return inputSync(player, title, defaultValue, string -> Result.wrapCustomError(() -> Integer.valueOf(string), Text.translatable("minions.command.input.int.fail")));
     }
 
     public static CompletableFuture<Float> inputFloat(ServerPlayerEntity player, Text title, String defaultValue) {
-        return input(player, title, defaultValue, string -> Result.wrapCustomError(() -> Float.valueOf(string), Text.translatable("minions.command.input.float.fail")));
+        return inputSync(player, title, defaultValue, string -> Result.wrapCustomError(() -> Float.valueOf(string), Text.translatable("minions.command.input.float.fail")));
     }
 
     @Override
@@ -52,13 +61,15 @@ public class TextInput<T> extends AnvilInputGui {
     }
 
     public void updateConfirmButton(String input) {
-        result = parser.apply(input);
-        if(result.isSuccess()) {
-            setSlot(AnvilScreenHandler.OUTPUT_ID, valid);
-        } else {
-            Text text = result.getErrorOrThrow();
-            setSlot(AnvilScreenHandler.OUTPUT_ID, invalid.setName(text));
-        }
+        parser.apply(input).thenAccept(result -> {
+            this.result = result;
+            if(result.isSuccess()) {
+                setSlot(AnvilScreenHandler.OUTPUT_ID, valid);
+            } else {
+                Text text = result.getErrorOrThrow();
+                setSlot(AnvilScreenHandler.OUTPUT_ID, invalid.setName(text));
+            }
+        });
     }
 
     @Override
@@ -69,9 +80,11 @@ public class TextInput<T> extends AnvilInputGui {
     }
 
     public void onConfirm() {
-        result.ifSuccess(success -> {
-            future.complete(success);
-            close();
-        });
+        if(result != null) {
+            result.ifSuccess(success -> {
+                future.complete(success);
+                close();
+            });
+        }
     }
 }

@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.module;
 
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.command.SimpleCommand;
+import io.github.skippyall.minions.module.command.SimpleCommand;
 import io.github.skippyall.minions.input.TextInput;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;

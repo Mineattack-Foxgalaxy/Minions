@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import java.util.function.Predicate;
 
 @Mixin(EntityView.class)
-public class EntityViewMixin {
+public interface EntityViewMixin {
     @ModifyArg(method = "getClosestPlayer(DDDDZ)Lnet/minecraft/entity/player/PlayerEntity;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/EntityView;getClosestPlayer(DDDDLjava/util/function/Predicate;)Lnet/minecraft/entity/player/PlayerEntity;"))
     private @Nullable Predicate<Entity> addMinionPredicate(@Nullable Predicate<Entity> targetPredicate) {
         Predicate<Entity> predicate = EntityViewMixinHelper.ADDITIONAL_PREDICATE.get();

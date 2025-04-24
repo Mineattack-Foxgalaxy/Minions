@@ -2,18 +2,23 @@ package io.github.skippyall.minions.minion;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
+import io.github.skippyall.minions.gui.MinionLookGui;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
@@ -50,6 +55,17 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     @Override
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
+        if(user instanceof ServerPlayerEntity serverPlayer) {
+            ItemStack stack = user.getStackInHand(hand);
+            MinionLookGui.open(serverPlayer, stack);
+            return ActionResult.SUCCESS;
+        }
+
+        return ActionResult.SUCCESS_SERVER;
+    }
+
+    @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         if(!context.getWorld().isClient) {
             MinionData data = getDataOrDefault(context.getStack());
@@ -61,6 +77,7 @@ public class MinionItem extends Item implements PolymerItem {
 
     public static void setData(MinionData data, ItemStack item) {
         item.set(MinionData.COMPONENT, data.uuid());
+        MinionPersistentState.INSTANCE.updateMinionData(data);
     }
 
     @Nullable
@@ -75,6 +92,7 @@ public class MinionItem extends Item implements PolymerItem {
         MinionData data = getData(item);
         if(data == null) {
             data = MinionData.createDefault();
+            setData(data, item);
         }
         return data;
     }

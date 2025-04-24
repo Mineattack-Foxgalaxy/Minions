@@ -8,6 +8,13 @@
   "minions.gui.commands.title": "%s's Commands",
   "minions.gui.modules.title": "%s's Modules",
   "minions.gui.ok": "OK",
+  "minions.gui.look.skin.name": "Name",
+  "minions.gui.look.skin.name.title": "Enter a player name",
+  "minions.gui.look.skin.uuid": "UUID",
+  "minions.gui.look.skin.uuid.title": "Enter a player UUID",
+  "minions.gui.look.skin.base64": "Base64",
+  "minions.gui.look.skin.base64.title": "Enter a skin in base64 encoding",
+  "minions.gui.look.rename.title": "Enter a name",
 
   "minions.command.input.int.fail": "Not an integer",
   "minions.command.input.float.fail": "Not a number",
@@ -31,5 +38,9 @@
   "item.minions.basic_upgrade_base": "Basic Upgrade Base",
   "item.minions.advanced_upgrade_base": "Advanced Upgrade Base",
 
-  "minions.minion_item.tooltip": "Name: %s"
+  "minions.minion_item.tooltip": "Name: %s",
+  "minions.generic.name.invalid_char": "Name contains invalid character",
+  "minions.generic.name.too_long": "Name is too long",
+  "minions.generic.name.invalid": "Name is invalid",
+  "minions.generic.name.taken": "This name is already used"
 }

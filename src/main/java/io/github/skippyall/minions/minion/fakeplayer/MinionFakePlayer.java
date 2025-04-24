@@ -58,22 +58,22 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     private final ModuleInventory moduleInventory = new ModuleInventory();
     private final MinionRuntime runtime = new MinionRuntime(this);
 
-    private MinionData data;
+    private final MinionData data;
 
     public static void spawnMinion(MinionData data, ServerWorld level, @Nullable Vec3d pos, @Nullable Vec2f rot) {
         MinecraftServer server = level.getServer();
 
-        CompletableFuture<PropertyMap> future = data.getSkin(server);
+        PropertyMap skin = data.skin().orElse(null);
 
-        future.thenAccept((skin) -> {
-            GameProfile profile = MinionProfileUtils.makeNewMinionProfile(data.uuid(), data.name(), skin);
-            MinionsTickExecutor.addExecuteOnNextTick(() -> doSpawn(data, profile, server, level, pos, rot));
-        });
+        GameProfile profile = MinionProfileUtils.makeNewMinionProfile(data.uuid(), data.name(), skin);
+        doSpawn(data, profile, server, level, pos, rot);
+
     }
 
     private static void doSpawn(MinionData data, GameProfile profile, MinecraftServer server, ServerWorld level, @Nullable Vec3d pos, @Nullable Vec2f rot) {
 
-        MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, SyncedClientOptions.createDefault());
+        MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, SyncedClientOptions.createDefault(), data);
+        MinionPersistentState.INSTANCE.updateMinionData(data.withSpawned(true));
 
         if(pos != null && rot != null) {
             instance.fixStartingPosition = () -> instance.refreshPositionAndAngles(pos.x, pos.y, pos.z, rot.x, rot.y);
@@ -95,14 +95,15 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         instance.getAbilities().flying = false;
     }
 
-    public static MinionFakePlayer respawnFake(MinecraftServer server, ServerWorld level, GameProfile profile, SyncedClientOptions cli)
+    public static MinionFakePlayer respawnFake(MinecraftServer server, ServerWorld level, GameProfile profile, SyncedClientOptions cli, MinionData data)
     {
-        return new MinionFakePlayer(server, level, profile, cli);
+        return new MinionFakePlayer(server, level, profile, cli, data);
     }
 
-    private MinionFakePlayer(MinecraftServer server, ServerWorld worldIn, GameProfile profile, SyncedClientOptions cli)
+    private MinionFakePlayer(MinecraftServer server, ServerWorld worldIn, GameProfile profile, SyncedClientOptions cli, MinionData data)
     {
         super(server, worldIn, profile, cli);
+        this.data = data;
     }
 
     public boolean isProgrammable() {
@@ -162,9 +163,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
             }));
         }
 
-        data.withSpawned(false);
-
-        MinionPersistentState.INSTANCE.updateMinionData(data);
+        MinionPersistentState.INSTANCE.updateMinionData(data.withSpawned(false));
     }
 
     @Override
@@ -289,6 +288,10 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         ItemStack stack = new ItemStack(Minions.MINION_ITEM);
         MinionItem.setData(data, stack);
         return stack;
+    }
+
+    public MinionData getData() {
+        return data;
     }
 
     @Override
