@@ -18,8 +18,8 @@
     "SleepManagerMixin",
     "SpawnHelperMixin",
     "antimobcap.ChunkPosDistanceLevelPropagatorMixin",
-    "antimobcap.ChunkTicketManager$DistanceFromNearestPlayerTrackerMixin",
-    "antimobcap.ChunkTicketManagerMixin",
+    "antimobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerMixin",
+    "antimobcap.ChunkLevelManagerMixin",
     "antimobcap.ServerChunkManagerAccessor",
     "antimobcap.ServerChunkManagerMixin"
   ],

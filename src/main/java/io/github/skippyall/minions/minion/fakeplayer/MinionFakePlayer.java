@@ -16,6 +16,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.EndPortalBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -54,7 +55,6 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     private float moveForward;
     private float moveSideways;
 
-    private boolean programmable;
     private final ModuleInventory moduleInventory = new ModuleInventory();
     private final MinionRuntime runtime = new MinionRuntime(this);
 
@@ -104,14 +104,6 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     {
         super(server, worldIn, profile, cli);
         this.data = data;
-    }
-
-    public boolean isProgrammable() {
-        return programmable;
-    }
-
-    public void setProgrammable(boolean programmable) {
-        this.programmable = programmable;
     }
 
     public ModuleInventory getModuleInventory() {
@@ -281,7 +273,10 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     @Override
     public void drop(ServerWorld world, DamageSource damageSource) {
         super.drop(world, damageSource);
-        dropStack(world, toItemStack()).setNeverDespawn();
+        ItemEntity entity = dropStack(world, toItemStack());
+        if (entity != null) {
+            entity.setNeverDespawn();
+        }
     }
 
     private ItemStack toItemStack() {
@@ -298,13 +293,11 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.put("modules", moduleInventory.writeNbt(new NbtCompound(), getRegistryManager()));
-        nbt.putBoolean("programmable", programmable);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        moduleInventory.readNbt(nbt.getCompound("modules"), getRegistryManager());
-        programmable = nbt.getBoolean("programmable");
+        moduleInventory.readNbt(nbt.getCompoundOrEmpty("modules"), getRegistryManager());
     }
 }

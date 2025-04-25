@@ -1,6 +1,6 @@
 package io.github.skippyall.minions.mixins;
 
-import io.github.skippyall.minions.mixinhelpers.EntityViewMixinHelper;
+import io.github.skippyall.minions.mixinhelper.EntityViewMixinHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.EntityView;
 import org.jetbrains.annotations.Nullable;

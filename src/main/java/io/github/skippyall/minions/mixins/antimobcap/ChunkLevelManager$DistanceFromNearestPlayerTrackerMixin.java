@@ -1,12 +1,13 @@
 package io.github.skippyall.minions.mixins.antimobcap;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.mixinhelper.ChunkTicketManager$DistanceFromNearestPlayerTrackerAccessor;
-import io.github.skippyall.minions.mixinhelper.ChunkTicketManagerAccessor;
+import io.github.skippyall.minions.mixinhelper.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
+import io.github.skippyall.minions.mixinhelper.ChunkLevelManagerAccessor;
 import io.github.skippyall.minions.module.MobSpawningModule;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkLevelManager;
 import net.minecraft.server.world.ChunkTicketManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,11 +18,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = ChunkTicketManager.DistanceFromNearestPlayerTracker.class)
-public abstract class ChunkTicketManager$DistanceFromNearestPlayerTrackerMixin extends ChunkPosDistanceLevelPropagatorMixin implements ChunkTicketManager$DistanceFromNearestPlayerTrackerAccessor {
+@Mixin(value = ChunkLevelManager.DistanceFromNearestPlayerTracker.class)
+public abstract class ChunkLevelManager$DistanceFromNearestPlayerTrackerMixin extends ChunkPosDistanceLevelPropagatorMixin implements ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor {
     @Final
     @Shadow
-    ChunkTicketManager field_17462;
+    ChunkLevelManager field_17462;
 
     @Shadow
     @Final
@@ -41,7 +42,7 @@ public abstract class ChunkTicketManager$DistanceFromNearestPlayerTrackerMixin e
 
     @Override
     public boolean minions$isRealPlayerInChunk(long chunkPos) {
-        ObjectSet<ServerPlayerEntity> players = ((ChunkTicketManagerAccessor)field_17462).getPlayers(chunkPos);
+        ObjectSet<ServerPlayerEntity> players = ((ChunkLevelManagerAccessor)field_17462).minions$getPlayers(chunkPos);
         boolean contains = false;
         if(players != null) {
             contains = players.stream().anyMatch(player -> {
@@ -57,14 +58,14 @@ public abstract class ChunkTicketManager$DistanceFromNearestPlayerTrackerMixin e
     @Inject(method = "updateLevels", at = @At("HEAD"))
     public void minions$sync(CallbackInfo info) {
         if (minions$target) {
-            ((ChunkTicketManagerAccessor)field_17462).getMinionless().updateLevels();
+            ((ChunkLevelManagerAccessor)field_17462).minions$getMinionless().updateLevels();
         }
     }
 
     @Override
     public void minions$updateLevel(long chunkPos, int distance, boolean decrease, CallbackInfo info) {
         if (minions$target && (distance == Integer.MAX_VALUE || minions$isRealPlayerInChunk(chunkPos))) {
-            ((ChunkTicketManagerAccessor)field_17462).getMinionless().updateLevel(chunkPos, distance, decrease);
+            ((ChunkLevelManagerAccessor)field_17462).minions$getMinionless().updateLevel(chunkPos, distance, decrease);
         }
     }
 

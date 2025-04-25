@@ -281,14 +281,14 @@ public class EntityPlayerActionPack
         else // one slot
         {
             if (selectedSlot == -1)
-                selectedSlot = inv.selectedSlot;
+                selectedSlot = inv.getSelectedSlot();
             dropItemFromSlot(selectedSlot, dropAll);
         }
     }
 
     public void setSlot(int slot)
     {
-        player.getInventory().selectedSlot = slot-1;
+        player.getInventory().setSelectedSlot(slot-1);
         player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(slot-1));
     }
 
@@ -321,7 +321,7 @@ public class EntityPlayerActionPack
                                     BlockHitResult blockHit = (BlockHitResult) hit;
                                     BlockPos pos = blockHit.getBlockPos();
                                     Direction side = blockHit.getSide();
-                                    if (pos.getY() < player.getServerWorld().getTopYInclusive() - (side == Direction.UP ? 1 : 0) && world.canPlayerModifyAt(player, pos))
+                                    if (pos.getY() < player.getServerWorld().getTopYInclusive() - (side == Direction.UP ? 1 : 0) && world.canEntityModifyAt(player, pos))
                                     {
                                         ActionResult result = player.interactionManager.interactBlock(player, world, player.getStackInHand(hand), hand, blockHit);
                                         if (result instanceof ActionResult.Success success)

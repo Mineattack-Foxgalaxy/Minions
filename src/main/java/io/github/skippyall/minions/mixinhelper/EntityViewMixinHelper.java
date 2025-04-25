@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.mixinhelpers;
+package io.github.skippyall.minions.mixinhelper;
 
 import net.minecraft.entity.Entity;
 

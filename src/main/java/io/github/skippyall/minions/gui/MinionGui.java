@@ -25,15 +25,6 @@ public class MinionGui {
                     openCommandsGui(player, minion);
                 })
         );
-        if(minion.isProgrammable()) {
-            gui.setSlot(4, new GuiElementBuilder()
-                    .setItem(Items.REDSTONE)
-                    .setName(Text.translatable("minions.gui.main.programming"))
-                    .setCallback(() -> {
-                        openProgrammingInventory(player, minion);
-                    })
-            );
-        }
         gui.setSlot(3, new GuiElementBuilder()
                 .setItem(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
                 .setName(Text.translatable("minions.gui.main.modules"))

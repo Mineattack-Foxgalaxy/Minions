@@ -5,6 +5,7 @@ import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import io.github.skippyall.minions.gui.MinionLookGui;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MinionItem extends Item implements PolymerItem {
     public MinionItem(Settings settings) {
@@ -47,10 +49,10 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent component,  Consumer<Text> tooltip, TooltipType type) {
         MinionData data = getData(stack);
         if(data != null) {
-            tooltip.add(Text.translatable("minions.minion_item.tooltip", data.name()));
+            tooltip.accept(Text.translatable("minions.minion_item.tooltip", data.name()));
         }
     }
 
