@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class MinionPersistentState extends PersistentState {
@@ -57,7 +58,13 @@ public class MinionPersistentState extends PersistentState {
     }
 
     public boolean isMinionNameTaken(String name) {
-        return minionData.values().stream().anyMatch(data -> data.name().equals(name));
+        return getMinionWithName(name).isPresent();
+    }
+
+    public Optional<MinionData> getMinionWithName(String name) {
+        return minionData.values().stream()
+                .filter(data -> data.name().equals(name))
+                .findFirst();
     }
 
     public static void create(MinecraftServer server) {

@@ -1,0 +1,52 @@
+package io.github.skippyall.minions.command;
+
+import com.mojang.brigadier.Message;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandExceptionType;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.github.skippyall.minions.minion.MinionData;
+import io.github.skippyall.minions.minion.MinionPersistentState;
+import io.github.skippyall.minions.minion.MinionProfileUtils;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+public class MinionArgument {
+    public static final SimpleCommandExceptionType MINION_NOT_PRESENT = new SimpleCommandExceptionType(Text.translatable("minions.command.minion.not_present"));
+
+    public static final MinionSuggestionProvider SUGGESTION_PROVIDER = new MinionSuggestionProvider();
+
+    public static MinionData parse(String argument) throws CommandSyntaxException {
+        Optional<MinionData> data = Optional.empty();
+        if(argument.startsWith(MinionProfileUtils.PREFIX)) {
+            data = MinionPersistentState.INSTANCE.getMinionWithName(argument);
+        } else {
+            try {
+                data = Optional.ofNullable(MinionPersistentState.INSTANCE.getMinionData(UUID.fromString(argument)));
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        if(data.isEmpty()) {
+            throw MINION_NOT_PRESENT.create();
+        }
+        return data.get();
+    }
+
+    public static class MinionSuggestionProvider implements SuggestionProvider<ServerCommandSource> {
+        @Override
+        public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+            for (MinionData data : MinionPersistentState.INSTANCE.getMinionDataList()) {
+                builder.suggest(data.name());
+            }
+
+            return builder.buildFuture();
+        }
+    }
+}

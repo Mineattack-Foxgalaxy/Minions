@@ -42,5 +42,7 @@
   "minions.generic.name.invalid_char": "Name contains invalid character",
   "minions.generic.name.too_long": "Name is too long",
   "minions.generic.name.invalid": "Name is invalid",
-  "minions.generic.name.taken": "This name is already used"
+  "minions.generic.name.taken": "This name is already used",
+  "minions.generic.mod_name": "Minions",
+  "minions.command.minion.not_present": "This minion does not exist"
 }

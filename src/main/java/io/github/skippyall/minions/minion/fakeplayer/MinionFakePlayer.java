@@ -3,8 +3,7 @@ package io.github.skippyall.minions.minion.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
-import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.MinionsTickExecutor;
+import io.github.skippyall.minions.MinionItems;
 import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.gui.MinionGui;
 import io.github.skippyall.minions.minion.MinionItem;
@@ -13,7 +12,6 @@ import io.github.skippyall.minions.minion.MinionProfileUtils;
 import io.github.skippyall.minions.gui.ModuleInventory;
 import io.github.skippyall.minions.program.runtime.MinionRuntime;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.EndPortalBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -47,7 +45,6 @@ import net.minecraft.world.TeleportTarget;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 public class MinionFakePlayer extends ServerPlayerEntity {
     public Runnable fixStartingPosition = () -> {};
@@ -61,17 +58,21 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     private final MinionData data;
 
     public static void spawnMinion(MinionData data, ServerWorld level, @Nullable Vec3d pos, @Nullable Vec2f rot) {
-        MinecraftServer server = level.getServer();
+        spawnMinion(data, level, pos, rot, false);
+    }
 
-        PropertyMap skin = data.skin().orElse(null);
+    public static void spawnMinion(MinionData data, ServerWorld level, @Nullable Vec3d pos, @Nullable Vec2f rot, boolean force) {
+        if(!data.isSpawned() || force) {
+            MinecraftServer server = level.getServer();
 
-        GameProfile profile = MinionProfileUtils.makeNewMinionProfile(data.uuid(), data.name(), skin);
-        doSpawn(data, profile, server, level, pos, rot);
+            PropertyMap skin = data.skin().orElse(null);
 
+            GameProfile profile = MinionProfileUtils.makeNewMinionProfile(data.uuid(), data.name(), skin);
+            doSpawn(data, profile, server, level, pos, rot);
+        }
     }
 
     private static void doSpawn(MinionData data, GameProfile profile, MinecraftServer server, ServerWorld level, @Nullable Vec3d pos, @Nullable Vec2f rot) {
-
         MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, SyncedClientOptions.createDefault(), data);
         MinionPersistentState.INSTANCE.updateMinionData(data.withSpawned(true));
 
@@ -280,7 +281,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     private ItemStack toItemStack() {
-        ItemStack stack = new ItemStack(Minions.MINION_ITEM);
+        ItemStack stack = new ItemStack(MinionItems.MINION_ITEM);
         MinionItem.setData(data, stack);
         return stack;
     }
