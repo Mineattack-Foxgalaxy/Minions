@@ -1,8 +1,9 @@
 package io.github.skippyall.minions.module;
 
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.module.command.SimpleCommand;
+import io.github.skippyall.minions.module.action.ActionModules;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
+import io.github.skippyall.minions.module.instruction.InstructionDisplay;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -12,7 +13,7 @@ import java.util.List;
 import static io.github.skippyall.minions.module.Modules.register;
 
 public class AttackModule {
-    public static final SimpleCommand ATTACK_COMMAND = new SimpleCommand(
+    public static final InstructionDisplay ATTACK_COMMAND = new InstructionDisplay(
             Text.translatable("minions.command.attack.name"),
             Text.translatable("minions.command.attack.description"),
             Items.DIAMOND_PICKAXE,

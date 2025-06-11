@@ -50,6 +50,8 @@ import java.util.Set;
 public class MinionFakePlayer extends ServerPlayerEntity {
     public Runnable fixStartingPosition = () -> {};
 
+    private EntityPlayerActionPack actionPack;
+
     private float moveForward;
     private float moveSideways;
 
@@ -106,6 +108,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     {
         super(server, worldIn, profile, cli);
         this.data = data;
+        actionPack = new EntityPlayerActionPack(this);
     }
 
     public ModuleInventory getModuleInventory() {
@@ -117,7 +120,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     public EntityPlayerActionPack getMinionActionPack() {
-        return ((ServerPlayerInterface)this).minions$getActionPack();
+        return actionPack;
     }
 
     @Override
@@ -163,6 +166,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     @Override
     public void tick()
     {
+        actionPack.onUpdate();
         if (this.getServer().getTicks() % 10 == 0)
         {
             this.networkHandler.syncWithPlayerPosition();

@@ -1,15 +1,17 @@
-package io.github.skippyall.minions.module;
+package io.github.skippyall.minions.module.action;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import io.github.skippyall.minions.module.command.CommandExecutor;
 import io.github.skippyall.minions.input.TextInput;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.new_program.instruction.Instruction;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+
+import java.util.List;
 
 public class ActionModules {
     public static void executeOnce(EntityPlayerActionPack.ActionType actionType, ServerPlayerEntity player, MinionFakePlayer minion) {
@@ -31,7 +33,11 @@ public class ActionModules {
         minion.getMinionActionPack().stop(actionType);
     }
 
-    public static CommandExecutor detailSelectionExecutor(EntityPlayerActionPack.ActionType actionType, Text actionName) {
+    public static List<Instruction> actionInstruction(EntityPlayerActionPack.ActionType actionType, Text actionName) {
+        return List.of(
+
+        )
+
         return (player, minion) -> {
             SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, player, false);
             gui.setTitle(Text.translatable("minions.command.action.details", actionName));

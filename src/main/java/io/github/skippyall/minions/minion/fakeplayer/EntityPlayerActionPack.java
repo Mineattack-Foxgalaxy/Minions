@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.mixins.EntityAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
@@ -17,6 +18,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -34,7 +36,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class EntityPlayerActionPack
 {
-    private final ServerPlayerEntity player;
+    private final MinionFakePlayer player;
 
     private final Map<ActionType, Action> actions = new EnumMap<>(ActionType.class);
 
@@ -50,7 +52,7 @@ public class EntityPlayerActionPack
 
     private int itemUseCooldown;
 
-    public EntityPlayerActionPack(ServerPlayerEntity playerIn)
+    public EntityPlayerActionPack(MinionFakePlayer playerIn)
     {
         player = playerIn;
         stopAll();
@@ -297,9 +299,9 @@ public class EntityPlayerActionPack
         USE(true)
                 {
                     @Override
-                    boolean execute(ServerPlayerEntity player, Action action)
+                    boolean execute(MinionFakePlayer player, Action action)
                     {
-                        EntityPlayerActionPack ap = ((ServerPlayerInterface) player).minions$getActionPack();
+                        EntityPlayerActionPack ap = player.getMinionActionPack();
                         if (ap.itemUseCooldown > 0)
                         {
                             ap.itemUseCooldown--;
@@ -366,16 +368,16 @@ public class EntityPlayerActionPack
                     }
 
                     @Override
-                    void inactiveTick(ServerPlayerEntity player, Action action)
+                    void inactiveTick(MinionFakePlayer player, Action action)
                     {
-                        EntityPlayerActionPack ap = ((ServerPlayerInterface) player).minions$getActionPack();
+                        EntityPlayerActionPack ap = player.getMinionActionPack();
                         ap.itemUseCooldown = 0;
                         player.stopUsingItem();
                     }
                 },
         ATTACK(true) {
             @Override
-            boolean execute(ServerPlayerEntity player, Action action) {
+            boolean execute(MinionFakePlayer player, Action action) {
                 HitResult hit = getTarget(player);
                 switch (hit.getType()) {
                     case ENTITY: {
@@ -390,7 +392,7 @@ public class EntityPlayerActionPack
                         return true;
                     }
                     case BLOCK: {
-                        EntityPlayerActionPack ap = ((ServerPlayerInterface) player).minions$getActionPack();
+                        EntityPlayerActionPack ap = player.getMinionActionPack();
                         if (ap.blockHitDelay > 0)
                         {
                             ap.blockHitDelay--;
@@ -459,9 +461,9 @@ public class EntityPlayerActionPack
             }
 
             @Override
-            void inactiveTick(ServerPlayerEntity player, Action action)
+            void inactiveTick(MinionFakePlayer player, Action action)
             {
-                EntityPlayerActionPack ap = ((ServerPlayerInterface) player).minions$getActionPack();
+                EntityPlayerActionPack ap = player.getMinionActionPack();
                 if (ap.currentBlock == null) return;
                 player.getWorld().setBlockBreakingInfo(-1, ap.currentBlock, -1);
                 player.interactionManager.processBlockBreakingAction(ap.currentBlock, PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, Direction.DOWN, player.getWorld().getTopYInclusive(), -1);
@@ -471,7 +473,7 @@ public class EntityPlayerActionPack
         JUMP(true)
                 {
                     @Override
-                    boolean execute(ServerPlayerEntity player, Action action)
+                    boolean execute(MinionFakePlayer player, Action action)
                     {
                         if (action.limit == 1)
                         {
@@ -485,7 +487,7 @@ public class EntityPlayerActionPack
                     }
 
                     @Override
-                    void inactiveTick(ServerPlayerEntity player, Action action)
+                    void inactiveTick(MinionFakePlayer player, Action action)
                     {
                         player.setJumping(false);
                     }
@@ -493,7 +495,7 @@ public class EntityPlayerActionPack
         DROP_ITEM(true)
                 {
                     @Override
-                    boolean execute(ServerPlayerEntity player, Action action)
+                    boolean execute(MinionFakePlayer player, Action action)
                     {
                         player.updateLastActionTime();
                         player.dropSelectedItem(false); // dropSelectedItem
@@ -503,7 +505,7 @@ public class EntityPlayerActionPack
         DROP_STACK(true)
                 {
                     @Override
-                    boolean execute(ServerPlayerEntity player, Action action)
+                    boolean execute(MinionFakePlayer player, Action action)
                     {
                         player.updateLastActionTime();
                         player.dropSelectedItem(true); // dropSelectedItem
@@ -513,7 +515,7 @@ public class EntityPlayerActionPack
         SWAP_HANDS(true)
                 {
                     @Override
-                    boolean execute(ServerPlayerEntity player, Action action)
+                    boolean execute(MinionFakePlayer player, Action action)
                     {
                         player.updateLastActionTime();
                         ItemStack itemStack_1 = player.getStackInHand(Hand.OFF_HAND);
@@ -530,10 +532,10 @@ public class EntityPlayerActionPack
             this.preventSpectator = preventSpectator;
         }
 
-        void start(ServerPlayerEntity player, Action action) {}
-        abstract boolean execute(ServerPlayerEntity player, Action action);
-        void inactiveTick(ServerPlayerEntity player, Action action) {}
-        void stop(ServerPlayerEntity player, Action action)
+        void start(MinionFakePlayer player, Action action) {}
+        abstract boolean execute(MinionFakePlayer player, Action action);
+        void inactiveTick(MinionFakePlayer player, Action action) {}
+        void stop(MinionFakePlayer player, Action action)
         {
             inactiveTick(player, action);
         }
