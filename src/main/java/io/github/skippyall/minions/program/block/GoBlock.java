@@ -2,7 +2,6 @@ package io.github.skippyall.minions.program.block;
 
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.minion.fakeplayer.ServerPlayerInterface;
 import io.github.skippyall.minions.program.runtime.MinionRuntime;
 import io.github.skippyall.minions.program.runtime.ProgramRuntime;
 import io.github.skippyall.minions.program.statement.Statement;

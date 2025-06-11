@@ -9,19 +9,19 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+import java.util.Collection;
 import java.util.List;
 
 public class CommandsGui {
     public static void openServerModuleCommandGui(ServerPlayerEntity player, MinionFakePlayer minion) {
-        List<ModuleItem> modules = minion.getModuleInventory().getModuleItems();
+        Collection<ModuleItem> modules = minion.getModuleInventory().getModuleItems();
 
         SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_9X3, player, false);
 
         gui.setTitle(Text.translatable("minions.gui.module_commands.title"));
 
-        for (int i = 0; i < modules.size(); i++) {
-            ModuleItem module = modules.get(i);
-            gui.setSlot(i, new GuiElementBuilder()
+        for (ModuleItem module : modules) {
+            gui.addSlot(new GuiElementBuilder()
                     .setItem(module.asItem())
                     .setCallback(() -> openServerCommandGui(player, minion, module))
             );

@@ -2,6 +2,8 @@ package io.github.skippyall.minions.module;
 
 import io.github.skippyall.minions.MinionItems;
 import io.github.skippyall.minions.module.command.Command;
+import io.github.skippyall.minions.module.instruction.InstructionDisplay;
+import io.github.skippyall.minions.new_program.instruction.Instruction;
 import io.github.skippyall.minions.program.block.CodeBlock;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -22,7 +24,7 @@ public class Modules {
         AttackModule.registerMe();
     }
 
-    public static SimpleModuleItem register(Identifier id, List<CodeBlock<?,?>> codeBlocks, List<Command> commands, Item vanillaItem) {
-        return MinionItems.registerItem(id, settings -> new SimpleModuleItem(codeBlocks, commands, settings, vanillaItem));
+    public static SimpleModuleItem register(Identifier id, List<InstructionDisplay> instructions, Item vanillaItem) {
+        return MinionItems.registerItem(id, settings -> new SimpleModuleItem(instructions, settings, vanillaItem));
     }
 }

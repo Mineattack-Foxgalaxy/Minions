@@ -4,6 +4,9 @@ import io.github.skippyall.minions.module.command.Command;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.ModuleItem;
 import io.github.skippyall.minions.program.block.CodeBlock;
+import net.fabricmc.fabric.impl.transfer.item.ComposterWrapper;
+import net.fabricmc.fabric.mixin.transfer.JukeboxBlockEntityMixin;
+import net.minecraft.block.ComposterBlock;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
@@ -14,9 +17,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ModuleInventory extends SimpleInventory {
+    private final Set<ModuleItem> modules = new HashSet<>();
     public ModuleInventory() {
         super(27);
     }
@@ -35,8 +42,24 @@ public class ModuleInventory extends SimpleInventory {
         return (stack.getCount() <= getMaxCountPerStack()) && stack.getItem() instanceof ModuleItem;
     }
 
+    @Override
+    public void markDirty() {
+        super.markDirty();
+        updateModules();
+    }
+
+    public void updateModules() {
+        modules.clear();
+        for (ItemStack heldStack : heldStacks) {
+            if(heldStack.getItem() instanceof ModuleItem moduleItem) {
+                modules.add(moduleItem);
+            }
+        }
+    }
+
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
         Inventories.readNbt(nbt, heldStacks, lookup);
+        updateModules();
     }
 
     public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
@@ -44,21 +67,10 @@ public class ModuleInventory extends SimpleInventory {
     }
 
     public boolean hasModule(ModuleItem module) {
-        for(ItemStack stack : heldStacks) {
-            if(stack.getItem() instanceof ModuleItem module2 && module2 == module) {
-                return true;
-            }
-        }
-        return false;
+        return modules.contains(module);
     }
 
-    public List<ModuleItem> getModuleItems() {
-        ArrayList<ModuleItem> modules = new ArrayList<>();
-        for(ItemStack stack : heldStacks) {
-            if(stack.getItem() instanceof ModuleItem module) {
-                modules.add(module);
-            }
-        }
+    public Collection<ModuleItem> getModuleItems() {
         return modules;
     }
 

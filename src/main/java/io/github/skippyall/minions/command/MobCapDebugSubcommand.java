@@ -6,7 +6,7 @@ import io.github.skippyall.minions.mixinhelper.ChunkLevelManager$DistanceFromNea
 import io.github.skippyall.minions.mixinhelper.ChunkLevelManagerAccessor;
 import io.github.skippyall.minions.mixins.antimobcap.ServerChunkManagerAccessor;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ChunkTicketManager;
+import net.minecraft.server.world.ChunkLevelManager;
 import net.minecraft.text.Text;
 
 import static net.minecraft.server.command.CommandManager.literal;
@@ -16,8 +16,8 @@ public class MobCapDebugSubcommand {
             .executes(MobCapDebugSubcommand::mobcapdebugCommand);
 
     public static int mobcapdebugCommand(CommandContext<ServerCommandSource> context) {
-        ChunkTicketManager ticketManager = ((ServerChunkManagerAccessor)context.getSource().getWorld().getChunkManager()).getTicketManager();
-        int tickedChunkCount = ((ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor)((ChunkLevelManagerAccessor)ticketManager).minions$getMinionless()).minions$getTickedChunkCount();
+        ChunkLevelManager levelManager = ((ServerChunkManagerAccessor)context.getSource().getWorld().getChunkManager()).getLevelManager();
+        int tickedChunkCount = ((ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor)((ChunkLevelManagerAccessor)levelManager).minions$getMinionless()).minions$getTickedChunkCount();
         context.getSource().sendFeedback(() -> Text.of(String.valueOf(tickedChunkCount)), false);
         return 0;
     }
