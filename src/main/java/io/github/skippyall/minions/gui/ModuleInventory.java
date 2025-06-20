@@ -4,16 +4,13 @@ import io.github.skippyall.minions.module.command.Command;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.ModuleItem;
 import io.github.skippyall.minions.program.block.CodeBlock;
-import net.fabricmc.fabric.impl.transfer.item.ComposterWrapper;
-import net.fabricmc.fabric.mixin.transfer.JukeboxBlockEntityMixin;
-import net.minecraft.block.ComposterBlock;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -57,13 +54,13 @@ public class ModuleInventory extends SimpleInventory {
         }
     }
 
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        Inventories.readNbt(nbt, heldStacks, lookup);
+    public void readData(ReadView view) {
+        Inventories.readData(view, heldStacks);
         updateModules();
     }
 
-    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup lookup) {
-        return Inventories.writeNbt(nbt, heldStacks, lookup);
+    public void writeData(WriteView view) {
+        Inventories.writeData(view, heldStacks);
     }
 
     public boolean hasModule(ModuleItem module) {

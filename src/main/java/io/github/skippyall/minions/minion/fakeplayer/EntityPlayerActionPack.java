@@ -317,11 +317,11 @@ public class EntityPlayerActionPack
                                 case BLOCK:
                                 {
                                     player.updateLastActionTime();
-                                    ServerWorld world = player.getServerWorld();
+                                    ServerWorld world = player.getWorld();
                                     BlockHitResult blockHit = (BlockHitResult) hit;
                                     BlockPos pos = blockHit.getBlockPos();
                                     Direction side = blockHit.getSide();
-                                    if (pos.getY() < player.getServerWorld().getTopYInclusive() - (side == Direction.UP ? 1 : 0) && world.canEntityModifyAt(player, pos))
+                                    if (pos.getY() < player.getWorld().getTopYInclusive() - (side == Direction.UP ? 1 : 0) && world.canEntityModifyAt(player, pos))
                                     {
                                         ActionResult result = player.interactionManager.interactBlock(player, world, player.getStackInHand(hand), hand, blockHit);
                                         if (result instanceof ActionResult.Success success)

@@ -38,9 +38,9 @@ public class NetHandlerPlayServerFake extends ServerPlayNetworkHandler
     public void requestTeleport(PlayerPosition pos, Set<PositionFlag> set)
     {
         super.requestTeleport(pos, set);
-        if (player.getServerWorld().getPlayerByUuid(player.getUuid()) != null) {
+        if (player.getWorld().getPlayerByUuid(player.getUuid()) != null) {
             syncWithPlayerPosition();
-            player.getServerWorld().getChunkManager().updatePosition(player);
+            player.getWorld().getChunkManager().updatePosition(player);
         }
     }
 

@@ -21,7 +21,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
@@ -33,6 +32,8 @@ import net.minecraft.server.ServerTask;
 import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
@@ -151,7 +152,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         if (reason.getContent() instanceof TranslatableTextContent text && text.getKey().equals("multiplayer.disconnect.duplicate_login")) {
             this.networkHandler.onDisconnected(new DisconnectionInfo(reason));
         } else {
-            this.server.send(new ServerTask(this.server.getTicks(), () -> {
+            this.getServer().send(new ServerTask(this.getServer().getTicks(), () -> {
                 this.networkHandler.onDisconnected(new DisconnectionInfo(reason));
             }));
         }
@@ -165,7 +166,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         if (this.getServer().getTicks() % 10 == 0)
         {
             this.networkHandler.syncWithPlayerPosition();
-            this.getServerWorld().getChunkManager().updatePosition(this);
+            this.getWorld().getChunkManager().updatePosition(this);
         }
         try
         {
@@ -291,14 +292,14 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.put("modules", moduleInventory.writeNbt(new NbtCompound(), getRegistryManager()));
+    public void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        moduleInventory.writeData(view.get("modules"));
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        moduleInventory.readNbt(nbt.getCompoundOrEmpty("modules"), getRegistryManager());
+    public void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        moduleInventory.readData(view.getReadView("modules"));
     }
 }

@@ -43,7 +43,7 @@ public class MinionGui {
                 .setItem(Items.BARRIER)
                 .setName(Text.translatable("minions.gui.main.pickup"))
                 .setCallback(() -> {
-                    minion.kill(minion.getServerWorld());
+                    minion.kill(minion.getWorld());
                 })
         );
         gui.open();
