@@ -21,10 +21,11 @@ public class Minions implements ModInitializer {
         MinionData.register();
         PolymerEntityUtils.registerType();
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            LOGGER.error("Initializing Minion data");
             MinionPersistentState.create(server);
             MinionPersistentState.INSTANCE.getMinionData().forEach((uuid, data) -> {
                 if(data.isSpawned()) {
-                    MinionFakePlayer.spawnMinion(data, server.getOverworld(), null, null);
+                    MinionFakePlayer.spawnMinion(data, server.getOverworld(), null, null, true);
                 }
             });
         });

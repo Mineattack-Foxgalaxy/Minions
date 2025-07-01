@@ -1,16 +1,12 @@
 package io.github.skippyall.minions.minion;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.RegistryWrapper;
+import io.github.skippyall.minions.Minions;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateType;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +64,7 @@ public class MinionPersistentState extends PersistentState {
     }
 
     public static void create(MinecraftServer server) {
+        Minions.LOGGER.error("Creating Minion Persistent state");
         INSTANCE = server.getWorld(World.OVERWORLD).getPersistentStateManager().getOrCreate(TYPE);
     }
 }

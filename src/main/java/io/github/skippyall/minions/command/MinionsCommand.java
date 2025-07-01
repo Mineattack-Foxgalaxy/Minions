@@ -11,6 +11,7 @@ public class MinionsCommand {
                 literal("minions")
                         .then(SpawnSubcommand.SPAWN)
                         .then(MobCapDebugSubcommand.MOB_CAP_DEBUG)
+                        .then(ListSubcommand.LIST)
         );
     }
 

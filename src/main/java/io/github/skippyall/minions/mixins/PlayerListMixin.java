@@ -17,7 +17,9 @@ import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.storage.ReadView;
 import net.minecraft.text.Text;
+import net.minecraft.util.ErrorReporter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,17 +27,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Mixin(PlayerManager.class)
 public class PlayerListMixin {
 
     @Inject(method = "loadPlayerData", at = @At(value = "RETURN", shift = At.Shift.BEFORE))
-    private void fixStartingPos(ServerPlayerEntity serverPlayerEntity_1, CallbackInfoReturnable<NbtCompound> cir)
+    private void fixStartingPos(ServerPlayerEntity player, ErrorReporter errorReporter, CallbackInfoReturnable<Optional<ReadView>> cir)
     {
-        if (serverPlayerEntity_1 instanceof MinionFakePlayer)
+        if (player instanceof MinionFakePlayer)
         {
-            ((MinionFakePlayer) serverPlayerEntity_1).fixStartingPosition.run();
+            ((MinionFakePlayer) player).fixStartingPosition.run();
         }
     }
 
