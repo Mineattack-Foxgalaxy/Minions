@@ -69,7 +69,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
             PropertyMap skin = data.skin().orElse(null);
 
             GameProfile profile = MinionProfileUtils.makeNewMinionProfile(data.uuid(), data.name(), skin);
-            doSpawn(data, profile, server, level, pos, rot);
+            server.send(server.createTask(() -> doSpawn(data, profile, server, level, pos, rot)));
         }
     }
 
