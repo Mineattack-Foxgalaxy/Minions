@@ -6,16 +6,15 @@ import com.mojang.authlib.properties.PropertyMap;
 import io.github.skippyall.minions.MinionItems;
 import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.gui.MinionGui;
+import io.github.skippyall.minions.minion.MinionInstructionManager;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.MinionProfileUtils;
 import io.github.skippyall.minions.gui.ModuleInventory;
-import io.github.skippyall.minions.program.runtime.MinionRuntime;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.MovementType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.HungerManager;
@@ -56,7 +55,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     private float moveSideways;
 
     private final ModuleInventory moduleInventory = new ModuleInventory();
-    private final MinionRuntime runtime = new MinionRuntime(this);
+    private final MinionInstructionManager instructionManager = new MinionInstructionManager(this);
 
     private final MinionData data;
 
@@ -115,12 +114,24 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         return moduleInventory;
     }
 
-    public MinionRuntime getRuntime() {
-        return runtime;
-    }
-
     public EntityPlayerActionPack getMinionActionPack() {
         return actionPack;
+    }
+
+    public MinionInstructionManager getInstructionManager() {
+        return instructionManager;
+    }
+
+    public MinionData getData() {
+        return data;
+    }
+
+    public boolean canSpawnMobs() {
+        return true;
+    }
+
+    public boolean canDespawnMobs() {
+        return true;
     }
 
     @Override
@@ -176,13 +187,13 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         {
             super.tick();
             this.playerTick();
+            instructionManager.tick();
         }
         catch (NullPointerException ignored)
         {
             // happens with that paper port thingy - not sure what that would fix, but hey
             // the game not gonna crash violently.
         }
-        runtime.tick();
 
     }
 
@@ -238,7 +249,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         return networkHandler.player;
     }
 
-    public void moveForward(float forward) {
+    /*public void moveForward(float forward) {
         this.moveForward += forward;
         EntityPlayerActionPack actionPack = getMinionActionPack();
         if (moveForward != 0) {
@@ -274,7 +285,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
             moveSideways = newSideways;
         }
         super.move(movementType, newMovement);
-    }
+    }*/
 
     @Override
     public void drop(ServerWorld world, DamageSource damageSource) {
@@ -291,19 +302,17 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         return stack;
     }
 
-    public MinionData getData() {
-        return data;
-    }
-
     @Override
     public void writeCustomData(WriteView view) {
         super.writeCustomData(view);
         moduleInventory.writeData(view.get("modules"));
+        instructionManager.save(view.get("instructionManager"));
     }
 
     @Override
     public void readCustomData(ReadView view) {
         super.readCustomData(view);
         moduleInventory.readData(view.getReadView("modules"));
+        instructionManager.load(view.getReadView("instructionManager"));
     }
 }

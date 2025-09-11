@@ -1,14 +1,18 @@
 package io.github.skippyall.minions.new_program.argument;
 
+import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.new_program.value.ValueType;
 
-public class ValueArgument<T> implements Argument<T> {
-    private final ValueType<T> valueType;
+/**
+ * An argument that always resolves to a fixed value
+ */
+public class ValueArgument<T> implements Argument<T, ValueArgumentType<T>> {
+    private final ValueArgumentType<T> type;
     private final T value;
 
-    public ValueArgument(ValueType<T> valueType, T value) {
-        this.valueType = valueType;
+    public ValueArgument(ValueArgumentType<T> valueType, T value) {
+        this.type = valueType;
         this.value = value;
     }
 
@@ -22,7 +26,12 @@ public class ValueArgument<T> implements Argument<T> {
     }
 
     @Override
-    public ValueType<T> getType() {
-        return valueType;
+    public GuiDisplay getDisplay() {
+        return getValueType().display();
+    }
+
+    @Override
+    public ValueArgumentType<T> getType() {
+        return type;
     }
 }

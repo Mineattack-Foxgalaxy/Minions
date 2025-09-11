@@ -1,9 +1,8 @@
 package io.github.skippyall.minions.gui;
 
-import io.github.skippyall.minions.module.command.Command;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.module.ModuleItem;
-import io.github.skippyall.minions.program.block.CodeBlock;
+import io.github.skippyall.minions.new_module.MinionModule;
+import io.github.skippyall.minions.new_program.instruction.InstructionType;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ModuleInventory extends SimpleInventory {
-    private final Set<ModuleItem> modules = new HashSet<>();
+    private final Set<MinionModule> modules = new HashSet<>();
     public ModuleInventory() {
         super(27);
     }
@@ -36,7 +35,7 @@ public class ModuleInventory extends SimpleInventory {
 
     @Override
     public boolean isValid(int slot, ItemStack stack) {
-        return (stack.getCount() <= getMaxCountPerStack()) && stack.getItem() instanceof ModuleItem;
+        return (stack.getCount() <= getMaxCountPerStack()) && stack.contains(MinionModule.COMPONENT_TYPE);
     }
 
     @Override
@@ -48,8 +47,9 @@ public class ModuleInventory extends SimpleInventory {
     public void updateModules() {
         modules.clear();
         for (ItemStack heldStack : heldStacks) {
-            if(heldStack.getItem() instanceof ModuleItem moduleItem) {
-                modules.add(moduleItem);
+            MinionModule module = heldStack.get(MinionModule.COMPONENT_TYPE);
+            if(module != null) {
+                modules.add(module);
             }
         }
     }
@@ -63,31 +63,19 @@ public class ModuleInventory extends SimpleInventory {
         Inventories.writeData(view, heldStacks);
     }
 
-    public boolean hasModule(ModuleItem module) {
+    public boolean hasModule(MinionModule module) {
         return modules.contains(module);
     }
 
-    public Collection<ModuleItem> getModuleItems() {
+    public Collection<MinionModule> getModules() {
         return modules;
     }
 
-    public List<Command> getAllCommands() {
-        ArrayList<Command> commands = new ArrayList<>();
-        for(ItemStack stack : heldStacks) {
-            if(stack.getItem() instanceof ModuleItem module) {
-                commands.addAll(module.getCommands());
-            }
+    public List<InstructionType<?>> getAllInstructions() {
+        ArrayList<InstructionType<?>> instructionTypes = new ArrayList<>();
+        for(MinionModule module : modules) {
+            instructionTypes.addAll(module.instructions());
         }
-        return commands;
-    }
-
-    public List<CodeBlock<?,?>> getAllCodeBlocks() {
-        ArrayList<CodeBlock<?,?>> commands = new ArrayList<>();
-        for(ItemStack stack : heldStacks) {
-            if(stack.getItem() instanceof ModuleItem module) {
-                commands.addAll(module.getCodeBlocks());
-            }
-        }
-        return commands;
+        return instructionTypes;
     }
 }

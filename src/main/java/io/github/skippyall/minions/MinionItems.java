@@ -2,7 +2,6 @@ package io.github.skippyall.minions;
 
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import io.github.skippyall.minions.minion.MinionItem;
-import io.github.skippyall.minions.module.Modules;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DamageResistantComponent;
 import net.minecraft.entity.damage.DamageType;
@@ -39,6 +38,5 @@ public class MinionItems {
     }
 
     public static void register() {
-        Modules.register();
     }
 }

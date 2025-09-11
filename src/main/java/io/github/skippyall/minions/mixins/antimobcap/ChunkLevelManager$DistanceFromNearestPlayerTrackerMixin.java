@@ -3,7 +3,6 @@ package io.github.skippyall.minions.mixins.antimobcap;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.mixinhelper.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
 import io.github.skippyall.minions.mixinhelper.ChunkLevelManagerAccessor;
-import io.github.skippyall.minions.module.MobSpawningModule;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -47,7 +46,7 @@ public abstract class ChunkLevelManager$DistanceFromNearestPlayerTrackerMixin ex
         if(players != null) {
             contains = players.stream().anyMatch(player -> {
                 if (player instanceof MinionFakePlayer minion) {
-                    return MobSpawningModule.canMinionSpawnMobs(minion);
+                    return minion.canSpawnMobs();
                 }
                 return true;
             });

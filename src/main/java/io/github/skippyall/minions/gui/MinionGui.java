@@ -22,7 +22,7 @@ public class MinionGui {
                 .setItem(Items.COMMAND_BLOCK)
                 .setName(Text.translatable("minions.gui.main.commands"))
                 .setCallback((i, clickType, slotActionType) -> {
-                    openCommandsGui(player, minion);
+                    InstructionGui.openInstructionMainMenu(minion, player);
                 })
         );
         gui.setSlot(3, new GuiElementBuilder()
@@ -50,7 +50,7 @@ public class MinionGui {
     }
 
     public static void openCommandsGui(ServerPlayerEntity player, MinionFakePlayer minion) {
-        CommandsGui.openServerModuleCommandGui(player, minion);
+        //CommandsGui.openServerModuleCommandGui(player, minion);
     }
 
     public static void openProgrammingInventory(ServerPlayerEntity player, MinionFakePlayer minion) {

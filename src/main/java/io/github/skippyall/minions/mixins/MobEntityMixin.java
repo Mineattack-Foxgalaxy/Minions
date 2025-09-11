@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.mixinhelper.EntityViewMixinHelper;
-import io.github.skippyall.minions.module.MobSpawningModule;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +17,7 @@ public abstract class MobEntityMixin {
     public PlayerEntity checkMobDespawningMinion(World instance, Entity entity, double maxDistance, Operation<PlayerEntity> original) {
         EntityViewMixinHelper.ADDITIONAL_PREDICATE.set(entity2 -> {
             if(entity2 instanceof MinionFakePlayer minion) {
-                return MobSpawningModule.canMinionDespawnMobs(minion);
+                return minion.canDespawnMobs();
             } else {
                 return true;
             }

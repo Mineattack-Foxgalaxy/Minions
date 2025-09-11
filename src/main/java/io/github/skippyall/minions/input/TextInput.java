@@ -22,6 +22,7 @@ public class TextInput<T> extends AnvilInputGui {
     private final Function<String, CompletableFuture<Result<T, Text>>> parser;
     private final CompletableFuture<T> future;
     private Result<T, Text> result;
+    private boolean isConfirm;
 
     public TextInput(ServerPlayerEntity player, Text title, String defaultValue, Function<String, CompletableFuture<Result<T, Text>>> parser, CompletableFuture<T> future) {
         super(player, false);
@@ -74,7 +75,7 @@ public class TextInput<T> extends AnvilInputGui {
 
     @Override
     public void onClose() {
-        if(!future.isDone()) {
+        if(!future.isDone() && !isConfirm) {
             future.cancel(false);
         }
     }
@@ -82,8 +83,9 @@ public class TextInput<T> extends AnvilInputGui {
     public void onConfirm() {
         if(result != null) {
             result.ifSuccess(success -> {
-                future.complete(success);
+                isConfirm = true;
                 close();
+                future.complete(success);
             });
         }
     }

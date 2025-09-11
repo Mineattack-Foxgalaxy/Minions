@@ -1,7 +1,6 @@
 package io.github.skippyall.minions.mixins;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.module.MobSpawningModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +17,7 @@ public class SpawnHelperMixin {
         return instance.getClosestPlayer(x, y, z, maxDistance, EntityPredicates.EXCEPT_SPECTATOR.and(entity -> {
             if(entity instanceof ServerPlayerEntity player) {
                 if(player instanceof MinionFakePlayer minion) {
-                    return MobSpawningModule.canMinionSpawnMobs(minion);
+                    return minion.canSpawnMobs();
                 }
                 return true;
             }
