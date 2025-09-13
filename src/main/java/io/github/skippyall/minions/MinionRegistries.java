@@ -2,9 +2,9 @@ package io.github.skippyall.minions;
 
 import com.mojang.serialization.Lifecycle;
 import io.github.skippyall.minions.minion.skin.SkinProvider;
-import io.github.skippyall.minions.new_program.argument.GenericArgumentType;
-import io.github.skippyall.minions.new_program.instruction.InstructionType;
-import io.github.skippyall.minions.new_program.value.ValueType;
+import io.github.skippyall.minions.program.argument.GenericArgumentType;
+import io.github.skippyall.minions.program.instruction.InstructionType;
+import io.github.skippyall.minions.program.value.ValueType;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.SimpleRegistry;

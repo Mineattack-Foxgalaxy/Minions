@@ -1,7 +1,7 @@
-package io.github.skippyall.minions.new_program.instruction.execution;
+package io.github.skippyall.minions.program.instruction.execution;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.new_program.instruction.InstructionExecution;
+import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 

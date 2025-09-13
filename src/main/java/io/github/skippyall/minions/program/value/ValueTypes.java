@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.new_program.value;
+package io.github.skippyall.minions.program.value;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.MinionRegistries;

@@ -1,9 +1,9 @@
-package io.github.skippyall.minions.new_program.argument;
+package io.github.skippyall.minions.program.argument;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.MinionRegistries;
-import io.github.skippyall.minions.new_program.value.ValueType;
+import io.github.skippyall.minions.program.value.ValueType;
 import org.jetbrains.annotations.Nullable;
 
 public record Parameter<T>(String name, ValueType<T> type) {

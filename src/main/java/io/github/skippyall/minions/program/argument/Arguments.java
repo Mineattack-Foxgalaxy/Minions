@@ -1,13 +1,9 @@
-package io.github.skippyall.minions.new_program.argument;
+package io.github.skippyall.minions.program.argument;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.Lifecycle;
 import io.github.skippyall.minions.MinionRegistries;
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.new_program.value.ValueType;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.util.Identifier;
 
 public class Arguments {

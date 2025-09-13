@@ -1,8 +1,7 @@
-package io.github.skippyall.minions.gui;
+package io.github.skippyall.minions.module;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.new_module.MinionModule;
-import io.github.skippyall.minions.new_program.instruction.InstructionType;
+import io.github.skippyall.minions.program.instruction.InstructionType;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;

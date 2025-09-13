@@ -1,8 +1,7 @@
-package io.github.skippyall.minions.new_program.argument;
+package io.github.skippyall.minions.program.argument;
 
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.new_program.value.ValueType;
 
 /**
  * An argument that always resolves to a fixed value

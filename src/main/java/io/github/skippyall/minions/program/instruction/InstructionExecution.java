@@ -1,7 +1,7 @@
-package io.github.skippyall.minions.new_program.instruction;
+package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.new_program.argument.ArgumentList;
+import io.github.skippyall.minions.program.argument.ArgumentList;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 
@@ -39,7 +39,7 @@ public interface InstructionExecution<R> {
      * Stops this execution. This is guaranteed to be called if {@link InstructionExecution#isDone(MinionFakePlayer) isDone}
      * returns true after ticking the execution, but it may also be called before that.
      * In this case, the return value is ignored unless this is a
-     * {@link io.github.skippyall.minions.new_program.instruction.execution.ContinuousInstructionExecution ContinuousInstructionExecution}.</br>
+     * {@link io.github.skippyall.minions.program.instruction.execution.ContinuousInstructionExecution ContinuousInstructionExecution}.</br>
      * This should undo changes to the minion unless they are supposed to be permanent.
      *
      * @param minion The minion that was executing this instruction.

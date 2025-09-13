@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.gui;
+package io.github.skippyall.minions.module;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

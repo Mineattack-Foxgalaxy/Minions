@@ -2,8 +2,8 @@ package io.github.skippyall.minions.minion;
 
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.new_program.instruction.ConfiguredInstruction;
-import io.github.skippyall.minions.new_program.instruction.InstructionType;
+import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
+import io.github.skippyall.minions.program.instruction.InstructionType;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 
@@ -44,6 +44,10 @@ public class MinionInstructionManager {
 
     public ConfiguredInstruction<?> getInstruction(String name) {
         return configuredInstructions.get(name);
+    }
+
+    public boolean hasInstruction(String name) {
+        return configuredInstructions.containsKey(name);
     }
 
     public void save(WriteView view) {

@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.new_program.argument;
+package io.github.skippyall.minions.program.argument;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;

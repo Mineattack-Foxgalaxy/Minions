@@ -17,6 +17,8 @@
   "minions.gui.look.rename.title": "Enter a name",
   "minions.gui.instruction.no_instruction_set": "No instruction set",
   "minions.gui.instruction.enter_name": "Enter a name",
+  "minions.gui.instruction.removed": "This instruction no longer exists",
+  "minions.gui.instruction.no_argument_set": "No argument set",
 
   "minions.command.input.int.fail": "Not an integer",
   "minions.command.input.float.fail": "Not a number",
@@ -48,6 +50,5 @@
   "minions.generic.name.invalid": "Name is invalid",
   "minions.generic.name.taken": "This name is already used",
   "minions.generic.mod_name": "Minions",
-  "minions.generic.unknown": "Unknown",
-  "minions.gui.instruction.no_argument_set": "No argument set"
+  "minions.generic.unknown": "Unknown"
 }

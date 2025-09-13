@@ -1,7 +1,7 @@
-package io.github.skippyall.minions.new_program.argument;
+package io.github.skippyall.minions.program.argument;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.new_program.value.ValueType;
+import io.github.skippyall.minions.program.value.ValueType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 

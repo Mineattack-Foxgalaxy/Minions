@@ -1,10 +1,10 @@
-package io.github.skippyall.minions.new_program.instruction;
+package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.new_program.argument.Parameter;
-import io.github.skippyall.minions.new_program.argument.ArgumentList;
-import io.github.skippyall.minions.new_program.value.ValueType;
+import io.github.skippyall.minions.program.argument.Parameter;
+import io.github.skippyall.minions.program.argument.ArgumentList;
+import io.github.skippyall.minions.program.value.ValueType;
 import net.minecraft.storage.ReadView;
 
 import java.util.Collection;

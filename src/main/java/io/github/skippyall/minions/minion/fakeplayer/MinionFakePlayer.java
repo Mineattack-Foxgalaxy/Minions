@@ -10,7 +10,7 @@ import io.github.skippyall.minions.minion.MinionInstructionManager;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.MinionProfileUtils;
-import io.github.skippyall.minions.gui.ModuleInventory;
+import io.github.skippyall.minions.module.ModuleInventory;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
