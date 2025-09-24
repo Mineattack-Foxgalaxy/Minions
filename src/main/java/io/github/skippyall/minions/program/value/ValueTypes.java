@@ -3,8 +3,11 @@ package io.github.skippyall.minions.program.value;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.MinionRegistries;
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.gui.Displayable;
 import io.github.skippyall.minions.gui.GuiDisplay;
+import io.github.skippyall.minions.input.ChoiceInput;
 import io.github.skippyall.minions.input.TextInput;
+import io.github.skippyall.minions.program.instruction.execution.TurnExecution;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -50,6 +53,14 @@ public class ValueTypes {
                     Text.literal("Text"),
                     oldValue)
             )
+    );
+
+    public static ValueType<TurnExecution.TurnDirection> TURN_DIRECTION = registerSimple(
+            "turn_direction",
+            TurnExecution.TurnDirection.CODEC,
+            base -> new GuiDisplay.ModelBased(Items.STRUCTURE_VOID, base, true),
+            TurnExecution.TurnDirection.RIGHT,
+            ChoiceInput.createDialogOpener(TurnExecution.TurnDirection.values())
     );
 
     public static ValueType<Void> VOID = registerSimple(

@@ -1,6 +1,7 @@
 package io.github.skippyall.minions.program.value;
 
 import com.mojang.serialization.Codec;
+import io.github.skippyall.minions.gui.Displayable;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import net.minecraft.server.network.ServerPlayerEntity;
 

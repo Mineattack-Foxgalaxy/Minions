@@ -64,7 +64,6 @@ public class MinionPersistentState extends PersistentState {
     }
 
     public static void create(MinecraftServer server) {
-        Minions.LOGGER.error("Creating Minion Persistent state");
         INSTANCE = server.getWorld(World.OVERWORLD).getPersistentStateManager().getOrCreate(TYPE);
     }
 }

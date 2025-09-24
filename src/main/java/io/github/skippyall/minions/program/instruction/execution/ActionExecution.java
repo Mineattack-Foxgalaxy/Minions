@@ -6,7 +6,7 @@ import io.github.skippyall.minions.program.argument.ArgumentList;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 
-public class ActionExecution implements ContinuousInstructionExecution<Void> {
+public class ActionExecution implements ContinuousInstructionExecution {
     private final EntityPlayerActionPack.ActionType action;
 
     public ActionExecution(EntityPlayerActionPack.ActionType action) {
@@ -31,5 +31,7 @@ public class ActionExecution implements ContinuousInstructionExecution<Void> {
     public void save(WriteView view, MinionFakePlayer minion) {}
 
     @Override
-    public void load(ReadView view, MinionFakePlayer minion) {}
+    public void load(ReadView view, MinionFakePlayer minion) {
+        minion.getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
+    }
 }

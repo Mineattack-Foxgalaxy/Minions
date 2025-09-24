@@ -29,17 +29,14 @@ public interface InstructionExecution<R> {
 
     /**
      * Called every tick to determine if the execution of this instruction should be stopped.
-     * Shouldn't
      * @param minion The minion executing the instruction
      * @return <code>true</code> if the instruction is done, <code>false</code> otherwise.
      */
     boolean isDone(MinionFakePlayer minion);
 
     /**
-     * Stops this execution. This is guaranteed to be called if {@link InstructionExecution#isDone(MinionFakePlayer) isDone}
-     * returns true after ticking the execution, but it may also be called before that.
-     * In this case, the return value is ignored unless this is a
-     * {@link io.github.skippyall.minions.program.instruction.execution.ContinuousInstructionExecution ContinuousInstructionExecution}.</br>
+     * Stops this execution. Is called when isDone returns true, but it may also be called before that.
+     * In this case, the return value is ignored.
      * This should undo changes to the minion unless they are supposed to be permanent.
      *
      * @param minion The minion that was executing this instruction.
