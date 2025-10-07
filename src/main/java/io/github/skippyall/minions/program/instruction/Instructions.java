@@ -4,6 +4,7 @@ import io.github.skippyall.minions.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.execution.ActionExecution;
 import io.github.skippyall.minions.program.instruction.execution.WalkExecution;
 import io.github.skippyall.minions.program.argument.Parameter;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Instructions {
-    public static final InstructionType<Void> WALK = register(
+    public static final InstructionType<Void, MinionFakePlayer> WALK = register(
             "walk",
             base -> new GuiDisplay.ModelBased(ModelIdUtil.getItemModelId(Items.IRON_BOOTS), base, true),
             WalkExecution::new,
@@ -26,21 +27,21 @@ public class Instructions {
             WalkExecution.blocksToMoveParam
     );
 
-    public static final InstructionType<Void> ATTACK = register(
+    public static final InstructionType<Void, MinionFakePlayer> ATTACK = register(
             "attack",
             base -> new GuiDisplay.ModelBased(ModelIdUtil.getItemModelId(Items.IRON_BOOTS), base, true),
             () -> new ActionExecution(EntityPlayerActionPack.ActionType.ATTACK),
             ValueTypes.VOID
     );
 
-    public static final InstructionType<Void> USE = register(
+    public static final InstructionType<Void, MinionFakePlayer> USE = register(
             "use",
             base -> new GuiDisplay.ModelBased(ModelIdUtil.getItemModelId(Items.LEVER), base, true),
             () -> new ActionExecution(EntityPlayerActionPack.ActionType.USE),
             ValueTypes.VOID
     );
 
-    private static <R> InstructionType<R> register(String id, Function<String, GuiDisplay> displayFunction, Supplier<InstructionExecution<R>> factory, ValueType<R> returnType, Parameter<?>... parameters) {
+    private static <R> InstructionType<R, MinionFakePlayer> register(String id, Function<String, GuiDisplay> displayFunction, Supplier<InstructionExecution<R,MinionFakePlayer>> factory, ValueType<R> returnType, Parameter<?>... parameters) {
         Identifier identifier = Identifier.of(Minions.MOD_ID, id);
         return Registry.register(MinionRegistries.INSTRUCTION_TYPES, identifier, InstructionType.create(displayFunction.apply(identifier.toTranslationKey("instruction_type")), factory, returnType, parameters));
     }

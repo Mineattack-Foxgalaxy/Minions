@@ -14,7 +14,7 @@ import net.minecraft.util.StringIdentifiable;
 
 import java.util.UUID;
 
-public class TurnExecution implements InstructionExecution<Void> {
+public class TurnExecution implements InstructionExecution<Void,MinionFakePlayer> {
     public static final Parameter<Float> ANGLE = new Parameter<>("maxAngle", ValueTypes.FLOAT);
     public static final Parameter<TurnDirection> DIRECTION = new Parameter<>("direction", ValueTypes.TURN_DIRECTION);
 
@@ -43,7 +43,7 @@ public class TurnExecution implements InstructionExecution<Void> {
     }
 
     @Override
-    public void readArguments(ArgumentList arguments, MinionFakePlayer minion) {
+    public void readArguments(ArgumentList<MinionFakePlayer> arguments, MinionFakePlayer minion) {
         maxAngle = arguments.getValue(ANGLE, minion);
         direction = arguments.getValue(DIRECTION, minion);
     }

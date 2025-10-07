@@ -10,7 +10,7 @@ import net.minecraft.storage.WriteView;
  * The timer must be set with <code>setTimer</code> when reading from parameters.
  * Saving and loading of the timer is automatic if the super method is called by the subclass.
  */
-public abstract class TimedInstructionExecution<T> implements InstructionExecution<T> {
+public abstract class TimedInstructionExecution<T> implements InstructionExecution<T,MinionFakePlayer> {
     int timer;
 
     public int getTimer() {

@@ -9,7 +9,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 
-public class WalkExecution implements InstructionExecution<Void> {
+public class WalkExecution implements InstructionExecution<Void,MinionFakePlayer> {
     public static final Parameter<Float> blocksToMoveParam = new Parameter<>("blocksToMove", ValueTypes.FLOAT);
     private final float ACCURACY = 1F / 32F;
 
@@ -34,7 +34,7 @@ public class WalkExecution implements InstructionExecution<Void> {
     }
 
     @Override
-    public void readArguments(ArgumentList parameters, MinionFakePlayer minion) {
+    public void readArguments(ArgumentList<MinionFakePlayer> parameters, MinionFakePlayer minion) {
         totalBlocksToMove = parameters.getValue(blocksToMoveParam, minion);
         blocksMoved = 0;
     }

@@ -8,28 +8,28 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import org.jetbrains.annotations.Nullable;
 
-public class ConfiguredInstruction<R> {
-    private final InstructionType<R> instruction;
-    private final ArgumentList arguments;
-    private @Nullable InstructionExecution<R> execution;
+public class ConfiguredInstruction<Return,R> {
+    private final InstructionType<Return,R> instruction;
+    private final ArgumentList<R> arguments;
+    private @Nullable InstructionExecution<Return, R> execution;
     private final String name;
 
-    private ConfiguredInstruction(InstructionType<R> instruction, ArgumentList arguments, @Nullable InstructionExecution<R> execution, String name) {
+    private ConfiguredInstruction(InstructionType<Return,R> instruction, ArgumentList<R> arguments, @Nullable InstructionExecution<Return,R> execution, String name) {
         this.instruction = instruction;
         this.arguments = arguments;
         this.execution = execution;
         this.name = name;
     }
 
-    public ConfiguredInstruction(InstructionType<R> instruction, String name) {
-        this(instruction, new ArgumentList(), null, name);
+    public ConfiguredInstruction(InstructionType<Return,R> instruction, String name) {
+        this(instruction, new ArgumentList<>(), null, name);
     }
 
-    public InstructionType<R> getInstruction() {
+    public InstructionType<Return,R> getInstruction() {
         return instruction;
     }
 
-    public ArgumentList getArguments() {
+    public ArgumentList<R> getArguments() {
         return arguments;
     }
 
@@ -45,11 +45,11 @@ public class ConfiguredInstruction<R> {
         return execution != null;
     }
 
-    public @Nullable InstructionExecution<R> getExecution() {
+    public @Nullable InstructionExecution<Return,R> getExecution() {
         return execution;
     }
 
-    public void run(MinionFakePlayer minion) {
+    public void run(R minion) {
         if(canRun() && !isRunning()) {
             try {
                 execution = instruction.createExecution(arguments, minion);
@@ -61,7 +61,7 @@ public class ConfiguredInstruction<R> {
         }
     }
 
-    public void tick(MinionFakePlayer minion) {
+    public void tick(R minion) {
         if(isRunning()) {
             if(execution.isDone(minion)) {
                 stop(minion);
@@ -74,14 +74,14 @@ public class ConfiguredInstruction<R> {
         }
     }
 
-    public void stop(MinionFakePlayer minion) {
+    public void stop(R minion) {
         if(isRunning()) {
             execution.stop(minion);
             execution = null;
         }
     }
 
-    public void save(WriteView view, MinionFakePlayer minion) {
+    public void save(WriteView view, R minion) {
         view.put("instruction", MinionRegistries.INSTRUCTION_TYPES.getCodec(), instruction);
         view.put("arguments", ArgumentList.CODEC, arguments);
         view.putBoolean("running", isRunning());
@@ -90,18 +90,18 @@ public class ConfiguredInstruction<R> {
         }
     }
 
-    public static <R> ConfiguredInstruction<R> load(ReadView view, MinionFakePlayer minion, String name) {
+    public static <Return,R> ConfiguredInstruction<Return,R> load(ReadView view, R minion, String name) {
         //noinspection unchecked
-        InstructionType<R> instructionType = (InstructionType<R>) view.read("instruction", MinionRegistries.INSTRUCTION_TYPES.getCodec()).orElseThrow();
+        InstructionType<Return,R> instructionType = (InstructionType<Return,R>) view.read("instruction", MinionRegistries.INSTRUCTION_TYPES.getCodec()).orElseThrow();
 
-        ArgumentList arguments = view.read("arguments", ArgumentList.CODEC).orElseThrow();
+        ArgumentList<R> arguments = view.read("arguments", ArgumentList.get).orElseThrow();
 
         boolean running = view.getBoolean("running", false);
 
         if(running) {
             ReadView executionView = view.getReadView("execution");
             try {
-                InstructionExecution<R> execution = instructionType.loadExecution(executionView, minion);
+                InstructionExecution<Return,R> execution = instructionType.loadExecution(executionView, minion);
                 return new ConfiguredInstruction<>(instructionType, arguments, execution, name);
             } catch (Exception e) {
 

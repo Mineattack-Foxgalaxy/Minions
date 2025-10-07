@@ -112,7 +112,7 @@ public class InstructionGui {
         }
     }
 
-    public static <T, A extends Argument<T, ? extends SpecificArgumentType<T, A>>> void configureArgumentMenu(String name, ConfiguredInstruction<?> instruction, Parameter<T> parameter, MinionFakePlayer minion, ServerPlayerEntity player) {
+    public static <T, A extends Argument<T, ? extends SpecificArgumentType<T, A, MinionFakePlayer>, MinionFakePlayer>> void configureArgumentMenu(String name, ConfiguredInstruction<?> instruction, Parameter<T> parameter, MinionFakePlayer minion, ServerPlayerEntity player) {
         if(!checkInstructionExists(name, instruction, minion, player)) {
             return;
         }

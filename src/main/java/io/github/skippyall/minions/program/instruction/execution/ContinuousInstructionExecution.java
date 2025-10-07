@@ -3,7 +3,7 @@ package io.github.skippyall.minions.program.instruction.execution;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 
-public interface ContinuousInstructionExecution extends InstructionExecution<Void> {
+public interface ContinuousInstructionExecution extends InstructionExecution<Void,MinionFakePlayer> {
     @Override
     default boolean isDone(MinionFakePlayer minion) {
         return false;

@@ -1,22 +1,25 @@
-package io.github.skippyall.minions.program.argument;
+package io.github.skippyall.minions.program.returnvalue;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.InstructionRuntime;
+import io.github.skippyall.minions.program.argument.Argument;
+import io.github.skippyall.minions.program.argument.Arguments;
+import io.github.skippyall.minions.program.argument.GenericArgumentType;
+import io.github.skippyall.minions.program.argument.Parameter;
+import io.github.skippyall.minions.program.argument.SpecificArgumentType;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ArgumentList<R extends InstructionRuntime<R>> {
-    private final Map<String, Argument<?, ?, R>> arguments;
+public class ReturnValueList<R extends InstructionRuntime<R>> {
+    private final Map<String, ValueConsumer<?, ?, R>> arguments;
 
-    public ArgumentList() {
+    public ReturnValueList() {
         arguments = new HashMap<>();
     }
 
-    public ArgumentList(Map<String, Argument<?,?, R>> arguments) {
+    public ReturnValueList(Map<String, ValueConsumer<?,?, R>> arguments) {
         this.arguments = new HashMap<>(arguments);
     }
 
@@ -47,8 +50,8 @@ public class ArgumentList<R extends InstructionRuntime<R>> {
         return true;
     }
 
-    public static <R extends InstructionRuntime<R>> Codec<ArgumentList<R>> getCodec(Codec<GenericArgumentType<R>> genericCodec) {
+    public static <R extends InstructionRuntime<R>> Codec<ReturnValueList<R>> getCodec(Codec<GenericArgumentType<R>> genericCodec) {
         return Codec.unboundedMap(Codec.STRING, Arguments.createArgumentCodec(genericCodec))
-                .xmap(ArgumentList::new, list -> list.arguments);
+                .xmap(ReturnValueList::new, list -> list.arguments);
     }
 }

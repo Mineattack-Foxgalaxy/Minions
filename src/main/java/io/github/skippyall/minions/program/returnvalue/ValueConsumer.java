@@ -1,7 +1,8 @@
-package io.github.skippyall.minions.program.argument;
+package io.github.skippyall.minions.program.returnvalue;
 
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.program.InstructionRuntime;
+import io.github.skippyall.minions.program.argument.SpecificArgumentType;
 import io.github.skippyall.minions.program.value.ValueType;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> The type of the <code>Argument</code>'s value
  * @param <S> The <code>SpecificArgumentType</code>
  */
-public interface Argument<T, S extends SpecificArgumentType<T, ? extends Argument<T, S, R>, R>, R extends InstructionRuntime<R>> {
-    T resolve(R minion);
+public interface ValueConsumer<T, S extends SpecificValueConsumerType<T, ? extends ValueConsumer<T, S, R>, R>, R extends InstructionRuntime<R>> {
+    void consume(T value, R runtime);
 
     default ValueType<T> getValueType() {
         return getType().getValueType();
@@ -23,7 +24,7 @@ public interface Argument<T, S extends SpecificArgumentType<T, ? extends Argumen
 
     S getType();
 
-    default <U, A extends Argument<U, ? extends SpecificArgumentType<U,A,R>, R>> @Nullable A cast(ValueType<U> type) {
+    default <U, A extends io.github.skippyall.minions.program.argument.Argument<U, ? extends SpecificArgumentType<U,A,R>, R>> @Nullable A cast(ValueType<U> type) {
         if(getValueType() == type) {
             //noinspection unchecked
             return (A) this;
