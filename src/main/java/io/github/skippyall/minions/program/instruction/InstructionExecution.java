@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.program.instruction;
 
+import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.argument.ArgumentList;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
@@ -10,9 +11,8 @@ import net.minecraft.storage.WriteView;
  * <li>A new instance is created using the factory</li>
  * <li>{@link InstructionExecution#readArguments(ArgumentList, R) readFromParameters} is called</li>
  * <li>{@link InstructionExecution#start(R) start} is called</li>
- * @param <Return>
  */
-public interface InstructionExecution<Return, R> {
+public interface InstructionExecution<R extends InstructionRuntime<R>> {
     /**
      * Starts the execution.
      */
@@ -36,9 +36,8 @@ public interface InstructionExecution<Return, R> {
      * This should undo changes to the minion unless they are supposed to be permanent.
      *
      * @param runtime The runtime that was executing this instruction.
-     * @return The return value of the instruction
      */
-    Return stop(R runtime);
+    void stop(R runtime);
 
     /**
      * Initializes the execution with its arguments.

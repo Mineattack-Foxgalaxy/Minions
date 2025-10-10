@@ -4,11 +4,13 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.MinionRegistries;
 import io.github.skippyall.minions.input.TextInput;
+import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.MinionModule;
 import io.github.skippyall.minions.program.argument.Argument;
 import io.github.skippyall.minions.program.argument.GenericArgumentType;
 import io.github.skippyall.minions.program.argument.SpecificArgumentType;
+import io.github.skippyall.minions.program.dingenskirchen.SpecificDingenskirchenType;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.argument.Parameter;
@@ -112,7 +114,7 @@ public class InstructionGui {
         }
     }
 
-    public static <T, A extends Argument<T, ? extends SpecificArgumentType<T, A, MinionFakePlayer>, MinionFakePlayer>> void configureArgumentMenu(String name, ConfiguredInstruction<?> instruction, Parameter<T> parameter, MinionFakePlayer minion, ServerPlayerEntity player) {
+    public static <T, A extends Argument<T, ? extends SpecificDingenskirchenType<T, A, MinionRuntime>, MinionRuntime>> void configureArgumentMenu(String name, ConfiguredInstruction<?> instruction, Parameter<T> parameter, MinionFakePlayer minion, ServerPlayerEntity player) {
         if(!checkInstructionExists(name, instruction, minion, player)) {
             return;
         }

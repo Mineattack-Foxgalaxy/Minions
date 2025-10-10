@@ -3,16 +3,19 @@ package io.github.skippyall.minions.program.argument;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.InstructionRuntime;
+import io.github.skippyall.minions.program.value.ValueType;
 
 /**
  * An argument that always resolves to a fixed value
  */
-public class ValueArgument<T, R extends InstructionRuntime<R>> implements Argument<T, ValueArgumentType<T, R>, R> {
-    private final ValueArgumentType<T,R> type;
+public class ValueArgument<T, R extends InstructionRuntime<R>> implements Argument<T, R> {
+    private final ValueArgumentType<R> type;
+    private final ValueType<T> valueType;
     private final T value;
 
-    public ValueArgument(ValueArgumentType<T,R> valueType, T value) {
-        this.type = valueType;
+    public ValueArgument(ValueArgumentType<R> type, ValueType<T> valueType, T value) {
+        this.type = type;
+        this.valueType = valueType;
         this.value = value;
     }
 
@@ -31,7 +34,12 @@ public class ValueArgument<T, R extends InstructionRuntime<R>> implements Argume
     }
 
     @Override
-    public ValueArgumentType<T,R> getType() {
+    public ValueType<T> getValueType() {
+        return valueType;
+    }
+
+    @Override
+    public ValueArgumentType<R> getType() {
         return type;
     }
 }

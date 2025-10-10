@@ -8,21 +8,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public class ValueArgumentType<V, R extends InstructionRuntime<R>> extends SpecificArgumentType<V, ValueArgument<V,R>, R> {
-    public ValueArgumentType(ValueType<V> valueType, GenericArgumentType<R> genericType) {
-        super(valueType, genericType);
+public class ValueArgumentType<R extends InstructionRuntime<R>> extends ArgumentType<R> {
+    @Override
+    public <T> Codec<ValueArgument<T,R>> getCodec(ValueType<T> valueType) {
+        return valueType.codec().xmap(value -> new ValueArgument<>(this, valueType, value), ValueArgument::getValue);
     }
 
     @Override
-    public Codec<ValueArgument<V,R>> getArgumentCodec() {
-        return valueType.codec().xmap(value -> new ValueArgument<>(this, value), ValueArgument::getValue);
-    }
-
-    @Override
-    public CompletableFuture<ValueArgument<V,R>> openArgumentDialog(ServerPlayerEntity player, @Nullable ValueArgument<V,R> previousArgument) {
+    public <V> CompletableFuture<ValueArgument<V,R>> openConfiguration(ServerPlayerEntity player, ValueType<V> valueType, @Nullable Argument<V,R> previousArgument) {
         return valueType.openValueDialog(
                 player,
-                previousArgument != null ? previousArgument.getValue() : valueType.defaultValue()
-        ).thenApply(value -> new ValueArgument<>(this, value));
+                previousArgument instanceof ValueArgument<V,R> val ? val.getValue() : valueType.defaultValue()
+        ).thenApply(value -> new ValueArgument<>(this, valueType, value));
     }
 }
