@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import eu.pb4.polymer.core.api.other.PolymerComponent;
 import io.github.skippyall.minions.MinionRegistries;
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import net.minecraft.component.ComponentType;
 import net.minecraft.registry.Registries;
@@ -13,10 +14,11 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public record MinionModule(List<InstructionType<?>> instructions) {
+public record MinionModule(List<InstructionType<MinionRuntime>> instructions, List<String> specialBehaviour) {
     public static final Codec<MinionModule> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    MinionRegistries.INSTRUCTION_TYPES.getCodec().listOf().fieldOf("instructions").forGetter(MinionModule::instructions)
+                    MinionRegistries.INSTRUCTION_TYPES.getCodec().listOf().fieldOf("instructions").forGetter(MinionModule::instructions),
+                    Codec.STRING.listOf().fieldOf("specialBehaviour").forGetter(MinionModule::specialBehaviour)
             ).apply(instance, MinionModule::new)
     );
 
@@ -24,8 +26,13 @@ public record MinionModule(List<InstructionType<?>> instructions) {
 
     public static final MinionModule EMPTY = new MinionModule(List.of());
 
-    public MinionModule(List<InstructionType<?>> instructions) {
+    public MinionModule(List<InstructionType<MinionRuntime>> instructions) {
+        this(instructions, List.of());
+    }
+
+    public MinionModule(List<InstructionType<MinionRuntime>> instructions, List<String> specialBehaviour) {
         this.instructions = List.copyOf(instructions);
+        this.specialBehaviour = List.copyOf(specialBehaviour);
     }
 
     public static void register() {

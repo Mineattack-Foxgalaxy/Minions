@@ -3,9 +3,10 @@ package io.github.skippyall.minions.program.instruction.execution;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.Displayable;
 import io.github.skippyall.minions.gui.GuiDisplay;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.argument.ArgumentList;
-import io.github.skippyall.minions.program.argument.Parameter;
+import io.github.skippyall.minions.minion.MinionRuntime;
+import io.github.skippyall.minions.program.consumer.ValueConsumerList;
+import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.value.ValueTypes;
 import net.minecraft.storage.ReadView;
@@ -14,7 +15,7 @@ import net.minecraft.util.StringIdentifiable;
 
 import java.util.UUID;
 
-public class TurnExecution implements InstructionExecution<Void,MinionFakePlayer> {
+public class TurnExecution implements InstructionExecution<MinionRuntime> {
     public static final Parameter<Float> ANGLE = new Parameter<>("maxAngle", ValueTypes.FLOAT);
     public static final Parameter<TurnDirection> DIRECTION = new Parameter<>("direction", ValueTypes.TURN_DIRECTION);
 
@@ -25,37 +26,36 @@ public class TurnExecution implements InstructionExecution<Void,MinionFakePlayer
     private TurnDirection direction;
 
     @Override
-    public void tick(MinionFakePlayer minion) {
+    public void tick(MinionRuntime minion) {
         float toRotate = Math.min(anglePerTick, maxAngle - rotatedAngle);
-        minion.getMinionActionPack().turn(direction.xFactor * toRotate, direction.yFactor * toRotate);
+        minion.getMinion().getMinionActionPack().turn(direction.xFactor * toRotate, direction.yFactor * toRotate);
 
         rotatedAngle += toRotate;
     }
 
     @Override
-    public boolean isDone(MinionFakePlayer minion) {
+    public boolean isDone(MinionRuntime minion) {
         return Math.abs(maxAngle - rotatedAngle) < 0.001F;
     }
 
     @Override
-    public Void stop(MinionFakePlayer minion) {
-        return null;
+    public void stop(MinionRuntime minion, ValueConsumerList<MinionRuntime> valueConsumers) {
     }
 
     @Override
-    public void readArguments(ArgumentList<MinionFakePlayer> arguments, MinionFakePlayer minion) {
+    public void readArguments(ValueSupplierList<MinionRuntime> arguments, MinionRuntime minion) {
         maxAngle = arguments.getValue(ANGLE, minion);
         direction = arguments.getValue(DIRECTION, minion);
     }
 
     @Override
-    public void save(WriteView view, MinionFakePlayer minion) {
+    public void save(WriteView view, MinionRuntime minion) {
         view.putFloat("maxAngle", maxAngle);
         view.put("direction", TurnDirection.CODEC, direction);
     }
 
     @Override
-    public void load(ReadView view, MinionFakePlayer minion) {
+    public void load(ReadView view, MinionRuntime minion) {
         maxAngle = view.getFloat("maxAngle", 0);
         direction = view.read("direction", TurnDirection.CODEC).orElseThrow();
     }

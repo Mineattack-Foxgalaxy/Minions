@@ -11,6 +11,7 @@ import net.minecraft.screen.slot.Slot;
 public class ModuleInventoryScreenHandler extends ScreenHandler {
     private final int rows = 3;
     private final ModuleInventory inventory;
+
     public ModuleInventoryScreenHandler(int syncId, ModuleInventory inventory) {
         super(ScreenHandlerType.GENERIC_9X3, syncId);
         this.inventory = inventory;
@@ -18,14 +19,13 @@ public class ModuleInventoryScreenHandler extends ScreenHandler {
 
     public ModuleInventoryScreenHandler(int syncId, PlayerInventory playerInventory, ModuleInventory inventory) {
         super(ScreenHandlerType.GENERIC_9X3, syncId);
-        int k;
-        int j;
+
         GenericContainerScreenHandler.checkSize(inventory, 3 * 9);
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
-        int i = (rows - 4) * 18;
-        for (j = 0; j < rows; ++j) {
-            for (k = 0; k < 9; ++k) {
+
+        for (int j = 0; j < rows; ++j) {
+            for (int k = 0; k < 9; ++k) {
                 this.addSlot(new Slot(inventory, k + j * 9, 8 + k * 18, 18 + j * 18) {
                     @Override
                     public boolean canInsert(ItemStack stack) {
@@ -34,14 +34,8 @@ public class ModuleInventoryScreenHandler extends ScreenHandler {
                 });
             }
         }
-        for (j = 0; j < 3; ++j) {
-            for (k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 103 + j * 18 + i));
-            }
-        }
-        for (j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 161 + i));
-        }
+
+        addPlayerSlots(playerInventory, 8, 85);
     }
 
     @Override

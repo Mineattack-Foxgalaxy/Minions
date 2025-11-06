@@ -1,8 +1,7 @@
-package io.github.skippyall.minions.program.returnvalue;
+package io.github.skippyall.minions.program.consumer;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.argument.Argument;
 import io.github.skippyall.minions.program.value.ValueType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;

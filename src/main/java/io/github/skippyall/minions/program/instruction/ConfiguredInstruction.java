@@ -2,33 +2,36 @@ package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.argument.ArgumentList;
+import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import org.jetbrains.annotations.Nullable;
 
 public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     private final InstructionType<R> instruction;
-    private final ArgumentList<R> arguments;
+    private final ValueSupplierList<R> arguments;
+    private final ValueConsumerList<R> valueConsumers;
     private @Nullable InstructionExecution<R> execution;
     private final String name;
 
-    private ConfiguredInstruction(InstructionType<R> instruction, ArgumentList<R> arguments, @Nullable InstructionExecution<R> execution, String name) {
+    private ConfiguredInstruction(InstructionType<R> instruction, ValueSupplierList<R> arguments, ValueConsumerList<R> valueConsumers, @Nullable InstructionExecution<R> execution, String name) {
         this.instruction = instruction;
         this.arguments = arguments;
+        this.valueConsumers = valueConsumers;
         this.execution = execution;
         this.name = name;
     }
 
     public ConfiguredInstruction(InstructionType<R> instruction, String name) {
-        this(instruction, new ArgumentList<>(), null, name);
+        this(instruction, new ValueSupplierList<>(), new ValueConsumerList<>(), null, name);
     }
 
     public InstructionType<R> getInstruction() {
         return instruction;
     }
 
-    public ArgumentList<R> getArguments() {
+    public ValueSupplierList<R> getArguments() {
         return arguments;
     }
 
@@ -75,7 +78,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
 
     public void stop(R minion) {
         if(isRunning()) {
-            execution.stop(minion);
+            execution.stop(minion, valueConsumers);
             execution = null;
         }
     }
@@ -83,6 +86,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     public void save(WriteView view, R minion) {
         view.put("instruction", minion.getInstructionTypeRegistry().getCodec(), instruction);
         view.put("arguments", minion.getArgumentListCodec(), arguments);
+        view.put("valueConsumers", minion.getValueConsumerListCodec(), valueConsumers);
         view.putBoolean("running", isRunning());
         if(isRunning()) {
             execution.save(view.get("execution"), minion);
@@ -92,7 +96,8 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     public static <R extends InstructionRuntime<R>> ConfiguredInstruction<R> load(ReadView view, R minion, String name) {
         InstructionType<R> instructionType = view.read("instruction", minion.getInstructionTypeRegistry().getCodec()).orElseThrow();
 
-        ArgumentList<R> arguments = view.read("arguments", minion.getArgumentListCodec()).orElseThrow();
+        ValueSupplierList<R> arguments = view.read("arguments", minion.getArgumentListCodec()).orElseGet(ValueSupplierList::new);
+        ValueConsumerList<R> valueConsumers = view.read("valueConsumers", minion.getValueConsumerListCodec()).orElseGet(ValueConsumerList::new);
 
         boolean running = view.getBoolean("running", false);
 
@@ -100,12 +105,12 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
             ReadView executionView = view.getReadView("execution");
             try {
                 InstructionExecution<R> execution = instructionType.loadExecution(executionView, minion);
-                return new ConfiguredInstruction<>(instructionType, arguments, execution, name);
+                return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, execution, name);
             } catch (Exception e) {
-
+                Minions.LOGGER.error("Error while loading execution", e);
             }
         }
 
-        return new ConfiguredInstruction<>(instructionType, arguments, null, name);
+        return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, null, name);
     }
 }

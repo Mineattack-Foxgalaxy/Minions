@@ -41,6 +41,8 @@ public class Minions implements ModInitializer {
 
         ValueTypes.register();
         SkinProviders.register();
+
+        MinionRegistration.register();
         MinionItems.register();
         MinionCreativeTab.registerGroup();
     }

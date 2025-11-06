@@ -1,11 +1,11 @@
 package io.github.skippyall.minions.program.instruction.execution;
 
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 
-public interface ContinuousInstructionExecution extends InstructionExecution<Void,MinionFakePlayer> {
+public interface ContinuousInstructionExecution<R extends InstructionRuntime<R>> extends InstructionExecution<R> {
     @Override
-    default boolean isDone(MinionFakePlayer minion) {
+    default boolean isDone(R minion) {
         return false;
     }
 }

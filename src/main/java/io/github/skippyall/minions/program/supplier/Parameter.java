@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.program.argument;
+package io.github.skippyall.minions.program.supplier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

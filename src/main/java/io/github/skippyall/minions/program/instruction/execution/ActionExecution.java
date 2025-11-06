@@ -1,12 +1,13 @@
 package io.github.skippyall.minions.program.instruction.execution;
 
+import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.argument.ArgumentList;
+import io.github.skippyall.minions.program.consumer.ValueConsumerList;
+import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 
-public class ActionExecution implements ContinuousInstructionExecution {
+public class ActionExecution implements ContinuousInstructionExecution<MinionRuntime> {
     private final EntityPlayerActionPack.ActionType action;
 
     public ActionExecution(EntityPlayerActionPack.ActionType action) {
@@ -14,24 +15,23 @@ public class ActionExecution implements ContinuousInstructionExecution {
     }
 
     @Override
-    public void start(MinionFakePlayer minion) {
-        minion.getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
+    public void start(MinionRuntime minion) {
+        minion.getMinion().getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
     }
 
     @Override
-    public Void stop(MinionFakePlayer minion) {
-        minion.getMinionActionPack().stop(action);
-        return null;
+    public void stop(MinionRuntime minion, ValueConsumerList<MinionRuntime> valueConsumers) {
+        minion.getMinion().getMinionActionPack().stop(action);
     }
 
     @Override
-    public void readArguments(ArgumentList parameters, MinionFakePlayer minion) {}
+    public void readArguments(ValueSupplierList<MinionRuntime> parameters, MinionRuntime minion) {}
 
     @Override
-    public void save(WriteView view, MinionFakePlayer minion) {}
+    public void save(WriteView view, MinionRuntime minion) {}
 
     @Override
-    public void load(ReadView view, MinionFakePlayer minion) {
-        minion.getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
+    public void load(ReadView view, MinionRuntime minion) {
+        minion.getMinion().getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
     }
 }

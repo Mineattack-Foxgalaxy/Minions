@@ -19,6 +19,8 @@ import java.util.Set;
 
 public class ModuleInventory extends SimpleInventory {
     private final Set<MinionModule> modules = new HashSet<>();
+    private final Set<String> specialAbilities = new HashSet<>();
+
     public ModuleInventory() {
         super(27);
     }
@@ -45,10 +47,12 @@ public class ModuleInventory extends SimpleInventory {
 
     public void updateModules() {
         modules.clear();
+        specialAbilities.clear();
         for (ItemStack heldStack : heldStacks) {
             MinionModule module = heldStack.get(MinionModule.COMPONENT_TYPE);
             if(module != null) {
                 modules.add(module);
+                specialAbilities.addAll(module.specialBehaviour());
             }
         }
     }
@@ -62,12 +66,12 @@ public class ModuleInventory extends SimpleInventory {
         Inventories.writeData(view, heldStacks);
     }
 
-    public boolean hasModule(MinionModule module) {
-        return modules.contains(module);
-    }
-
     public Collection<MinionModule> getModules() {
         return modules;
+    }
+
+    public boolean hasAbility(String ability) {
+        return specialAbilities.contains(ability);
     }
 
     public List<InstructionType<?>> getAllInstructions() {

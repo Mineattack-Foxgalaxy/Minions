@@ -1,14 +1,13 @@
-package io.github.skippyall.minions.program.argument;
+package io.github.skippyall.minions.program.supplier;
 
 import io.github.skippyall.minions.gui.GuiDisplay;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 
 /**
- * An argument that always resolves to a fixed value
+ * An supplier that always resolves to a fixed value
  */
-public class ValueArgument<T, R extends InstructionRuntime<R>> implements Argument<T, R> {
+public class ValueArgument<T, R extends InstructionRuntime<R>> implements ValueSupplier<T, R> {
     private final ValueArgumentType<R> type;
     private final ValueType<T> valueType;
     private final T value;

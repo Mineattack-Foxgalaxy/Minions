@@ -6,7 +6,7 @@ import com.mojang.authlib.properties.PropertyMap;
 import io.github.skippyall.minions.MinionItems;
 import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.gui.MinionGui;
-import io.github.skippyall.minions.minion.MinionInstructionManager;
+import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.MinionProfileUtils;
@@ -51,11 +51,8 @@ public class MinionFakePlayer extends ServerPlayerEntity {
 
     private EntityPlayerActionPack actionPack;
 
-    private float moveForward;
-    private float moveSideways;
-
     private final ModuleInventory moduleInventory = new ModuleInventory();
-    private final MinionInstructionManager instructionManager = new MinionInstructionManager(this);
+    private final MinionRuntime instructionManager = new MinionRuntime(this);
 
     private final MinionData data;
 
@@ -118,7 +115,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         return actionPack;
     }
 
-    public MinionInstructionManager getInstructionManager() {
+    public MinionRuntime getInstructionManager() {
         return instructionManager;
     }
 
@@ -127,11 +124,11 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     public boolean canSpawnMobs() {
-        return true;
+        return moduleInventory.hasAbility("mobSpawning");
     }
 
     public boolean canDespawnMobs() {
-        return true;
+        return moduleInventory.hasAbility("mobSpawning");
     }
 
     @Override
@@ -248,44 +245,6 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         }
         return networkHandler.player;
     }
-
-    /*public void moveForward(float forward) {
-        this.moveForward += forward;
-        EntityPlayerActionPack actionPack = getMinionActionPack();
-        if (moveForward != 0) {
-            actionPack.setForward(moveForward > 0 ? 1 : -1);
-        }
-    }
-
-    public void moveSideways(float sideways) {
-        this.moveSideways += sideways;
-        EntityPlayerActionPack actionPack = getMinionActionPack();
-        if (moveSideways != 0) {
-            actionPack.setStrafing(moveSideways > 0 ? 1 : -1);
-        }
-    }
-
-    @Override
-    public void move(MovementType movementType, Vec3d movement) {
-        float newForward = (float) (moveForward - movement.z);
-        float newSideways = (float) (moveSideways - movement.x);
-        Vec3d newMovement = movement;
-        if ((newForward < 0 && moveForward > 0) || (newForward > 0 && moveForward < 0)) {
-            newMovement = new Vec3d(newMovement.x, newMovement.y, moveForward);
-            moveForward = 0;
-            getMinionActionPack().setForward(0);
-        }else {
-            moveForward = newForward;
-        }
-        if ((newSideways < 0 && moveSideways > 0) || (newSideways > 0 && moveSideways < 0)) {
-            newMovement = new Vec3d(newMovement.x, newMovement.y, moveSideways);
-            moveSideways = 0;
-            getMinionActionPack().setStrafing(0);
-        }else {
-            moveSideways = newSideways;
-        }
-        super.move(movementType, newMovement);
-    }*/
 
     @Override
     public void drop(ServerWorld world, DamageSource damageSource) {

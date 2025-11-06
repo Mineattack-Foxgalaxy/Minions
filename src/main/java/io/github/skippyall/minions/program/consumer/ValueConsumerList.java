@@ -1,8 +1,8 @@
-package io.github.skippyall.minions.program.returnvalue;
+package io.github.skippyall.minions.program.consumer;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.argument.Parameter;
+import io.github.skippyall.minions.program.supplier.Parameter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +27,15 @@ public class ValueConsumerList<R extends InstructionRuntime<R>> {
         valueConsumers.put(parameter.name(), consumer);
     }
 
-    public static <R extends InstructionRuntime<R>> Codec<ValueConsumerList<R>> getCodec(Codec<ValueConsumerType<R>> genericCodec) {
-        return Codec.unboundedMap(Codec.STRING, ValueConsumers.createValueConsumersCodec(genericCodec))
+    public <T> void setValue(Parameter<T> parameter, T value, R runtime) {
+        ValueConsumer<T,R> consumer = getValueConsumer(parameter).cast(parameter.type());
+        if (consumer != null) {
+            consumer.consume(value, runtime);
+        }
+    }
+
+    public static <R extends InstructionRuntime<R>> Codec<ValueConsumerList<R>> getCodec(Codec<ValueConsumer<?,R>> valueConsumerCodec) {
+        return Codec.unboundedMap(Codec.STRING, valueConsumerCodec)
                 .xmap(ValueConsumerList::new, list -> list.valueConsumers);
     }
 }
