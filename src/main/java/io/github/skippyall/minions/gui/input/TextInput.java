@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.input;
+package io.github.skippyall.minions.gui.input;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
@@ -9,7 +9,6 @@ import net.minecraft.text.Text;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class TextInput<T> extends AnvilInputGui {
     private final GuiElementBuilder valid = new GuiElementBuilder()

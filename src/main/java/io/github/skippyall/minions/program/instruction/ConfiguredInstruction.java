@@ -13,18 +13,16 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     private final ValueSupplierList<R> arguments;
     private final ValueConsumerList<R> valueConsumers;
     private @Nullable InstructionExecution<R> execution;
-    private final String name;
 
-    private ConfiguredInstruction(InstructionType<R> instruction, ValueSupplierList<R> arguments, ValueConsumerList<R> valueConsumers, @Nullable InstructionExecution<R> execution, String name) {
+    private ConfiguredInstruction(InstructionType<R> instruction, ValueSupplierList<R> arguments, ValueConsumerList<R> valueConsumers, @Nullable InstructionExecution<R> execution) {
         this.instruction = instruction;
         this.arguments = arguments;
         this.valueConsumers = valueConsumers;
         this.execution = execution;
-        this.name = name;
     }
 
-    public ConfiguredInstruction(InstructionType<R> instruction, String name) {
-        this(instruction, new ValueSupplierList<>(), new ValueConsumerList<>(), null, name);
+    public ConfiguredInstruction(InstructionType<R> instruction) {
+        this(instruction, new ValueSupplierList<>(), new ValueConsumerList<>(), null);
     }
 
     public InstructionType<R> getInstruction() {
@@ -33,10 +31,6 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
 
     public ValueSupplierList<R> getArguments() {
         return arguments;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public boolean canRun() {
@@ -57,7 +51,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
                 execution = instruction.createExecution(arguments, minion);
                 execution.start(minion);
             } catch (Exception e) {
-                Minions.LOGGER.error("An error occurred while executing configured Instruction {}", name, e);
+                Minions.LOGGER.error("An error occurred while executing configured Instruction", e);
 
             }
         }
@@ -93,7 +87,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         }
     }
 
-    public static <R extends InstructionRuntime<R>> ConfiguredInstruction<R> load(ReadView view, R minion, String name) {
+    public static <R extends InstructionRuntime<R>> ConfiguredInstruction<R> load(ReadView view, R minion) {
         InstructionType<R> instructionType = view.read("instruction", minion.getInstructionTypeRegistry().getCodec()).orElseThrow();
 
         ValueSupplierList<R> arguments = view.read("arguments", minion.getArgumentListCodec()).orElseGet(ValueSupplierList::new);
@@ -105,12 +99,12 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
             ReadView executionView = view.getReadView("execution");
             try {
                 InstructionExecution<R> execution = instructionType.loadExecution(executionView, minion);
-                return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, execution, name);
+                return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, execution);
             } catch (Exception e) {
                 Minions.LOGGER.error("Error while loading execution", e);
             }
         }
 
-        return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, null, name);
+        return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, null);
     }
 }

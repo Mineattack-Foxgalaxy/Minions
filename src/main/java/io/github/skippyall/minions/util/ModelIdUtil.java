@@ -6,7 +6,6 @@ import net.minecraft.util.Identifier;
 
 public class ModelIdUtil {
     public static Identifier getItemModelId(Item item) {
-        Identifier identifier = Registries.ITEM.getId(item);
-        return identifier.withPrefixedPath("item/");
+        return Registries.ITEM.getId(item);
     }
 }

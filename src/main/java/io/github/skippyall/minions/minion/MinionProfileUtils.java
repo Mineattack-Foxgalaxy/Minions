@@ -1,20 +1,13 @@
 package io.github.skippyall.minions.minion;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.properties.PropertyMap;
-import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.brigadier.StringReader;
-import io.github.skippyall.minions.input.Result;
-import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.server.MinecraftServer;
+import io.github.skippyall.minions.gui.input.Result;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
 
 import static io.github.skippyall.minions.Minions.LOGGER;
 

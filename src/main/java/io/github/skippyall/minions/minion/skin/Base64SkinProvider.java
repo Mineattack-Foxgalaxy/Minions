@@ -2,7 +2,7 @@ package io.github.skippyall.minions.minion.skin;
 
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import io.github.skippyall.minions.input.TextInput;
+import io.github.skippyall.minions.gui.input.TextInput;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 

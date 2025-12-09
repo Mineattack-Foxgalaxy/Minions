@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.input;
+package io.github.skippyall.minions.gui.input;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -87,7 +87,7 @@ public interface Result<T, E> {
 
         @Override
         public @NotNull T getOrThrow() {
-            throw new RuntimeException("Result was an error: " + message.toString());
+            throw new RuntimeException("Result was an error: " + message);
         }
 
         @Override
@@ -106,7 +106,7 @@ public interface Result<T, E> {
         }
 
         @Override
-        public void ifError(Consumer<Error<T, E>> handler) {
+        public void ifError(@NotNull Consumer<Error<T, E>> handler) {
             handler.accept(this);
         }
     }

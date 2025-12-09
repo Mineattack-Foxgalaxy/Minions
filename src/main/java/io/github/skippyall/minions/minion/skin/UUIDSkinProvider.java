@@ -2,16 +2,10 @@ package io.github.skippyall.minions.minion.skin;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.skippyall.minions.input.TextInput;
-import io.github.skippyall.minions.minion.MinionProfileUtils;
+import io.github.skippyall.minions.gui.input.TextInput;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Uuids;
-import net.minecraft.util.dynamic.Codecs;
 
 import java.util.Optional;
 import java.util.UUID;

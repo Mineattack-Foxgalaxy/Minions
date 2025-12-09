@@ -1,11 +1,8 @@
 package io.github.skippyall.minions.gui;
 
 import com.mojang.authlib.properties.PropertyMap;
-import com.mojang.datafixers.util.Either;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import io.github.skippyall.minions.util.ModelIdUtil;
-import net.minecraft.block.SkullBlock;
-import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.ProfileComponent;
@@ -28,6 +25,10 @@ public interface GuiDisplay {
     record ModelBased(Identifier model, String translationKeyBase, boolean withLore) implements GuiDisplay {
         public ModelBased(Item model, String translationKeyBase, boolean withLore) {
             this(ModelIdUtil.getItemModelId(model), translationKeyBase, withLore);
+        }
+
+        public ModelBased(Item model, String translationKeyBase) {
+            this(ModelIdUtil.getItemModelId(model), translationKeyBase, false);
         }
 
         @Override

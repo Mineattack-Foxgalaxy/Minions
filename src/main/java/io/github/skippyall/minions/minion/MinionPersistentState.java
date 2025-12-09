@@ -1,7 +1,6 @@
 package io.github.skippyall.minions.minion;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.Minions;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateType;

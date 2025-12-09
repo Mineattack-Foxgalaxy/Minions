@@ -3,7 +3,7 @@ package io.github.skippyall.minions.gui;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.MinionRegistries;
-import io.github.skippyall.minions.input.TextInput;
+import io.github.skippyall.minions.gui.input.TextInput;
 import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionProfileUtils;

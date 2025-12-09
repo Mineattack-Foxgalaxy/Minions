@@ -10,62 +10,80 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class MinionTriggerBlockEntity extends BlockEntity {
     private UUID minionUuid;
     private String instructionName = "";
 
+    private boolean first = true;
+    private boolean runningCache = false;
+
     public MinionTriggerBlockEntity(BlockPos pos, BlockState state) {
         super(MinionRegistration.MINION_TRIGGER_BE_TYPE, pos, state);
     }
 
-    public void updatePower() {
-        boolean powered = getCachedState().get(MinionTriggerBlock.POWERED);
-        ConfiguredInstruction<MinionRuntime> instruction = getInstruction();
+    public void setInstruction(UUID minionUuid, String instructionName) {
+        this.minionUuid = minionUuid;
+        this.instructionName = instructionName;
+        markDirty();
+    }
 
-        if(instruction != null) {
-            if(powered) {
-                instruction.run(getMinion().getInstructionManager());
-            } else {
-                instruction.stop(getMinion().getInstructionManager());
+    public static void tick(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+        if(!(blockEntity instanceof MinionTriggerBlockEntity triggerBlockEntity)) {
+            return;
+        }
+        if(triggerBlockEntity.first) {
+            triggerBlockEntity.first = false;
+            world.updateComparators(pos, MinionRegistration.MINION_TRIGGER_BLOCK);
+            triggerBlockEntity.runningCache = triggerBlockEntity.getInstruction().map(ConfiguredInstruction::isRunning).orElse(false);
+        } else {
+            boolean isRunning = triggerBlockEntity.getInstruction().map(ConfiguredInstruction::isRunning).orElse(false);
+            if (isRunning != triggerBlockEntity.runningCache) {
+                world.updateComparators(pos, MinionRegistration.MINION_TRIGGER_BLOCK);
+                triggerBlockEntity.runningCache = isRunning;
             }
         }
     }
 
+    public void updatePower() {
+        boolean powered = getCachedState().get(MinionTriggerBlock.POWERED);
+        getMinion().ifPresent(minion -> {
+            getInstruction().ifPresent(instruction -> {
+                if(powered) {
+                    instruction.run(minion.getInstructionManager());
+                } else {
+                    instruction.stop(minion.getInstructionManager());
+                }
+            });
+        });
+
+    }
+
     public int getComparatorOutput() {
-        ConfiguredInstruction<MinionRuntime> instruction = getInstruction();
-        if(instruction != null && instruction.isRunning()) {
+        Optional<ConfiguredInstruction<MinionRuntime>> instruction = getInstruction();
+        if(instruction.isPresent() && instruction.get().isRunning()) {
             return 15;
         }
         return 0;
     }
 
-    public MinionFakePlayer getMinion() {
+    public Optional<MinionFakePlayer> getMinion() {
         if(minionUuid != null && world != null && world.getPlayerByUuid(minionUuid) instanceof MinionFakePlayer minion) {
-            return minion;
+            return Optional.of(minion);
         }
-        return null;
+        return Optional.empty();
     }
 
-    public ConfiguredInstruction<MinionRuntime> getInstruction() {
-        MinionFakePlayer minion = getMinion();
-        if(minion == null) {
-            return null;
-        }
-
-        return minion.getInstructionManager().getInstruction(instructionName);
+    public Optional<ConfiguredInstruction<MinionRuntime>> getInstruction(MinionFakePlayer minion) {
+        return Optional.ofNullable(minion.getInstructionManager().getInstruction(instructionName));
     }
 
-    @Override
-    public void onBlockReplaced(BlockPos pos, BlockState oldState) {
-        super.onBlockReplaced(pos, oldState);
-    }
-
-    @Override
-    public void markRemoved() {
-        super.markRemoved();
+    public Optional<ConfiguredInstruction<MinionRuntime>> getInstruction() {
+        return getMinion().flatMap(this::getInstruction);
     }
 
     @Override

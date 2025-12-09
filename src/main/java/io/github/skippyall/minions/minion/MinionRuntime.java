@@ -40,7 +40,11 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
     }
 
     public ConfiguredInstruction<MinionRuntime> createInstruction(String name, InstructionType<MinionRuntime> instructionType) {
-        ConfiguredInstruction<MinionRuntime> instruction = new ConfiguredInstruction<>(instructionType, name);
+        if(configuredInstructions.containsKey(name)) {
+            return null;
+        }
+
+        ConfiguredInstruction<MinionRuntime> instruction = new ConfiguredInstruction<>(instructionType);
         configuredInstructions.put(name, instruction);
         return instruction;
     }
@@ -57,6 +61,12 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
 
     public boolean hasInstruction(String name) {
         return configuredInstructions.containsKey(name);
+    }
+
+    public void setInstructionName(String oldName, String newName) {
+        if(!configuredInstructions.containsKey(newName)) {
+            configuredInstructions.put(newName, configuredInstructions.remove(oldName));
+        }
     }
 
     public void save(WriteView view) {
@@ -78,7 +88,7 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
             }
 
             try {
-                ConfiguredInstruction<MinionRuntime> instruction = ConfiguredInstruction.load(inner, this, name.get());
+                ConfiguredInstruction<MinionRuntime> instruction = ConfiguredInstruction.load(inner, this);
                 configuredInstructions.put(name.get(), instruction);
             } catch (Exception e) {
                 Minions.LOGGER.error("Could not deserialize configured instruction \"{}\" of minion \"{}\":", name.get(), minion.getGameProfile().getName(), e);

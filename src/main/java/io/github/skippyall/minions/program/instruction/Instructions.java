@@ -9,7 +9,6 @@ import io.github.skippyall.minions.program.instruction.execution.ActionExecution
 import io.github.skippyall.minions.program.instruction.execution.TurnExecution;
 import io.github.skippyall.minions.program.instruction.execution.WalkExecution;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.util.ModelIdUtil;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -22,7 +21,7 @@ import java.util.function.Supplier;
 public class Instructions {
     public static final InstructionType<MinionRuntime> WALK = register(
             "walk",
-            base -> new GuiDisplay.ModelBased(ModelIdUtil.getItemModelId(Items.IRON_BOOTS), base, true),
+            base -> new GuiDisplay.ModelBased(Items.IRON_BOOTS, base, true),
             WalkExecution::new,
             List.of(WalkExecution.blocksToMoveParam)
     );
@@ -36,13 +35,13 @@ public class Instructions {
 
     public static final InstructionType<MinionRuntime> ATTACK = register(
             "attack",
-            base -> new GuiDisplay.ModelBased(ModelIdUtil.getItemModelId(Items.IRON_BOOTS), base, true),
+            base -> new GuiDisplay.ModelBased(Items.IRON_PICKAXE, base, true),
             () -> new ActionExecution(EntityPlayerActionPack.ActionType.ATTACK)
     );
 
     public static final InstructionType<MinionRuntime> USE = register(
             "use",
-            base -> new GuiDisplay.ModelBased(ModelIdUtil.getItemModelId(Items.LEVER), base, true),
+            base -> new GuiDisplay.ModelBased(Items.LEVER, base, true),
             () -> new ActionExecution(EntityPlayerActionPack.ActionType.USE)
     );
 
