@@ -33,7 +33,7 @@ public class ChoiceInput {
             gui.setTitle(title);
 
             for(T value : values) {
-                gui.addSlot(displayFunction.apply(value).createElement()
+                gui.addSlot(new GuiElementBuilder(displayFunction.apply(value).createItemStack())
                         .setCallback(() -> future.complete(value))
                 );
             }
@@ -43,7 +43,7 @@ public class ChoiceInput {
     }
 
     public static <T extends Displayable> BiFunction<ServerPlayerEntity, T, CompletableFuture<T>> createDialogOpener(T[] values) {
-        return createDialogOpener(ScreenHandlerType.GENERIC_9X3, Text.empty(), Displayable::getDisplay, values, null);
+        return createDialogOpener(ScreenHandlerType.GENERIC_9X3, Text.empty(), t -> t != null ? t.getDisplay() : null, values, null);
     }
 
     public static CompletableFuture<Void> confirm(ServerPlayerEntity player, Text title) {

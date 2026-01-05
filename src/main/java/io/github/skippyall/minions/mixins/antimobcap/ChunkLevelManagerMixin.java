@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 
 @Mixin(ChunkLevelManager.class)
 public class ChunkLevelManagerMixin implements ChunkLevelManagerAccessor {
-    @Shadow @Final private Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos;
+    @Shadow @Final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos;
     @Shadow @Final private ChunkLevelManager.DistanceFromNearestPlayerTracker distanceFromNearestPlayerTracker;
     @Unique
     ChunkLevelManager.DistanceFromNearestPlayerTracker minionless;

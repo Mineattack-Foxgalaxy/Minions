@@ -9,7 +9,7 @@
     "EntityAccessor",
     "EntityMixin",
     "EntityViewMixin",
-    "GraveCompatMixin",
+    "compat.universal_graves.GraveMixin",
     "MinecraftServerMixin",
     "MobEntityMixin",
     "PlayerListEntryS2CPacket$EntryMixin",
@@ -28,5 +28,6 @@
   "server": [],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "plugin": "io.github.skippyall.minions.MinionMixinConfigPlugin"
 }

@@ -1,13 +1,17 @@
 package io.github.skippyall.minions;
 
+import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import io.github.skippyall.minions.command.MinionsCommand;
+import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.skin.SkinProviders;
 import io.github.skippyall.minions.module.MinionModule;
 import io.github.skippyall.minions.program.instruction.Instructions;
+import io.github.skippyall.minions.program.supplier.ValueSuppliers;
 import io.github.skippyall.minions.program.value.ValueTypes;
+import io.github.skippyall.minions.util.PolymerUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -21,10 +25,22 @@ public class Minions implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        MinionRegistries.register();
+
         Instructions.register();
+        ValueSuppliers.register();
+        ValueTypes.register();
+        SkinProviders.register();
+        GuiDisplay.register();
 
         MinionData.register();
         MinionModule.register();
+
+        MinionBlocks.register();
+        MinionItems.register();
+        MinionCreativeTab.registerGroup();
+
+        PolymerUtil.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             MinionPersistentState.create(server);
@@ -39,11 +55,6 @@ public class Minions implements ModInitializer {
             MinionsCommand.register(commandDispatcher);
         });
 
-        ValueTypes.register();
-        SkinProviders.register();
-
-        MinionRegistration.register();
-        MinionItems.register();
-        MinionCreativeTab.registerGroup();
+        PolymerResourcePackUtils.addModAssets(Minions.MOD_ID);
     }
 }

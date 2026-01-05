@@ -2,11 +2,13 @@ package io.github.skippyall.minions;
 
 import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
+import io.github.skippyall.minions.block.MinionTriggerBlockItem;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.module.MinionModule;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.instruction.Instructions;
+import io.github.skippyall.minions.reference.ReferenceItem;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DamageResistantComponent;
 import net.minecraft.entity.damage.DamageType;
@@ -45,13 +47,13 @@ public class MinionItems {
     public static final SimplePolymerItem MOVE_MODULE = registerModule(
             Identifier.of(MOD_ID, "move_module"),
             Items.IRON_BOOTS,
-            List.of(Instructions.WALK, Instructions.TURN)
+            List.of(Instructions.WALK, Instructions.WALK_CONTINUOUS, Instructions.TURN, Instructions.TURN_VECTOR)
     );
 
     public static final SimplePolymerItem ATTACK_MODULE = registerModule(
             Identifier.of(MOD_ID, "attack_module"),
             Items.IRON_PICKAXE,
-            List.of(Instructions.ATTACK)
+            List.of(Instructions.ATTACK, Instructions.MINE_BLOCK)
     );
 
     public static final SimplePolymerItem INTERACT_MODULE = registerModule(
@@ -69,9 +71,11 @@ public class MinionItems {
 
     public static final PolymerBlockItem MINION_TRIGGER_ITEM =
             registerItem(
-                    MinionRegistration.MINION_TRIGGER_ID,
-                    settings -> new PolymerBlockItem(MinionRegistration.MINION_TRIGGER_BLOCK, settings, Items.GOLD_BLOCK)
+                    MinionBlocks.MINION_TRIGGER_ID,
+                    settings -> new MinionTriggerBlockItem(MinionBlocks.MINION_TRIGGER_BLOCK, settings, Items.COMPARATOR)
             );
+
+    public static final ReferenceItem REFERENCE_ITEM = registerItem(Identifier.of(MOD_ID, "reference"), ReferenceItem::new);
 
     public static <T extends Item> T registerItem(Identifier identifier, Function<Item.Settings, T> constructor, Item.Settings settings) {
         T item = constructor.apply(settings.registryKey(RegistryKey.of(RegistryKeys.ITEM, identifier)));

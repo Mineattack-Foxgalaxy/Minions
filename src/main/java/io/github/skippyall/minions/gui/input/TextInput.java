@@ -47,12 +47,12 @@ public class TextInput<T> extends AnvilInputGui {
         return inputSync(player, title, defaultValue, Result.Success::new);
     }
 
-    public static CompletableFuture<Integer> inputInt(ServerPlayerEntity player, Text title, String defaultValue) {
-        return inputSync(player, title, defaultValue, string -> Result.wrapCustomError(() -> Integer.valueOf(string), Text.translatable("minions.command.input.int.fail")));
+    public static CompletableFuture<Long> inputLong(ServerPlayerEntity player, Text title, String defaultValue) {
+        return inputSync(player, title, defaultValue, string -> Result.wrapCustomError(() -> Long.valueOf(string), Text.translatable("minions.command.input.int.fail")));
     }
 
-    public static CompletableFuture<Float> inputFloat(ServerPlayerEntity player, Text title, String defaultValue) {
-        return inputSync(player, title, defaultValue, string -> Result.wrapCustomError(() -> Float.valueOf(string), Text.translatable("minions.command.input.float.fail")));
+    public static CompletableFuture<Double> inputDouble(ServerPlayerEntity player, Text title, String defaultValue) {
+        return inputSync(player, title, defaultValue, string -> Result.wrapCustomError(() -> Double.valueOf(string), Text.translatable("minions.command.input.float.fail")));
     }
 
     @Override

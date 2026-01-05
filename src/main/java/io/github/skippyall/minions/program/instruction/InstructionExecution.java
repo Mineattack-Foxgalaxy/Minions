@@ -37,7 +37,7 @@ public interface InstructionExecution<R extends InstructionRuntime<R>> {
      *
      * @param runtime The runtime that was executing this instruction.
      */
-    void stop(R runtime, ValueConsumerList<R> valueConsumers);
+    default void stop(R runtime, ValueConsumerList<R> valueConsumers) {}
 
     /**
      * Initializes the execution with its parameters. The parameters must be defined by the InstructionType
@@ -55,4 +55,15 @@ public interface InstructionExecution<R extends InstructionRuntime<R>> {
      * Loads the execution, e.g. when the server is started.
      */
     void load(ReadView view, R runtime);
+
+    interface Stateless<R extends InstructionRuntime<R>> extends InstructionExecution<R> {
+        @Override
+        default void readArguments(ValueSupplierList<R> arguments, R runtime) {}
+
+        @Override
+        default void save(WriteView view, R runtime) {}
+
+        @Override
+        default void load(ReadView view, R runtime) {}
+    }
 }

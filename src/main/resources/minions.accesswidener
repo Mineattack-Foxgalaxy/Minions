@@ -2,3 +2,4 @@ accessWidener v2 named
 
 accessible class net/minecraft/server/world/ChunkLevelManager$DistanceFromNearestPlayerTracker
 accessible method net/minecraft/server/world/ChunkLevelManager$DistanceFromNearestPlayerTracker <init> (Lnet/minecraft/server/world/ChunkLevelManager;I)V
+accessible class net/minecraft/screen/slot/ArmorSlot

@@ -46,6 +46,7 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
 
         ConfiguredInstruction<MinionRuntime> instruction = new ConfiguredInstruction<>(instructionType);
         configuredInstructions.put(name, instruction);
+        minion.forEachMinionListener(listener -> listener.onInstructionsUpdate(minion));
         return instruction;
     }
 
@@ -53,6 +54,9 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
         ConfiguredInstruction<MinionRuntime> instruction = getInstruction(name);
         instruction.stop(this);
         configuredInstructions.remove(name);
+
+        instruction.onInstructionRemove();
+        minion.forEachMinionListener(listener -> listener.onInstructionsUpdate(minion));
     }
 
     public ConfiguredInstruction<MinionRuntime> getInstruction(String name) {
@@ -64,8 +68,16 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
     }
 
     public void setInstructionName(String oldName, String newName) {
-        if(!configuredInstructions.containsKey(newName)) {
-            configuredInstructions.put(newName, configuredInstructions.remove(oldName));
+        if(!configuredInstructions.containsKey(newName) && configuredInstructions.containsKey(oldName)) {
+            ConfiguredInstruction<MinionRuntime> instruction = configuredInstructions.get(oldName);
+            configuredInstructions.remove(oldName);
+            configuredInstructions.put(newName, instruction);
+
+
+            minion.forEachMinionListener(minionListener -> {
+                minionListener.onInstructionRename(minion , instruction, newName);
+                minionListener.onInstructionsUpdate(minion);
+            });
         }
     }
 
@@ -98,7 +110,7 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
 
     @Override
     public Registry<ValueSupplierType<MinionRuntime>> getArgumentTypeRegistry() {
-        return MinionRegistries.ARGUMENT_TYPES;
+        return MinionRegistries.VALUE_SUPPLIER_TYPES;
     }
 
     @Override

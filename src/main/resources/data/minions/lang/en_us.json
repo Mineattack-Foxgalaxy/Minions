@@ -3,10 +3,8 @@
   "minions.gui.main.modules": "Modules",
   "minions.gui.main.inventory": "Inventory",
   "minions.gui.main.pickup": "Pick up",
-  "minions.gui.inventory.title": "%s's Inventory",
-  "minions.gui.module_commands.title": "Commands",
-  "minions.gui.commands.title": "%s's Commands",
-  "minions.gui.modules.title": "%s's Modules",
+  "minions.gui.inventory.title": "Inventory",
+  "minions.gui.modules.title": "Modules",
   "minions.gui.ok": "OK",
   "minions.gui.confirm": "Confirm",
   "minions.gui.abort": "Abort",
@@ -19,8 +17,11 @@
   "minions.gui.look.skin.base64.title": "Enter a skin in base64 encoding",
   "minions.gui.look.rename.title": "Enter a name",
 
+  "minions.gui.instruction.title": "Instructions",
   "minions.gui.instruction.list": "Instruction List",
   "minions.gui.instruction.create": "New Instruction",
+  "minions.gui.instruction.no_modules": "This minion has no modules",
+  "minions.gui.instruction.select_instruction": "Select instruction",
   "minions.gui.instruction.no_instruction_set": "No instruction set",
   "minions.gui.instruction.enter_name": "Enter a name",
   "minions.gui.instruction.name_already_used": "Name already used",
@@ -35,6 +36,7 @@
   "minions.gui.instruction.stop": "Stop",
   "minions.gui.instruction.argument.configure.type": "Type: %s",
   "minions.gui.instruction.argument.configure.type.unset": "Unset",
+  "minions.gui.instruction.parameter": "%s: %s",
 
   "minions.command.input.int.fail": "Not an integer",
   "minions.command.input.float.fail": "Not a number",
@@ -51,6 +53,24 @@
 
   "minions.command.minion.not_present": "This minion does not exist",
 
+  "minions.reference.instruction.tooltip": "Linked to instruction %s in %s",
+
+  "instruction_type.minions.walk": "Walk",
+  "instruction_type.minions.walk.description": "Walk forward a specified amount of blocks",
+  "instruction_type.minions.turn": "Turn",
+  "instruction_type.minions.turn.description": "Turn the head by specific angle",
+  "instruction_type.minions.attack": "Attack",
+  "instruction_type.minions.attack.description": "Attack and mine blocks\n Test",
+  "instruction_type.minions.use": "Use",
+  "instruction_type.minions.use.description": "Use and place blocks",
+
+  "value_type.minions.integer": "Integer",
+  "value_type.minions.float": "Decimal",
+  "value_type.minions.string": "Text",
+  "value_type.minions.turn_direction": "Turn Direction",
+
+  "value_supplier_type.minions.fixed": "Value",
+
   "item.minions.attack_module": "Attack Module",
   "item.minions.interact_module": "Interact Module",
   "item.minions.mob_spawning_module": "Mob Spawning Module",
@@ -59,6 +79,7 @@
   "item.minions.minion": "Minion",
   "item.minions.basic_upgrade_base": "Basic Upgrade Base",
   "item.minions.advanced_upgrade_base": "Advanced Upgrade Base",
+  "item.minions.reference": "Reference",
 
   "minions.minion_item.tooltip": "Name: %s",
   "minions.generic.name.invalid_char": "Name contains invalid character",

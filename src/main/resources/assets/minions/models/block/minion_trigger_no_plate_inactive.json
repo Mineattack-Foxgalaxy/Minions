@@ -1,0 +1,6 @@
+{
+  "parent": "minions:block/minion_trigger_no_plate",
+  "textures": {
+    "torch": "block/redstone_torch_off"
+  }
+}

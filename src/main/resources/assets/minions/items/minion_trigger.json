@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "minions:block/minion_trigger_active"
+  }
+}

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.mixins.EntityAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
@@ -18,7 +17,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -41,7 +39,7 @@ public class EntityPlayerActionPack
     private final Map<ActionType, Action> actions = new EnumMap<>(ActionType.class);
 
     private BlockPos currentBlock;
-    private int blockHitDelay;
+    public int blockHitDelay;
     private boolean isHittingBlock;
     private float curBlockDamageMP;
 
@@ -71,6 +69,14 @@ public class EntityPlayerActionPack
         strafing = other.strafing;
 
         itemUseCooldown = other.itemUseCooldown;
+    }
+
+    public Action getAction(ActionType type) {
+        return actions.get(type);
+    }
+
+    public boolean hasAction(ActionType type) {
+        return actions.containsKey(type);
     }
 
     public EntityPlayerActionPack start(ActionType type, Action action)
@@ -255,9 +261,13 @@ public class EntityPlayerActionPack
         if (strafing != 0.0F || player instanceof MinionFakePlayer) {
             player.sidewaysSpeed = strafing * vel;
         }
+
+        if(blockHitDelay > 0) {
+            blockHitDelay--;
+        }
     }
 
-    static HitResult getTarget(ServerPlayerEntity player)
+    public static HitResult getTarget(ServerPlayerEntity player)
     {
         double reach = player.interactionManager.isCreative() ? 5 : 4.5f;
         return Tracer.rayTrace(player, 1, reach, false);
@@ -382,7 +392,7 @@ public class EntityPlayerActionPack
                 switch (hit.getType()) {
                     case ENTITY: {
                         EntityHitResult entityHit = (EntityHitResult) hit;
-                        if (!action.isContinuous)
+                        if (!action.isContinuous || action.first)
                         {
                             player.attack(entityHit.getEntity());
                             player.swingHand(Hand.MAIN_HAND);
@@ -395,7 +405,6 @@ public class EntityPlayerActionPack
                         EntityPlayerActionPack ap = player.getMinionActionPack();
                         if (ap.blockHitDelay > 0)
                         {
-                            ap.blockHitDelay--;
                             return false;
                         }
                         BlockHitResult blockHit = (BlockHitResult) hit;
@@ -550,8 +559,9 @@ public class EntityPlayerActionPack
         private int count;
         private int next;
         private final boolean isContinuous;
+        boolean first = true;
 
-        private Action(int limit, int interval, int offset, boolean continuous)
+        private Action(int limit, int interval, int offset, boolean continuous, boolean first)
         {
             this.limit = limit;
             this.interval = interval;
@@ -562,22 +572,27 @@ public class EntityPlayerActionPack
 
         public static Action once()
         {
-            return new Action(1, 1, 0, false);
+            return new Action(1, 1, 0, false, false);
+        }
+
+        public static Action startContinuous()
+        {
+            return new Action(-1, 1, 0, true, true);
         }
 
         public static Action continuous()
         {
-            return new Action(-1, 1, 0, true);
+            return new Action(-1, 1, 0, true, false);
         }
 
         public static Action interval(int interval)
         {
-            return new Action(-1, interval, 0, false);
+            return new Action(-1, interval, 0, false, false);
         }
 
         public static Action interval(int interval, int offset)
         {
-            return new Action(-1, interval, offset, false);
+            return new Action(-1, interval, offset, false, false);
         }
 
         Boolean tick(EntityPlayerActionPack actionPack, ActionType type)
@@ -608,6 +623,7 @@ public class EntityPlayerActionPack
                     return cancel;
                 }
                 next = interval;
+                first = false;
             }
             else
             {

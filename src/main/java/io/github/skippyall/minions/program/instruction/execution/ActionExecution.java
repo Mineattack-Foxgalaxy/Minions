@@ -16,7 +16,10 @@ public class ActionExecution implements ContinuousInstructionExecution<MinionRun
 
     @Override
     public void start(MinionRuntime minion) {
-        minion.getMinion().getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
+        EntityPlayerActionPack ap = minion.getMinion().getMinionActionPack();
+        if(!ap.hasAction(action)) {
+            minion.getMinion().getMinionActionPack().start(action, EntityPlayerActionPack.Action.startContinuous());
+        }
     }
 
     @Override

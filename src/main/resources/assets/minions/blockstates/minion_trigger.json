@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "minions:block/minion_trigger_inactive"
+    },
+    "powered=true": {
+      "model": "minions:block/minion_trigger_active"
+    }
+  }
+}

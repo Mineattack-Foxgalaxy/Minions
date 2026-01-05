@@ -1,6 +1,6 @@
 package io.github.skippyall.minions.block;
 
-import io.github.skippyall.minions.MinionRegistration;
+import io.github.skippyall.minions.MinionBlocks;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
@@ -23,7 +23,7 @@ public class MinionTriggerBlockEntity extends BlockEntity {
     private boolean runningCache = false;
 
     public MinionTriggerBlockEntity(BlockPos pos, BlockState state) {
-        super(MinionRegistration.MINION_TRIGGER_BE_TYPE, pos, state);
+        super(MinionBlocks.MINION_TRIGGER_BE_TYPE, pos, state);
     }
 
     public void setInstruction(UUID minionUuid, String instructionName) {
@@ -38,12 +38,12 @@ public class MinionTriggerBlockEntity extends BlockEntity {
         }
         if(triggerBlockEntity.first) {
             triggerBlockEntity.first = false;
-            world.updateComparators(pos, MinionRegistration.MINION_TRIGGER_BLOCK);
+            world.updateComparators(pos, MinionBlocks.MINION_TRIGGER_BLOCK);
             triggerBlockEntity.runningCache = triggerBlockEntity.getInstruction().map(ConfiguredInstruction::isRunning).orElse(false);
         } else {
             boolean isRunning = triggerBlockEntity.getInstruction().map(ConfiguredInstruction::isRunning).orElse(false);
             if (isRunning != triggerBlockEntity.runningCache) {
-                world.updateComparators(pos, MinionRegistration.MINION_TRIGGER_BLOCK);
+                world.updateComparators(pos, MinionBlocks.MINION_TRIGGER_BLOCK);
                 triggerBlockEntity.runningCache = isRunning;
             }
         }
@@ -76,6 +76,14 @@ public class MinionTriggerBlockEntity extends BlockEntity {
             return Optional.of(minion);
         }
         return Optional.empty();
+    }
+
+    public UUID getMinionUuid() {
+        return minionUuid;
+    }
+
+    public String getInstructionName() {
+        return instructionName;
     }
 
     public Optional<ConfiguredInstruction<MinionRuntime>> getInstruction(MinionFakePlayer minion) {

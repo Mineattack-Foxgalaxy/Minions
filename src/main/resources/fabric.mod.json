@@ -12,6 +12,9 @@
   "icon": "assets/minions/icon.png",
   "environment": "*",
   "entrypoints": {
+    "client": [
+      "io.github.skippyall.minions.client.MinionsClient"
+    ],
     "main": [
       "io.github.skippyall.minions.Minions"
     ]

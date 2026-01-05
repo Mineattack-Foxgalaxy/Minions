@@ -1,18 +1,17 @@
 package io.github.skippyall.minions.program.supplier;
 
-import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 
 /**
- * An supplier that always resolves to a fixed value
+ * A supplier that always resolves to a fixed value
  */
-public class ValueArgument<T, R extends InstructionRuntime<R>> implements ValueSupplier<T, R> {
-    private final ValueArgumentType<R> type;
+public class FixedValueSupplier<T, R extends InstructionRuntime<R>> implements ValueSupplier<T, R> {
+    private final FixedValueSupplierType<R> type;
     private final ValueType<T> valueType;
     private final T value;
 
-    public ValueArgument(ValueArgumentType<R> type, ValueType<T> valueType, T value) {
+    public FixedValueSupplier(FixedValueSupplierType<R> type, ValueType<T> valueType, T value) {
         this.type = type;
         this.valueType = valueType;
         this.value = value;
@@ -28,17 +27,12 @@ public class ValueArgument<T, R extends InstructionRuntime<R>> implements ValueS
     }
 
     @Override
-    public GuiDisplay getDisplay() {
-        return getValueType().display();
-    }
-
-    @Override
     public ValueType<T> getValueType() {
         return valueType;
     }
 
     @Override
-    public ValueArgumentType<R> getType() {
+    public FixedValueSupplierType<R> getType() {
         return type;
     }
 }

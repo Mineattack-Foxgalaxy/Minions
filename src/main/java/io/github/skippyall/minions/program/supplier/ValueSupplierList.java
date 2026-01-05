@@ -3,12 +3,16 @@ package io.github.skippyall.minions.program.supplier;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.program.InstructionRuntime;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ValueSupplierList<R extends InstructionRuntime<R>> {
     private final Map<String, ValueSupplier<?, R>> arguments;
+    private final List<Consumer<Parameter<?>>> changeListeners = new ArrayList<>();
 
     public ValueSupplierList() {
         arguments = new HashMap<>();
@@ -30,10 +34,11 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
 
     public <T> void setArgument(Parameter<T> parameter, ValueSupplier<T,R> valueSupplier) {
         arguments.put(parameter.name(), valueSupplier);
+        onChange(parameter);
     }
 
     public boolean hasArgumentFor(Parameter<?> parameter) {
-        return getArgument(parameter) != null;
+        return arguments.containsKey(parameter.name());
     }
 
     public boolean hasArgumentForAll(Collection<Parameter<?>> checkParameters) {
@@ -43,6 +48,21 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
             }
         }
         return true;
+    }
+
+
+    private void onChange(Parameter<?> parameter) {
+        for (Consumer<Parameter<?>> listener : changeListeners) {
+            listener.accept(parameter);
+        }
+    }
+
+    public void addListener(Consumer<Parameter<?>> listener) {
+        changeListeners.add(listener);
+    }
+
+    public void removeListener(Consumer<Parameter<?>> listener) {
+        changeListeners.remove(listener);
     }
 
     public static <R extends InstructionRuntime<R>> Codec<ValueSupplierList<R>> getCodec(Codec<ValueSupplier<?,R>> argumentCodec) {

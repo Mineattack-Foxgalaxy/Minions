@@ -2,7 +2,6 @@ package io.github.skippyall.minions.program.supplier;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.MinionRegistries;
-import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 import org.jetbrains.annotations.Nullable;
@@ -15,8 +14,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ValueSupplier<T, R extends InstructionRuntime<R>> {
     T resolve(R minion);
-
-    GuiDisplay getDisplay();
 
     ValueType<T> getValueType();
 

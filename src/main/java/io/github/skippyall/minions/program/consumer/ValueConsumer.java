@@ -2,7 +2,6 @@ package io.github.skippyall.minions.program.consumer;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.MinionRegistries;
-import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 import org.jetbrains.annotations.Nullable;
@@ -15,8 +14,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ValueConsumer<T,R extends InstructionRuntime<R>> {
     void consume(T value, R runtime);
-
-    GuiDisplay getDisplay();
 
     ValueType<T> getValueType();
 
