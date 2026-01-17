@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.module;
 
+import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import net.minecraft.inventory.Inventories;
@@ -19,10 +20,14 @@ import java.util.Set;
 
 public class ModuleInventory extends SimpleInventory {
     private final Set<MinionModule> modules = new HashSet<>();
-    private final Set<String> specialAbilities = new HashSet<>();
+    private final Set<InstructionType<MinionRuntime>> instructions = new HashSet<>();
+    private final Set<SpecialAbility> specialAbilities = new HashSet<>();
 
-    public ModuleInventory() {
+    private final MinionFakePlayer minion;
+
+    public ModuleInventory(MinionFakePlayer minion) {
         super(27);
+        this.minion = minion;
     }
 
     public static void openModuleInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
@@ -46,13 +51,37 @@ public class ModuleInventory extends SimpleInventory {
     }
 
     public void updateModules() {
+        Set<MinionModule> oldModules = Set.copyOf(modules);
+        Set<InstructionType<MinionRuntime>> oldInstructions = Set.copyOf(instructions);
+        Set<SpecialAbility> oldAbilities = Set.copyOf(specialAbilities);
+
         modules.clear();
+        instructions.clear();
         specialAbilities.clear();
         for (ItemStack heldStack : heldStacks) {
             MinionModule module = heldStack.get(MinionModule.COMPONENT_TYPE);
             if(module != null) {
                 modules.add(module);
-                specialAbilities.addAll(module.specialBehaviour());
+                instructions.addAll(module.instructions());
+                specialAbilities.addAll(module.specialAbilities());
+
+                for(SpecialAbility ability : module.specialAbilities()) {
+                    if(!oldAbilities.contains(ability)) {
+                        ability.onAdd(minion);
+                    }
+                }
+            }
+        }
+
+        for(InstructionType<MinionRuntime> instructionType : oldInstructions) {
+            if(!instructions.contains(instructionType)) {
+                minion.getInstructionManager().disableInstructionType(instructionType);
+            }
+        }
+
+        for(SpecialAbility ability : oldAbilities) {
+            if(!specialAbilities.contains(ability)) {
+                ability.onRemove(minion);
             }
         }
     }
@@ -70,7 +99,7 @@ public class ModuleInventory extends SimpleInventory {
         return modules;
     }
 
-    public boolean hasAbility(String ability) {
+    public boolean hasAbility(SpecialAbility ability) {
         return specialAbilities.contains(ability);
     }
 

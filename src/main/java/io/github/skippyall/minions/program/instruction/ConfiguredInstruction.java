@@ -17,7 +17,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     private final ValueConsumerList<R> valueConsumers;
     private @Nullable InstructionExecution<R> execution;
 
-    private SerializableListenerManager<ConfiguredInstructionListener> listeners;
+    private SerializableListenerManager<ConfiguredInstructionListener> listeners = new SerializableListenerManager<>(MinionRegistries.INSTRUCTION_LISTENER_CODECS);
 
     private ConfiguredInstruction(InstructionType<R> instruction, ValueSupplierList<R> arguments, ValueConsumerList<R> valueConsumers, @Nullable InstructionExecution<R> execution, SerializableListenerManager<ConfiguredInstructionListener> listeners) {
         this(instruction, arguments, valueConsumers, execution);
@@ -29,7 +29,6 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         this.arguments = arguments;
         this.valueConsumers = valueConsumers;
         this.execution = execution;
-
         arguments.addListener(this::onSupplierChange);
         valueConsumers.addListener(this::onConsumerChange);
     }

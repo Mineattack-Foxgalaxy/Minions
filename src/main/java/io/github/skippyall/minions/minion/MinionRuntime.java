@@ -35,6 +35,14 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
         }
     }
 
+    public void disableInstructionType(InstructionType<MinionRuntime> instructionType) {
+
+    }
+
+    public void enableInstructionType(InstructionType<MinionRuntime> instructionType) {
+
+    }
+
     public Set<String> getInstructionNames() {
         return configuredInstructions.keySet();
     }

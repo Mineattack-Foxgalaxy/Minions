@@ -14,11 +14,11 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public record MinionModule(List<InstructionType<MinionRuntime>> instructions, List<String> specialBehaviour) {
+public record MinionModule(List<InstructionType<MinionRuntime>> instructions, List<SpecialAbility> specialAbilities) {
     public static final Codec<MinionModule> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     MinionRegistries.INSTRUCTION_TYPES.getCodec().listOf().fieldOf("instructions").forGetter(MinionModule::instructions),
-                    Codec.STRING.listOf().fieldOf("specialBehaviour").forGetter(MinionModule::specialBehaviour)
+                    MinionRegistries.SPECIAL_ABILITIES.getCodec().listOf().fieldOf("specialAbilities").forGetter(MinionModule::specialAbilities)
             ).apply(instance, MinionModule::new)
     );
 
@@ -30,9 +30,9 @@ public record MinionModule(List<InstructionType<MinionRuntime>> instructions, Li
         this(instructions, List.of());
     }
 
-    public MinionModule(List<InstructionType<MinionRuntime>> instructions, List<String> specialBehaviour) {
+    public MinionModule(List<InstructionType<MinionRuntime>> instructions, List<SpecialAbility> specialAbilities) {
         this.instructions = List.copyOf(instructions);
-        this.specialBehaviour = List.copyOf(specialBehaviour);
+        this.specialAbilities = List.copyOf(specialAbilities);
     }
 
     public static void register() {

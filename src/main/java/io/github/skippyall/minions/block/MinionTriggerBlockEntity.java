@@ -1,6 +1,7 @@
 package io.github.skippyall.minions.block;
 
 import io.github.skippyall.minions.MinionBlocks;
+import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;

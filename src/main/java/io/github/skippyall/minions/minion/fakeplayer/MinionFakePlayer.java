@@ -12,7 +12,9 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.MinionProfileUtils;
+import io.github.skippyall.minions.module.MobSpawningAbility;
 import io.github.skippyall.minions.module.ModuleInventory;
+import io.github.skippyall.minions.module.SpecialAbilities;
 import io.github.skippyall.minions.util.SerializableListenerManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -56,7 +58,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     private EntityPlayerActionPack actionPack;
 
     private final SerializableListenerManager<MinionListener> minionListeners = new SerializableListenerManager<>(MinionRegistries.MINION_LISTENER_CODECS);
-    private final ModuleInventory moduleInventory = new ModuleInventory();
+    private final ModuleInventory moduleInventory = new ModuleInventory(this);
     private final MinionRuntime instructionManager = new MinionRuntime(this);
 
     private final MinionData data;
@@ -93,8 +95,8 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         instance.unsetRemoved();
         instance.getAttributeInstance(EntityAttributes.STEP_HEIGHT).setBaseValue(0.6F);
         instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
-        server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());//instance.dimension);
-        server.getPlayerManager().sendToDimension(EntityPositionSyncS2CPacket.create(instance), level.getRegistryKey());//instance.dimension);
+        server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());
+        server.getPlayerManager().sendToDimension(EntityPositionSyncS2CPacket.create(instance), level.getRegistryKey());
         instance.getWorld().getChunkManager().updatePosition(instance);
         instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
         instance.getAbilities().flying = false;
@@ -143,11 +145,11 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     public boolean canSpawnMobs() {
-        return moduleInventory.hasAbility("mobSpawning");
+        return moduleInventory.hasAbility(SpecialAbilities.MOB_SPAWNING);
     }
 
     public boolean canDespawnMobs() {
-        return moduleInventory.hasAbility("mobSpawning");
+        return moduleInventory.hasAbility(SpecialAbilities.MOB_SPAWNING);
     }
 
     @Override

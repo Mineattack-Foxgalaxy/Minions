@@ -12,11 +12,6 @@ public class ModuleInventoryScreenHandler extends ScreenHandler {
     private final int rows = 3;
     private final ModuleInventory inventory;
 
-    public ModuleInventoryScreenHandler(int syncId, ModuleInventory inventory) {
-        super(ScreenHandlerType.GENERIC_9X3, syncId);
-        this.inventory = inventory;
-    }
-
     public ModuleInventoryScreenHandler(int syncId, PlayerInventory playerInventory, ModuleInventory inventory) {
         super(ScreenHandlerType.GENERIC_9X3, syncId);
 

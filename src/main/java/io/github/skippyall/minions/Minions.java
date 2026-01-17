@@ -11,6 +11,7 @@ import io.github.skippyall.minions.module.MinionModule;
 import io.github.skippyall.minions.program.instruction.Instructions;
 import io.github.skippyall.minions.program.supplier.ValueSuppliers;
 import io.github.skippyall.minions.program.value.ValueTypes;
+import io.github.skippyall.minions.reference.Reference;
 import io.github.skippyall.minions.util.PolymerUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -35,6 +36,7 @@ public class Minions implements ModInitializer {
 
         MinionData.register();
         MinionModule.register();
+        Reference.register();
 
         MinionBlocks.register();
         MinionItems.register();

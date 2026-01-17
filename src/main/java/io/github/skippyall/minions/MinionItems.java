@@ -6,6 +6,9 @@ import io.github.skippyall.minions.block.MinionTriggerBlockItem;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.module.MinionModule;
+import io.github.skippyall.minions.module.MobSpawningAbility;
+import io.github.skippyall.minions.module.SpecialAbilities;
+import io.github.skippyall.minions.module.SpecialAbility;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.instruction.Instructions;
 import io.github.skippyall.minions.reference.ReferenceItem;
@@ -66,7 +69,7 @@ public class MinionItems {
             Identifier.of(MOD_ID, "mob_spawning_module"),
             Items.SPAWNER,
             List.of(),
-            List.of("mobSpawning")
+            List.of(SpecialAbilities.MOB_SPAWNING)
     );
 
     public static final PolymerBlockItem MINION_TRIGGER_ITEM =
@@ -89,11 +92,11 @@ public class MinionItems {
         return registerItem(identifier, constructor, new Item.Settings());
     }
 
-    public static SimplePolymerItem registerModule(Identifier identifier, Item vanillaItem, List<InstructionType<MinionRuntime>> instructionTypes, List<String> specialEffects) {
+    public static SimplePolymerItem registerModule(Identifier identifier, Item vanillaItem, List<InstructionType<MinionRuntime>> instructionTypes, List<SpecialAbility> specialAbilities) {
         return registerItem(
                 identifier,
                 settings -> new SimplePolymerItem(settings, vanillaItem),
-                new Item.Settings().component(MinionModule.COMPONENT_TYPE, new MinionModule(instructionTypes, specialEffects))
+                new Item.Settings().component(MinionModule.COMPONENT_TYPE, new MinionModule(instructionTypes, specialAbilities))
         );
     }
 

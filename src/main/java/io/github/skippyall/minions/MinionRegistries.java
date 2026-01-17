@@ -7,6 +7,7 @@ import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.skin.SkinProvider;
+import io.github.skippyall.minions.module.SpecialAbility;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import io.github.skippyall.minions.program.instruction.InstructionType;
@@ -30,6 +31,7 @@ public class MinionRegistries {
     public static final Registry<Codec<? extends ConfiguredInstructionListener>> INSTRUCTION_LISTENER_CODECS = registry("instruction_listener_codec");
     public static final Registry<Codec<? extends MinionListener>> MINION_LISTENER_CODECS = registry("minion_listener_codec");
     public static final Registry<MapCodec<? extends Reference>> REFERENCE_CODEC = registry("reference_codec");
+    public static final Registry<SpecialAbility> SPECIAL_ABILITIES = registry("special_ability");
 
     public static final RegistryKey<Registry<GuiDisplay>> GUI_DISPLAY = key("gui_display");
     public static final RegistryKey<Registry<ReferenceEntry>> REFERENCE_ENTRY = key("reference_entry");

@@ -6,13 +6,39 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SerializableListenerManager<T extends SerializableListenerManager.SerializableListener> extends ListenerManager<T> {
     private final Registry<Codec<? extends T>> registry;
 
     public SerializableListenerManager(Registry<Codec<? extends T>> registry) {
         this.registry = registry;
+    }
+
+    public SerializableListenerManager(Registry<Codec<? extends T>> registry, List<T> listeners) {
+        super(listeners);
+        this.registry = registry;
+    }
+
+    public static <T extends SerializableListener> Codec<SerializableListenerManager<T>> getCodec(Registry<Codec<? extends T>> registry) {
+        return registry.getCodec().<T>dispatch(
+                    listener -> listener.getCodecId().map(registry::get).orElse(Codec.unit(null)),
+                    codec -> codec.fieldOf("data")
+            ).listOf().xmap(
+                    list -> new SerializableListenerManager<>(registry, new CopyOnWriteArrayList<>(list)),
+                    manager -> {
+                        List<T> serializableListeners = new ArrayList<>();
+                        for(T listener : manager.listeners) {
+                            if(listener.getCodecId().isPresent()) {
+                                serializableListeners.add(listener);
+                            }
+                        }
+                        return serializableListeners;
+                    }
+            );
     }
 
     public void save(WriteView view) {

@@ -122,14 +122,14 @@ publishing {
         // Notice: This block does NOT have the same function as the block in the top level.
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
-        maven {
-            def release = "https://maven.foxgalaxy.de/private-releases"
-            def snapshot = "https://maven.foxgalaxy.de/private-snapshot"
-            url = version.endsWith('SNAPSHOT') ? snapshot : release
+        if(project.hasProperty("foxgalaxy_user_name") && project.hasProperty("foxgalaxy_password")) {
+            maven {
+                url = "https://maven.foxgalaxy.de/private"
 
-            credentials {
-                username = "${maven_user}"
-                password = "${maven_password}"
+                credentials {
+                    username = project.property("foxgalaxy_user_name")
+                    password = project.property("foxgalaxy_password")
+                }
             }
         }
     }

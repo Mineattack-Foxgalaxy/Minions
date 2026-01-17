@@ -5,7 +5,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 public class ListenerManager<T> {
-    protected final List<T> listeners = new CopyOnWriteArrayList<>();
+    protected final List<T> listeners;
+
+    public ListenerManager() {
+        this(new CopyOnWriteArrayList<>());
+    }
+
+    protected ListenerManager(List<T> listeners) {
+        this.listeners = listeners;
+    }
 
     public void forEachListener(Consumer<T> listenerConsumer) {
         for(T listener : listeners) {

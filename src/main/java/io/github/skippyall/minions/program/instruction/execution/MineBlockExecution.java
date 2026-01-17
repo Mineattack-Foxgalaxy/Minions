@@ -114,8 +114,10 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
         MinionFakePlayer player = runtime.getMinion();
         EntityPlayerActionPack ap = player.getMinionActionPack();
 
-        player.getWorld().setBlockBreakingInfo(-1, currentBlock, -1);
-        player.interactionManager.processBlockBreakingAction(currentBlock, PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, Direction.DOWN, player.getWorld().getTopYInclusive(), -1);
+        if(currentBlock != null) {
+            player.getWorld().setBlockBreakingInfo(-1, currentBlock, -1);
+            player.interactionManager.processBlockBreakingAction(currentBlock, PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, Direction.DOWN, player.getWorld().getTopYInclusive(), -1);
+        }
     }
 
     @Override

@@ -96,7 +96,12 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        if(world.isClient()) {
+            return ActionResult.CONSUME;
+        }
+
         world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(be -> {
+
             String name = MinionPersistentState.INSTANCE.getMinionData(be.getMinionUuid()).name();
             player.sendMessage(Text.translatable("minions.reference.instruction.tooltip", name, be.getInstructionName()), true);
         });
