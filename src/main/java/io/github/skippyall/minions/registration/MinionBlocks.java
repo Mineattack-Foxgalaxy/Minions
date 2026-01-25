@@ -1,8 +1,9 @@
-package io.github.skippyall.minions;
+package io.github.skippyall.minions.registration;
 
 import eu.pb4.polymer.core.api.block.PolymerBlockUtils;
-import io.github.skippyall.minions.block.MinionTriggerBlock;
-import io.github.skippyall.minions.block.MinionTriggerBlockEntity;
+import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlock;
+import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.entity.BlockEntityType;

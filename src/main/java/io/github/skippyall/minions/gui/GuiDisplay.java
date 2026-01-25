@@ -2,7 +2,7 @@ package io.github.skippyall.minions.gui;
 
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.util.TranslationUtil;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
@@ -15,7 +15,6 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;

@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.program.consumer;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 import org.jetbrains.annotations.Nullable;

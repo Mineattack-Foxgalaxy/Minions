@@ -81,6 +81,8 @@
   "item.minions.advanced_upgrade_base": "Advanced Upgrade Base",
   "item.minions.reference": "Reference",
 
+  "block.minions.minion_trigger": "Minion Trigger",
+
   "minions.minion_item.tooltip": "Name: %s",
   "minions.generic.name.invalid_char": "Name contains invalid character",
   "minions.generic.name.too_long": "Name is too long",

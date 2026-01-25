@@ -2,7 +2,7 @@ package io.github.skippyall.minions.gui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.gui.input.TextInput;
 import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.minion.MinionItem;
@@ -49,9 +49,9 @@ public class MinionLookGui extends SimpleGui {
         GuiElementBuilder builder = new GuiElementBuilder()
                 .setItem(Items.PLAYER_HEAD)
                 .setCallback(() -> currentSkinProvider.openSkinMenu(player).thenAccept(skin -> {
-                    MinionItem.setData(getData().withSkin(skin), minionItem);
+                    MinionItem.setData(player.getServer(), getData().withSkin(skin), minionItem);
                 }));
-        if(MinionItem.getData(minionItem) != null && MinionItem.getData(minionItem).skin().isPresent()) {
+        if(MinionItem.getData(player.getServer(), minionItem) != null && MinionItem.getData(player.getServer(), minionItem).skin().isPresent()) {
             builder.setComponent(DataComponentTypes.PROFILE, new ProfileComponent(Optional.empty(), Optional.empty(), getData().skin().get()));
         }
         setSlot(16, builder);
@@ -77,7 +77,7 @@ public class MinionLookGui extends SimpleGui {
     }
 
     private MinionData getData() {
-        return MinionItem.getDataOrDefault(minionItem);
+        return MinionItem.getDataOrDefault(player.getServer(), minionItem);
     }
 
     public static void open(ServerPlayerEntity player, ItemStack minionItem) {
@@ -87,9 +87,9 @@ public class MinionLookGui extends SimpleGui {
     }
 
     public void openRenameGui(ServerPlayerEntity player, ItemStack minionItem) {
-        TextInput.inputSync(player, Text.translatable("minions.gui.look.rename.title"), "Minion", MinionProfileUtils::checkMinionNameWithoutPrefix)
+        TextInput.inputSync(player, Text.translatable("minions.gui.look.rename.title"), "Minion", name -> MinionProfileUtils.checkMinionNameWithoutPrefix(player.getServer(), name))
                 .thenAccept(name -> {
-                    MinionItem.setData(getData().withName(MinionProfileUtils.PREFIX + name), minionItem);
+                    MinionItem.setData(player.getServer(), getData().withName(MinionProfileUtils.PREFIX + name), minionItem);
                     open();
                 });
     }

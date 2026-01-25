@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.block;
+package io.github.skippyall.minions.block.miniontrigger;
 
 import com.mojang.serialization.MapCodec;
 import eu.pb4.polymer.core.api.block.PolymerBlock;
@@ -8,7 +8,7 @@ import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.virtualentity.api.BlockWithElementHolder;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
-import io.github.skippyall.minions.MinionBlocks;
+import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.reference.InstructionReference;
@@ -22,8 +22,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -76,6 +74,12 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
     }
 
     @Override
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        super.onStateReplaced(state, world, pos, moved);
+        world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(MinionTriggerBlockEntity::removeListener);
+    }
+
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(POWERED);
     }
@@ -101,8 +105,7 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
         }
 
         world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(be -> {
-
-            String name = MinionPersistentState.INSTANCE.getMinionData(be.getMinionUuid()).name();
+            String name = MinionPersistentState.get(world.getServer()).getMinionData(be.getMinionUuid()).name();
             player.sendMessage(Text.translatable("minions.reference.instruction.tooltip", name, be.getInstructionName()), true);
         });
         return ActionResult.SUCCESS;
@@ -113,6 +116,7 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
         if(!canPlaceAt(state, world, pos)) {
             dropStacks(state, world, pos);
             world.removeBlock(pos, false);
+            return;
         }
 
         boolean newPower = world.isReceivingRedstonePower(pos);
@@ -145,15 +149,6 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
     @Override
     public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
         return PolymerUtil.isOnClient(context) ? state : Blocks.COMPARATOR.getDefaultState().with(AbstractRedstoneGateBlock.POWERED, state.get(POWERED));
-    }
-
-    @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        if(type == MinionBlocks.MINION_TRIGGER_BE_TYPE) {
-            return MinionTriggerBlockEntity::tick;
-        } else {
-            return null;
-        }
     }
 
     @Override

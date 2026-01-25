@@ -17,8 +17,6 @@ public class MinionPersistentState extends PersistentState {
 
     public static PersistentStateType<MinionPersistentState> TYPE = new PersistentStateType<>("minion", MinionPersistentState::new, MinionPersistentState.CODEC, null);
 
-    public static MinionPersistentState INSTANCE;
-
     private final Map<UUID, MinionData> minionData = new HashMap<>();
 
     public MinionPersistentState() {
@@ -62,7 +60,7 @@ public class MinionPersistentState extends PersistentState {
                 .findFirst();
     }
 
-    public static void create(MinecraftServer server) {
-        INSTANCE = server.getWorld(World.OVERWORLD).getPersistentStateManager().getOrCreate(TYPE);
+    public static MinionPersistentState get(MinecraftServer server) {
+        return server.getWorld(World.OVERWORLD).getPersistentStateManager().getOrCreate(TYPE);
     }
 }

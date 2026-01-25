@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.client;
 
 import eu.pb4.polymer.networking.api.client.PolymerClientNetworking;
-import io.github.skippyall.minions.MinionBlocks;
+import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.util.PolymerUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;

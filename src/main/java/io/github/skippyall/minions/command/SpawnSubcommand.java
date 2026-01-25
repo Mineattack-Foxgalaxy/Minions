@@ -48,7 +48,7 @@ public class SpawnSubcommand {
             );
 
     public static int spawnCommand(ServerCommandSource source, String minion, PosArgument pos, boolean force) throws CommandSyntaxException {
-        MinionData data = MinionArgument.parse(minion);
+        MinionData data = MinionArgument.parse(source.getServer(), minion);
         MinionFakePlayer.spawnMinion(data, source.getWorld(), pos != null ? pos.getPos(source) : null, pos != null ? pos.getRotation(source) : null, force);
         return 0;
     }

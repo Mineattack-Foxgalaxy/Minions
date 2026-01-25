@@ -1,12 +1,11 @@
-package io.github.skippyall.minions;
+package io.github.skippyall.minions.registration;
 
 import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
-import io.github.skippyall.minions.block.MinionTriggerBlockItem;
+import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlockItem;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.module.MinionModule;
-import io.github.skippyall.minions.module.MobSpawningAbility;
 import io.github.skippyall.minions.module.SpecialAbilities;
 import io.github.skippyall.minions.module.SpecialAbility;
 import io.github.skippyall.minions.program.instruction.InstructionType;
@@ -75,7 +74,8 @@ public class MinionItems {
     public static final PolymerBlockItem MINION_TRIGGER_ITEM =
             registerItem(
                     MinionBlocks.MINION_TRIGGER_ID,
-                    settings -> new MinionTriggerBlockItem(MinionBlocks.MINION_TRIGGER_BLOCK, settings, Items.COMPARATOR)
+                    settings -> new MinionTriggerBlockItem(MinionBlocks.MINION_TRIGGER_BLOCK, settings, Items.COMPARATOR),
+                    new Item.Settings().useBlockPrefixedTranslationKey()
             );
 
     public static final ReferenceItem REFERENCE_ITEM = registerItem(Identifier.of(MOD_ID, "reference"), ReferenceItem::new);

@@ -12,6 +12,11 @@ import io.github.skippyall.minions.program.instruction.Instructions;
 import io.github.skippyall.minions.program.supplier.ValueSuppliers;
 import io.github.skippyall.minions.program.value.ValueTypes;
 import io.github.skippyall.minions.reference.Reference;
+import io.github.skippyall.minions.registration.MinionBlocks;
+import io.github.skippyall.minions.registration.MinionCreativeTab;
+import io.github.skippyall.minions.registration.MinionItems;
+import io.github.skippyall.minions.registration.MinionRegistration;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.PolymerUtil;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -41,12 +46,12 @@ public class Minions implements ModInitializer {
         MinionBlocks.register();
         MinionItems.register();
         MinionCreativeTab.registerGroup();
+        MinionRegistration.register();
 
         PolymerUtil.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            MinionPersistentState.create(server);
-            MinionPersistentState.INSTANCE.getMinionData().forEach((uuid, data) -> {
+            MinionPersistentState.get(server).getMinionData().forEach((uuid, data) -> {
                 if(data.isSpawned()) {
                     MinionFakePlayer.spawnMinion(data, server.getOverworld(), null, null, true);
                 }
@@ -56,6 +61,12 @@ public class Minions implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((commandDispatcher, commandRegistryAccess, registrationEnvironment) -> {
             MinionsCommand.register(commandDispatcher);
         });
+
+        /*ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, world) -> {
+            if(blockEntity instanceof MinionTriggerBlockEntity) {
+                world.updateComparators(blockEntity.getPos(), MinionBlocks.MINION_TRIGGER_BLOCK);
+            }
+        });*/
 
         PolymerResourcePackUtils.addModAssets(Minions.MOD_ID);
     }

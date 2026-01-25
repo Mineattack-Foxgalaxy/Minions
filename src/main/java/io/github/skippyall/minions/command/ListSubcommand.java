@@ -16,7 +16,7 @@ public class ListSubcommand {
             .executes(ListSubcommand::list);
 
     public static int list(CommandContext<ServerCommandSource> context) {
-        Collection<MinionData> minions = MinionPersistentState.INSTANCE.getMinionData().values();
+        Collection<MinionData> minions = MinionPersistentState.get(context.getSource().getServer()).getMinionData().values();
         for (MinionData minion : minions) {
             context.getSource().sendFeedback(() -> Text.literal(minion.name() + "(" + minion.uuid() + "):" + minion.isSpawned()), false);
         }

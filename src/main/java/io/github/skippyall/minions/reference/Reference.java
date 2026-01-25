@@ -3,7 +3,7 @@ package io.github.skippyall.minions.reference;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import eu.pb4.polymer.core.api.other.PolymerComponent;
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.minecraft.component.ComponentType;

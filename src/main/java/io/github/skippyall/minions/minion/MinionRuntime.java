@@ -1,6 +1,6 @@
 package io.github.skippyall.minions.minion;
 
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.InstructionRuntime;
@@ -83,7 +83,7 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
 
 
             minion.forEachMinionListener(minionListener -> {
-                minionListener.onInstructionRename(minion , instruction, newName);
+                minionListener.onInstructionRename(minion, instruction, oldName, newName);
                 minionListener.onInstructionsUpdate(minion);
             });
         }

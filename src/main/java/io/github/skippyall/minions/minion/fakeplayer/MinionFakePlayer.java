@@ -3,8 +3,7 @@ package io.github.skippyall.minions.minion.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
-import io.github.skippyall.minions.MinionItems;
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionItems;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.gui.MinionGui;
@@ -12,7 +11,6 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.MinionProfileUtils;
-import io.github.skippyall.minions.module.MobSpawningAbility;
 import io.github.skippyall.minions.module.ModuleInventory;
 import io.github.skippyall.minions.module.SpecialAbilities;
 import io.github.skippyall.minions.util.SerializableListenerManager;
@@ -57,11 +55,8 @@ public class MinionFakePlayer extends ServerPlayerEntity {
 
     private EntityPlayerActionPack actionPack;
 
-    private final SerializableListenerManager<MinionListener> minionListeners = new SerializableListenerManager<>(MinionRegistries.MINION_LISTENER_CODECS);
     private final ModuleInventory moduleInventory = new ModuleInventory(this);
     private final MinionRuntime instructionManager = new MinionRuntime(this);
-
-    private final MinionData data;
 
     public static void spawnMinion(MinionData data, ServerWorld level, @Nullable Vec3d pos, @Nullable Vec2f rot) {
         spawnMinion(data, level, pos, rot, false);
@@ -79,8 +74,8 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     private static void doSpawn(MinionData data, GameProfile profile, MinecraftServer server, ServerWorld level, @Nullable Vec3d pos, @Nullable Vec2f rot) {
-        MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, SyncedClientOptions.createDefault(), data);
-        MinionPersistentState.INSTANCE.updateMinionData(data.withSpawned(true));
+        MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, SyncedClientOptions.createDefault());
+        MinionPersistentState.get(server).updateMinionData(data.withSpawned(true));
 
         if(pos != null && rot != null) {
             instance.fixStartingPosition = () -> instance.refreshPositionAndAngles(pos.x, pos.y, pos.z, rot.x, rot.y);
@@ -101,18 +96,17 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         instance.dataTracker.set(PLAYER_MODEL_PARTS, (byte) 0x7f); // show all model layers (incl. capes)
         instance.getAbilities().flying = false;
 
-        instance.minionListeners.forEachListener(listener -> listener.onMinionSpawn(instance));
+        instance.listeners().forEach(listener -> listener.onMinionSpawn(instance));
     }
 
-    public static MinionFakePlayer respawnFake(MinecraftServer server, ServerWorld level, GameProfile profile, SyncedClientOptions cli, MinionData data)
+    public static MinionFakePlayer respawnFake(MinecraftServer server, ServerWorld level, GameProfile profile, SyncedClientOptions cli)
     {
-        return new MinionFakePlayer(server, level, profile, cli, data);
+        return new MinionFakePlayer(server, level, profile, cli);
     }
 
-    private MinionFakePlayer(MinecraftServer server, ServerWorld worldIn, GameProfile profile, SyncedClientOptions cli, MinionData data)
+    private MinionFakePlayer(MinecraftServer server, ServerWorld worldIn, GameProfile profile, SyncedClientOptions cli)
     {
         super(server, worldIn, profile, cli);
-        this.data = data;
         actionPack = new EntityPlayerActionPack(this);
     }
 
@@ -129,19 +123,23 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     public MinionData getData() {
-        return data;
+        return MinionPersistentState.get(getServer()).getMinionData(getUuid());
+    }
+
+    public SerializableListenerManager<MinionListener> listeners() {
+        return getData().listeners();
     }
 
     public void addMinionListener(MinionListener listener) {
-        minionListeners.addListener(listener);
+        listeners().addListener(listener);
     }
 
     public void removeMinionListener(MinionListener listener) {
-        minionListeners.removeListener(listener);
+        listeners().removeListener(listener);
     }
 
     public void forEachMinionListener(Consumer<MinionListener> listenerConsumer) {
-        minionListeners.forEachListener(listenerConsumer);
+        listeners().forEach(listenerConsumer);
     }
 
     public boolean canSpawnMobs() {
@@ -173,7 +171,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
 
     public void kill(Text reason)
     {
-        minionListeners.forEachListener(listener -> listener.onMinionRemove(this));
+        listeners().forEach(listener -> listener.onMinionRemove(this));
 
         shakeOff();
 
@@ -185,7 +183,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
             }));
         }
 
-        MinionPersistentState.INSTANCE.updateMinionData(data.withSpawned(false));
+        MinionPersistentState.get(getServer()).updateMinionData(getData().withSpawned(false));
     }
 
     @Override
@@ -266,15 +264,15 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     @Override
     public void drop(ServerWorld world, DamageSource damageSource) {
         super.drop(world, damageSource);
-        ItemEntity entity = dropStack(world, toItemStack());
+        ItemEntity entity = dropStack(world, toItemStack(getServer()));
         if (entity != null) {
             entity.setNeverDespawn();
         }
     }
 
-    private ItemStack toItemStack() {
+    private ItemStack toItemStack(MinecraftServer server) {
         ItemStack stack = new ItemStack(MinionItems.MINION_ITEM);
-        MinionItem.setData(data, stack);
+        MinionItem.setData(server, getData(), stack);
         return stack;
     }
 
@@ -283,7 +281,6 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         super.writeCustomData(view);
         moduleInventory.writeData(view.get("modules"));
         instructionManager.save(view.get("instructionManager"));
-        minionListeners.save(view);
     }
 
     @Override
@@ -291,6 +288,5 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         super.readCustomData(view);
         moduleInventory.readData(view.getReadView("modules"));
         instructionManager.load(view.getReadView("instructionManager"));
-        minionListeners.load(view);
     }
 }

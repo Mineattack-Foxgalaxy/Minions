@@ -1,6 +1,6 @@
 package io.github.skippyall.minions.program.instruction;
 
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
@@ -66,7 +66,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
                 Minions.LOGGER.error("An error occurred while executing configured Instruction", e);
             }
 
-            listeners.forEachListener(listener -> listener.onRun(this));
+            listeners.forEach(listener -> listener.onRun(this));
         }
     }
 
@@ -87,20 +87,20 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         if(execution != null) {
             execution.stop(minion, valueConsumers);
             execution = null;
-            listeners.forEachListener(listener -> listener.onStop(this));
+            listeners.forEach(listener -> listener.onStop(this));
         }
     }
 
     private void onSupplierChange(Parameter<?> parameter) {
-        listeners.forEachListener(listener -> listener.onSupplierChange(this, parameter));
+        listeners.forEach(listener -> listener.onSupplierChange(this, parameter));
     }
 
     private void onConsumerChange(Parameter<?> parameter) {
-        listeners.forEachListener(listener -> listener.onConsumerChange(this, parameter));
+        listeners.forEach(listener -> listener.onConsumerChange(this, parameter));
     }
 
     public void onInstructionRemove() {
-        listeners.forEachListener(listener -> listener.onInstructionRemove(this));
+        listeners.forEach(listener -> listener.onInstructionRemove(this));
     }
 
     public void addListener(ConfiguredInstructionListener listener) {

@@ -1,6 +1,6 @@
 package io.github.skippyall.minions.module;
 
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;

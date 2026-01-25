@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.block;
+package io.github.skippyall.minions.block.miniontrigger;
 
 import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;

@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.reference;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
-import io.github.skippyall.minions.MinionItems;
+import io.github.skippyall.minions.registration.MinionItems;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;

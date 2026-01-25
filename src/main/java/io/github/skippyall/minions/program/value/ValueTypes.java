@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.program.value;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.gui.input.ChoiceInput;
 import io.github.skippyall.minions.gui.input.TextInput;

@@ -1,7 +1,7 @@
-package io.github.skippyall.minions.block;
+package io.github.skippyall.minions.block.miniontrigger;
 
-import io.github.skippyall.minions.MinionBlocks;
-import io.github.skippyall.minions.minion.MinionPersistentState;
+import io.github.skippyall.minions.block.BlockEntityMinionListener;
+import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
@@ -11,7 +11,6 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -20,38 +19,34 @@ public class MinionTriggerBlockEntity extends BlockEntity {
     private UUID minionUuid;
     private String instructionName = "";
 
-    private boolean first = true;
-    private boolean runningCache = false;
-
     public MinionTriggerBlockEntity(BlockPos pos, BlockState state) {
         super(MinionBlocks.MINION_TRIGGER_BE_TYPE, pos, state);
     }
 
-    public void setInstruction(UUID minionUuid, String instructionName) {
-        this.minionUuid = minionUuid;
-        this.instructionName = instructionName;
-        markDirty();
+    public void removeListener() {
+        MinionTriggerMinionListener.removeListener(world, pos, minionUuid, instructionName);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
-        if(!(blockEntity instanceof MinionTriggerBlockEntity triggerBlockEntity)) {
-            return;
-        }
-        if(triggerBlockEntity.first) {
-            triggerBlockEntity.first = false;
-            world.updateComparators(pos, MinionBlocks.MINION_TRIGGER_BLOCK);
-            triggerBlockEntity.runningCache = triggerBlockEntity.getInstruction().map(ConfiguredInstruction::isRunning).orElse(false);
-        } else {
-            boolean isRunning = triggerBlockEntity.getInstruction().map(ConfiguredInstruction::isRunning).orElse(false);
-            if (isRunning != triggerBlockEntity.runningCache) {
-                world.updateComparators(pos, MinionBlocks.MINION_TRIGGER_BLOCK);
-                triggerBlockEntity.runningCache = isRunning;
-            }
-        }
+    public void addListener() {
+        MinionTriggerMinionListener.addListener(world, pos, minionUuid, instructionName);
+    }
+
+    public void setInstruction(UUID minionUuid, String instructionName) {
+        removeListener();
+        this.minionUuid = minionUuid;
+        this.instructionName = instructionName;
+        addListener();
+        markDirty();
     }
 
     public void updatePower() {
         boolean powered = getCachedState().get(MinionTriggerBlock.POWERED);
+
+        MinionTriggerMinionListener listener = getListener();
+        if(listener != null) {
+            listener.incomingPowerCache = powered;
+        }
+
         getMinion().ifPresent(minion -> {
             getInstruction().ifPresent(instruction -> {
                 if(powered) {
@@ -61,12 +56,11 @@ public class MinionTriggerBlockEntity extends BlockEntity {
                 }
             });
         });
-
     }
 
     public int getComparatorOutput() {
-        Optional<ConfiguredInstruction<MinionRuntime>> instruction = getInstruction();
-        if(instruction.isPresent() && instruction.get().isRunning()) {
+        MinionTriggerMinionListener listener = getListener();
+        if(listener != null && listener.runningCache) {
             return 15;
         }
         return 0;
@@ -93,6 +87,10 @@ public class MinionTriggerBlockEntity extends BlockEntity {
 
     public Optional<ConfiguredInstruction<MinionRuntime>> getInstruction() {
         return getMinion().flatMap(this::getInstruction);
+    }
+
+    public MinionTriggerMinionListener getListener() {
+        return BlockEntityMinionListener.getListener(world, pos, minionUuid, MinionTriggerMinionListener.class);
     }
 
     @Override

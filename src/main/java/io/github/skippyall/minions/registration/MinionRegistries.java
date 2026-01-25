@@ -1,7 +1,8 @@
-package io.github.skippyall.minions;
+package io.github.skippyall.minions.registration;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.docs.ReferenceEntry;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.minion.MinionListener;

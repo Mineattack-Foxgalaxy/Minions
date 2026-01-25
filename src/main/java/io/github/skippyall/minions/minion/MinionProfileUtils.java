@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.StringReader;
 import io.github.skippyall.minions.gui.input.Result;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
 
@@ -27,7 +28,7 @@ public class MinionProfileUtils {
         return newProfile;
     }
 
-    public static Result<String, Text> checkMinionNameWithoutPrefix(String name) {
+    public static Result<String, Text> checkMinionNameWithoutPrefix(MinecraftServer server, String name) {
         for(char c : name.toCharArray()) {
             if(!StringReader.isAllowedInUnquotedString(c)) {
                 return new Result.Error<>(Text.translatable("minions.generic.name.invalid_char"));
@@ -42,22 +43,22 @@ public class MinionProfileUtils {
             return new Result.Error<>(Text.translatable("minions.generic.name.invalid"));
         }
 
-        if(MinionPersistentState.INSTANCE.isMinionNameTaken(PREFIX + name)) {
+        if(MinionPersistentState.get(server).isMinionNameTaken(PREFIX + name)) {
             return new Result.Error<>(Text.translatable("minions.generic.name.taken"));
         }
 
         return new Result.Success<>(name);
     }
 
-    public static String newDefaultMinionName() {
+    public static String newDefaultMinionName(MinecraftServer server) {
         int i = 0;
-        while (MinionPersistentState.INSTANCE.isMinionNameTaken("+Minion" + i)) {
+        while (MinionPersistentState.get(server).isMinionNameTaken("+Minion" + i)) {
             i++;
         }
         return "+Minion" + i;
     }
 
-    public static boolean isMinion(UUID uuid) {
-        return MinionPersistentState.INSTANCE.isMinion(uuid);
+    public static boolean isMinion(MinecraftServer server, UUID uuid) {
+        return MinionPersistentState.get(server).isMinion(uuid);
     }
 }

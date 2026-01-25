@@ -70,7 +70,7 @@ public class ConfigureInstructionGui extends InstructionBoundSimpleGui {
     }
 
     @Override
-    public void onInstructionRename(MinionFakePlayer minion, ConfiguredInstruction<?> instruction, String newName) {
+    public void onInstructionRename(MinionFakePlayer minion, ConfiguredInstruction<?> instruction, String oldName, String newName) {
         this.setTitle(Text.literal(newName));
         name = newName;
     }

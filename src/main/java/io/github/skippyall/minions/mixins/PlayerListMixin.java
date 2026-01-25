@@ -54,7 +54,7 @@ public class PlayerListMixin {
     @WrapOperation(method = "respawnPlayer", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/server/world/ServerWorld;Lcom/mojang/authlib/GameProfile;Lnet/minecraft/network/packet/c2s/common/SyncedClientOptions;)Lnet/minecraft/server/network/ServerPlayerEntity;"))
     public ServerPlayerEntity makePlayerForRespawn(MinecraftServer minecraftServer, ServerWorld serverLevel, GameProfile gameProfile, SyncedClientOptions clientInformation, Operation<ServerPlayerEntity> original, ServerPlayerEntity serverPlayer, boolean bl) {
         if (serverPlayer instanceof MinionFakePlayer minion) {
-            return MinionFakePlayer.respawnFake(minecraftServer, serverLevel, gameProfile, clientInformation, minion.getData());
+            return MinionFakePlayer.respawnFake(minecraftServer, serverLevel, gameProfile, clientInformation);
         }
         return original.call(minecraftServer, serverLevel, gameProfile, clientInformation);
     }

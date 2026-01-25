@@ -3,7 +3,7 @@ package io.github.skippyall.minions.module;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import eu.pb4.polymer.core.api.other.PolymerComponent;
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.instruction.InstructionType;

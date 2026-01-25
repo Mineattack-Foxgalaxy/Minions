@@ -1,6 +1,7 @@
-package io.github.skippyall.minions;
+package io.github.skippyall.minions.registration;
 
 import eu.pb4.polymer.core.api.item.PolymerItemGroupUtils;
+import io.github.skippyall.minions.Minions;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;

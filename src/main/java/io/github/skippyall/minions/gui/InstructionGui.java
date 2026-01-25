@@ -2,7 +2,7 @@ package io.github.skippyall.minions.gui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import io.github.skippyall.minions.MinionRegistries;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.gui.input.TextInput;
 import io.github.skippyall.minions.minion.MinionRuntime;
@@ -164,6 +164,7 @@ public class InstructionGui {
                 if (!future.isDone()) {
                     future.cancel(false);
                 }
+                super.onClose();
             }
         };
         gui.setTitle(Text.translatable("minions.gui.instruction.select_instruction"));
@@ -193,6 +194,7 @@ public class InstructionGui {
                 if (!future.isDone()) {
                     future.cancel(false);
                 }
+                super.onClose();
             }
         };
         gui.setTitle(Text.translatable("minions.gui.instruction.select_instruction"));
