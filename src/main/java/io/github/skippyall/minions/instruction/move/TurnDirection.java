@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.program.instruction.execution.move;
+package io.github.skippyall.minions.instruction.move;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.Displayable;

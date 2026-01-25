@@ -3,7 +3,6 @@ package io.github.skippyall.minions.gui;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.util.TranslationUtil;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import net.minecraft.component.DataComponentTypes;
@@ -140,12 +139,5 @@ public interface GuiDisplay {
         public Codec<? extends GuiDisplay> getCodec() {
             return CODEC;
         }
-    }
-
-    static void register() {
-        Registry.register(MinionRegistries.GUI_DISPLAY_TYPE, Identifier.of(Minions.MOD_ID, "item"), ItemBased.CODEC);
-        Registry.register(MinionRegistries.GUI_DISPLAY_TYPE, Identifier.of(Minions.MOD_ID, "model"), ModelBased.CODEC);
-        Registry.register(MinionRegistries.GUI_DISPLAY_TYPE, Identifier.of(Minions.MOD_ID, "head"), HeadBased.CODEC);
-        Registry.register(MinionRegistries.GUI_DISPLAY_TYPE, Identifier.of(Minions.MOD_ID, "stack"), StackBased.CODEC);
     }
 }

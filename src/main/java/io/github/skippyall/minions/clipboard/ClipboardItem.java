@@ -1,6 +1,7 @@
-package io.github.skippyall.minions.reference;
+package io.github.skippyall.minions.clipboard;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
+import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionItems;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.component.DataComponentTypes;
@@ -12,8 +13,8 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-public class ReferenceItem extends Item implements PolymerItem {
-    public ReferenceItem(Settings settings) {
+public class ClipboardItem extends Item implements PolymerItem {
+    public ClipboardItem(Settings settings) {
         super(settings);
     }
 
@@ -36,7 +37,7 @@ public class ReferenceItem extends Item implements PolymerItem {
 
     public static ItemStack createInstructionReference(MinionFakePlayer minion, String instructionName) {
         ItemStack stack = new ItemStack(MinionItems.REFERENCE_ITEM);
-        stack.set(Reference.COMPONENT_TYPE, new InstructionReference(minion.getUuid(), instructionName, minion.getGameProfile().getName()));
+        stack.set(MinionComponentTypes.REFERENCE, new InstructionClipboard(minion.getUuid(), instructionName, minion.getGameProfile().getName()));
         return stack;
     }
 }

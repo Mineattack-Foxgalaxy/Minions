@@ -1,8 +1,9 @@
-package io.github.skippyall.minions.program.instruction.execution;
+package io.github.skippyall.minions.instruction;
 
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
+import io.github.skippyall.minions.program.instruction.execution.ContinuousInstructionExecution;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;

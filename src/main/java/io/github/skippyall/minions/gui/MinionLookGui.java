@@ -8,7 +8,7 @@ import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionProfileUtils;
 import io.github.skippyall.minions.minion.skin.SkinProvider;
-import io.github.skippyall.minions.minion.skin.SkinProviders;
+import io.github.skippyall.minions.registration.SkinProviders;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.item.ItemStack;

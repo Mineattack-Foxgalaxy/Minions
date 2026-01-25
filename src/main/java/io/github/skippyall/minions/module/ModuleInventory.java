@@ -3,6 +3,7 @@ package io.github.skippyall.minions.module;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.InstructionType;
+import io.github.skippyall.minions.registration.MinionComponentTypes;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
@@ -41,7 +42,7 @@ public class ModuleInventory extends SimpleInventory {
 
     @Override
     public boolean isValid(int slot, ItemStack stack) {
-        return (stack.getCount() <= getMaxCountPerStack()) && stack.contains(MinionModule.COMPONENT_TYPE);
+        return (stack.getCount() <= getMaxCountPerStack()) && stack.contains(MinionComponentTypes.MODULE);
     }
 
     @Override
@@ -59,7 +60,7 @@ public class ModuleInventory extends SimpleInventory {
         instructions.clear();
         specialAbilities.clear();
         for (ItemStack heldStack : heldStacks) {
-            MinionModule module = heldStack.get(MinionModule.COMPONENT_TYPE);
+            MinionModule module = heldStack.get(MinionComponentTypes.MODULE);
             if(module != null) {
                 modules.add(module);
                 instructions.addAll(module.instructions());

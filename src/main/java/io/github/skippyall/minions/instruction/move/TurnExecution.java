@@ -1,9 +1,9 @@
-package io.github.skippyall.minions.program.instruction.execution.move;
+package io.github.skippyall.minions.instruction.move;
 
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.program.value.ValueTypes;
+import io.github.skippyall.minions.registration.ValueTypes;
 
 public class TurnExecution extends AbstractTurnExecution {
     public static final Parameter<Double> ANGLE = new Parameter<>("maxAngle", ValueTypes.DOUBLE);

@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.block;
+package io.github.skippyall.minions.listener;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;

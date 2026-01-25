@@ -6,7 +6,7 @@ import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
-import io.github.skippyall.minions.util.SerializableListenerManager;
+import io.github.skippyall.minions.listener.SerializableListenerManager;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import org.jetbrains.annotations.Nullable;

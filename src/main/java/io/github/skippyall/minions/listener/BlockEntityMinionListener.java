@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.block;
+package io.github.skippyall.minions.listener;
 
 import com.mojang.datafixers.util.Function3;
 import com.mojang.serialization.Codec;

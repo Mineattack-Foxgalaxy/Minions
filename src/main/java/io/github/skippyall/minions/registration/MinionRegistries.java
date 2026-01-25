@@ -14,7 +14,7 @@ import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.consumer.ValueConsumerType;
 import io.github.skippyall.minions.program.value.ValueType;
-import io.github.skippyall.minions.reference.Reference;
+import io.github.skippyall.minions.clipboard.Clipboard;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
@@ -31,7 +31,7 @@ public class MinionRegistries {
     public static final Registry<Codec<? extends GuiDisplay>> GUI_DISPLAY_TYPE = registry("gui_display_type");
     public static final Registry<Codec<? extends ConfiguredInstructionListener>> INSTRUCTION_LISTENER_CODECS = registry("instruction_listener_codec");
     public static final Registry<Codec<? extends MinionListener>> MINION_LISTENER_CODECS = registry("minion_listener_codec");
-    public static final Registry<MapCodec<? extends Reference>> REFERENCE_CODEC = registry("reference_codec");
+    public static final Registry<MapCodec<? extends Clipboard>> CLIPBOARD_TYPES = registry("clipboard_type");
     public static final Registry<SpecialAbility> SPECIAL_ABILITIES = registry("special_ability");
 
     public static final RegistryKey<Registry<GuiDisplay>> GUI_DISPLAY = key("gui_display");

@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.program.instruction.execution.inventory;
+package io.github.skippyall.minions.instruction.inventory;
 
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;

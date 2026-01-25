@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.util;
+package io.github.skippyall.minions.listener;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.registry.Registry;

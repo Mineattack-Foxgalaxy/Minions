@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.util.SerializableListenerManager;
+import io.github.skippyall.minions.listener.SerializableListenerManager;
 
 public interface ConfiguredInstructionListener extends SerializableListenerManager.SerializableListener {
     default void onRun(ConfiguredInstruction<?> instruction) {}

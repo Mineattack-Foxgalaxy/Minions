@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.program.instruction.execution.move;
+package io.github.skippyall.minions.instruction.move;
 
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;

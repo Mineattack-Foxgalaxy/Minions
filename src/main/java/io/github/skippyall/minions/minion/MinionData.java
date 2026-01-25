@@ -3,15 +3,9 @@ package io.github.skippyall.minions.minion;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import eu.pb4.polymer.core.api.other.PolymerComponent;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.util.SerializableListenerManager;
-import net.minecraft.component.ComponentType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import io.github.skippyall.minions.listener.SerializableListenerManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -32,8 +26,6 @@ public record MinionData(UUID uuid, String name, Optional<PropertyMap> skin, boo
             ).apply(instance, MinionData::new)
     );
 
-    public static final ComponentType<UUID> COMPONENT = Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(Minions.MOD_ID, "minion_data"), ComponentType.<UUID>builder().codec(Uuids.CODEC).build());
-
     public static MinionData createDefault(MinecraftServer server) {
         return new MinionData(UUID.randomUUID(), MinionProfileUtils.newDefaultMinionName(server), Optional.empty(), false, new SerializableListenerManager<>(MinionRegistries.MINION_LISTENER_CODECS));
     }
@@ -48,9 +40,5 @@ public record MinionData(UUID uuid, String name, Optional<PropertyMap> skin, boo
 
     public MinionData withSpawned(boolean isSpawned) {
         return new MinionData(uuid, name, skin, isSpawned, listeners);
-    }
-
-    public static void register() {
-        PolymerComponent.registerDataComponent(COMPONENT);
     }
 }

@@ -2,6 +2,7 @@ package io.github.skippyall.minions.gui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.gui.input.TextInput;
@@ -171,7 +172,7 @@ public class InstructionGui {
 
         for (int i = 0; i < minion.getModuleInventory().size(); i++) {
             ItemStack moduleItem = minion.getModuleInventory().getStack(i);
-            MinionModule module = moduleItem.get(MinionModule.COMPONENT_TYPE);
+            MinionModule module = moduleItem.get(MinionComponentTypes.MODULE);
             if (module != null && !module.instructions().isEmpty()) {
                 gui.addSlot(new GuiElementBuilder(moduleItem)
                         .setCallback(() -> selectInstructionMenu(module, minion, player)

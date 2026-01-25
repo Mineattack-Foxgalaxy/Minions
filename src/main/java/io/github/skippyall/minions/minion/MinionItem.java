@@ -4,6 +4,7 @@ import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import io.github.skippyall.minions.gui.MinionLookGui;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.registration.MinionComponentTypes;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -78,14 +79,14 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     public static void setData(MinecraftServer server, MinionData data, ItemStack item) {
-        item.set(MinionData.COMPONENT, data.uuid());
+        item.set(MinionComponentTypes.MINION_DATA, data.uuid());
         MinionPersistentState.get(server).updateMinionData(data);
     }
 
     @Nullable
     public static MinionData getData(MinecraftServer server, ItemStack item) {
-        if(item.contains(MinionData.COMPONENT)) {
-            return MinionPersistentState.get(server).getMinionData(item.get(MinionData.COMPONENT));
+        if(item.contains(MinionComponentTypes.MINION_DATA)) {
+            return MinionPersistentState.get(server).getMinionData(item.get(MinionComponentTypes.MINION_DATA));
         }
         return null;
     }
@@ -100,6 +101,6 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     public static boolean containsData(ItemStack item) {
-        return item.contains(MinionData.COMPONENT);
+        return item.contains(MinionComponentTypes.MINION_DATA);
     }
 }

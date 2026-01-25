@@ -6,11 +6,9 @@ import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlockItem;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.module.MinionModule;
-import io.github.skippyall.minions.module.SpecialAbilities;
 import io.github.skippyall.minions.module.SpecialAbility;
 import io.github.skippyall.minions.program.instruction.InstructionType;
-import io.github.skippyall.minions.program.instruction.Instructions;
-import io.github.skippyall.minions.reference.ReferenceItem;
+import io.github.skippyall.minions.clipboard.ClipboardItem;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DamageResistantComponent;
 import net.minecraft.entity.damage.DamageType;
@@ -78,7 +76,7 @@ public class MinionItems {
                     new Item.Settings().useBlockPrefixedTranslationKey()
             );
 
-    public static final ReferenceItem REFERENCE_ITEM = registerItem(Identifier.of(MOD_ID, "reference"), ReferenceItem::new);
+    public static final ClipboardItem REFERENCE_ITEM = registerItem(Identifier.of(MOD_ID, "clipboard"), ClipboardItem::new);
 
     public static <T extends Item> T registerItem(Identifier identifier, Function<Item.Settings, T> constructor, Item.Settings settings) {
         T item = constructor.apply(settings.registryKey(RegistryKey.of(RegistryKeys.ITEM, identifier)));
@@ -96,7 +94,7 @@ public class MinionItems {
         return registerItem(
                 identifier,
                 settings -> new SimplePolymerItem(settings, vanillaItem),
-                new Item.Settings().component(MinionModule.COMPONENT_TYPE, new MinionModule(instructionTypes, specialAbilities))
+                new Item.Settings().component(MinionComponentTypes.MODULE, new MinionModule(instructionTypes, specialAbilities))
         );
     }
 

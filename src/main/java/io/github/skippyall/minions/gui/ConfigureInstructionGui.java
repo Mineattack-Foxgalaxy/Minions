@@ -6,7 +6,7 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.reference.ReferenceItem;
+import io.github.skippyall.minions.clipboard.ClipboardItem;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -61,7 +61,7 @@ public class ConfigureInstructionGui extends InstructionBoundSimpleGui {
                 .setName(Text.translatable("minions.gui.instruction.configure.copy"))
                 .addLoreLine(Text.translatable("minions.gui.instruction.configure.copy.description"))
                 .setCallback(() -> {
-                    player.getInventory().offer(ReferenceItem.createInstructionReference(minion, name), true);
+                    player.getInventory().offer(ClipboardItem.createInstructionReference(minion, name), true);
                     player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), SoundCategory.BLOCKS, 1, 1);
                 })
         );

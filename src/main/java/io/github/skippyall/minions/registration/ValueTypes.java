@@ -1,11 +1,11 @@
-package io.github.skippyall.minions.program.value;
+package io.github.skippyall.minions.registration;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.registration.MinionRegistries;
+import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.gui.input.ChoiceInput;
 import io.github.skippyall.minions.gui.input.TextInput;
-import io.github.skippyall.minions.program.instruction.execution.move.TurnDirection;
+import io.github.skippyall.minions.instruction.move.TurnDirection;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;

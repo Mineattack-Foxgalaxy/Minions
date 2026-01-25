@@ -1,6 +1,6 @@
 package io.github.skippyall.minions.block.miniontrigger;
 
-import io.github.skippyall.minions.block.BlockEntityMinionListener;
+import io.github.skippyall.minions.listener.BlockEntityMinionListener;
 import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;

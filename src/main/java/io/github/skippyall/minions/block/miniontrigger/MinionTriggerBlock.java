@@ -11,14 +11,13 @@ import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
 import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.MinionPersistentState;
-import io.github.skippyall.minions.reference.InstructionReference;
-import io.github.skippyall.minions.reference.Reference;
+import io.github.skippyall.minions.clipboard.InstructionClipboard;
+import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.util.PolymerUtil;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.block.entity.BlockEntity;
@@ -86,7 +85,7 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
 
     @Override
     protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if(stack.get(Reference.COMPONENT_TYPE) instanceof InstructionReference instruction) {
+        if(stack.get(MinionComponentTypes.REFERENCE) instanceof InstructionClipboard instruction) {
             world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(be -> {
                 be.setInstruction(instruction.selectedMinion(), instruction.selectedInstruction());
                 player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), SoundCategory.BLOCKS, 1, 1);
@@ -148,7 +147,7 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
 
     @Override
     public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
-        return PolymerUtil.isOnClient(context) ? state : Blocks.COMPARATOR.getDefaultState().with(AbstractRedstoneGateBlock.POWERED, state.get(POWERED));
+        return PolymerUtil.isOnClient(context) ? state : net.minecraft.block.Blocks.COMPARATOR.getDefaultState().with(AbstractRedstoneGateBlock.POWERED, state.get(POWERED));
     }
 
     @Override

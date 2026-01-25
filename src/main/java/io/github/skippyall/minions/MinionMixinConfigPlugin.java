@@ -22,7 +22,7 @@ public class MinionMixinConfigPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if(mixinClassName.startsWith("io.github.skippyall.mixins.compat.universal_graves.")) {
-            return FabricLoader.getInstance().isModLoaded("universal-universal_graves");
+            return FabricLoader.getInstance().isModLoaded("universal-graves");
         }
         return true;
     }

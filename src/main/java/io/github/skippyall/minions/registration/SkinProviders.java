@@ -1,6 +1,9 @@
-package io.github.skippyall.minions.minion.skin;
+package io.github.skippyall.minions.registration;
 
-import io.github.skippyall.minions.registration.MinionRegistries;
+import io.github.skippyall.minions.minion.skin.Base64SkinProvider;
+import io.github.skippyall.minions.minion.skin.NameSkinProvider;
+import io.github.skippyall.minions.minion.skin.SkinProvider;
+import io.github.skippyall.minions.minion.skin.UUIDSkinProvider;
 import io.github.skippyall.minions.Minions;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;

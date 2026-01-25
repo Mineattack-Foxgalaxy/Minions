@@ -3,7 +3,7 @@ package io.github.skippyall.minions.block.miniontrigger;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.block.BlockEntityMinionInstructionListener;
+import io.github.skippyall.minions.listener.BlockEntityMinionInstructionListener;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
