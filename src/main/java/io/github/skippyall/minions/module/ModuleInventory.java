@@ -13,10 +13,8 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class ModuleInventory extends SimpleInventory {
@@ -66,6 +64,12 @@ public class ModuleInventory extends SimpleInventory {
                 instructions.addAll(module.instructions());
                 specialAbilities.addAll(module.specialAbilities());
 
+                for(InstructionType<MinionRuntime> instructionType : module.instructions()) {
+                    if(!oldInstructions.contains(instructionType)) {
+                        minion.getInstructionManager().enableInstructionType(instructionType);
+                    }
+                }
+
                 for(SpecialAbility ability : module.specialAbilities()) {
                     if(!oldAbilities.contains(ability)) {
                         ability.onAdd(minion);
@@ -104,11 +108,11 @@ public class ModuleInventory extends SimpleInventory {
         return specialAbilities.contains(ability);
     }
 
-    public List<InstructionType<?>> getAllInstructions() {
-        ArrayList<InstructionType<?>> instructionTypes = new ArrayList<>();
-        for(MinionModule module : modules) {
-            instructionTypes.addAll(module.instructions());
-        }
-        return instructionTypes;
+    public boolean hasInstruction(InstructionType<MinionRuntime> instructionType) {
+        return instructions.contains(instructionType);
+    }
+
+    public Collection<InstructionType<MinionRuntime>> getAllInstructions() {
+        return instructions;
     }
 }

@@ -105,9 +105,9 @@ public class ConfigureInstructionGui extends InstructionBoundSimpleGui {
     }
 
     private void updateSuppliers() {
-        int slot = 11;
+        int slot = 12;
         for(Parameter<?> parameter : instruction.getInstruction().getParameters().reversed()) {
-            setSlot(slot, InstructionGui.createParameterElement(parameter, player.getRegistryManager())
+            setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getArgument(parameter), player.getRegistryManager())
                     .setCallback(() -> InstructionGui.configureArgumentMenu(name, instruction, parameter, minion, player))
             );
             slot--;

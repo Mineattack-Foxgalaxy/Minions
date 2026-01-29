@@ -221,19 +221,12 @@ public class InstructionGui {
         return instructionBuilder;
     }
 
-    public static GuiElementBuilder createParameterElement(Parameter<?> parameter, DynamicRegistryManager manager) {
-        return new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_TYPES, parameter.type(), manager))
+    public static GuiElementBuilder createParameterElement(Parameter<?> parameter, @Nullable ValueSupplier<?,?> valueSupplier, DynamicRegistryManager manager) {
+        GuiElementBuilder builder = new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_TYPES, parameter.type(), manager))
                 .setName(Text.translatable("minions.gui.instruction.parameter", parameter.name(), Text.translatable(TranslationUtil.getTranslationKey(parameter.type(), MinionRegistries.VALUE_TYPES))));
-    }
-
-    public static GuiElementBuilder createArgumentElement(ValueSupplier<?, MinionRuntime> valueSupplier, DynamicRegistryManager manager) {
-        GuiElementBuilder argumentBuilder;
-        if (valueSupplier != null) {
-            argumentBuilder = new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_SUPPLIER_TYPES, valueSupplier.getType(), manager));
-        } else {
-            argumentBuilder = new GuiElementBuilder(Items.RED_WOOL)
-                    .setName(Text.translatable("minions.gui.instruction.no_argument_set"));
+        if(valueSupplier != null) {
+                builder.addLoreLine(Text.translatable("minions.gui.instruction.argument", valueSupplier.getDisplayText()));
         }
-        return argumentBuilder;
+        return builder;
     }
 }

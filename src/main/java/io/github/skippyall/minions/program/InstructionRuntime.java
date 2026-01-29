@@ -17,6 +17,8 @@ public interface InstructionRuntime<R extends InstructionRuntime<R>> {
 
     Registry<ValueConsumerType<R>> getValueConsumerTypeRegistry();
 
+    boolean isInstructionEnabled(InstructionType<R> type);
+
     default Codec<ValueSupplierType<R>> getArgumentTypeCodec() {
         return getArgumentTypeRegistry().getCodec();
     }

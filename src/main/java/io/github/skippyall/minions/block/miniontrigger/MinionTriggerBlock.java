@@ -26,6 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -148,6 +149,11 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
     @Override
     public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
         return PolymerUtil.isOnClient(context) ? state : net.minecraft.block.Blocks.COMPARATOR.getDefaultState().with(AbstractRedstoneGateBlock.POWERED, state.get(POWERED));
+    }
+
+    @Override
+    public boolean handleMiningOnServer(ItemStack tool, BlockState state, BlockPos pos, ServerPlayerEntity player) {
+        return false;
     }
 
     @Override

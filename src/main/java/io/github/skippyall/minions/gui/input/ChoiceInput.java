@@ -71,4 +71,14 @@ public class ChoiceInput {
         gui.open();
         return future;
     }
+
+    public static BiFunction<ServerPlayerEntity, Boolean, CompletableFuture<Boolean>> inputBoolean(Text title) {
+        return createDialogOpener(ScreenHandlerType.GENERIC_3X3, title, value -> {
+            if(value) {
+                return new GuiDisplay.ItemBased(Items.EMERALD_BLOCK);
+            } else {
+                return new GuiDisplay.ItemBased(Items.REDSTONE_BLOCK);
+            }
+        }, new Boolean[]{false, true}, false);
+    }
 }

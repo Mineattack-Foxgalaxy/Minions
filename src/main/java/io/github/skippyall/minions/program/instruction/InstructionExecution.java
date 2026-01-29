@@ -31,6 +31,10 @@ public interface InstructionExecution<R extends InstructionRuntime<R>> {
      */
     boolean isDone(R runtime);
 
+    default void pause(R runtime) {}
+
+    default void resume(R runtime) {}
+
     /**
      * Stops this execution. Is called when isDone returns true, but it may also be called before that.
      * This should undo changes to the minion unless they are supposed to be permanent.

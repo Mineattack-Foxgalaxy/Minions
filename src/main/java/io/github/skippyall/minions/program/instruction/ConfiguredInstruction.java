@@ -16,12 +16,14 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     private final ValueSupplierList<R> arguments;
     private final ValueConsumerList<R> valueConsumers;
     private @Nullable InstructionExecution<R> execution;
+    private boolean paused = false;
 
     private SerializableListenerManager<ConfiguredInstructionListener> listeners = new SerializableListenerManager<>(MinionRegistries.INSTRUCTION_LISTENER_CODECS);
 
-    private ConfiguredInstruction(InstructionType<R> instruction, ValueSupplierList<R> arguments, ValueConsumerList<R> valueConsumers, @Nullable InstructionExecution<R> execution, SerializableListenerManager<ConfiguredInstructionListener> listeners) {
+    private ConfiguredInstruction(InstructionType<R> instruction, ValueSupplierList<R> arguments, ValueConsumerList<R> valueConsumers, @Nullable InstructionExecution<R> execution, SerializableListenerManager<ConfiguredInstructionListener> listeners, boolean paused) {
         this(instruction, arguments, valueConsumers, execution);
         this.listeners = listeners;
+        this.paused = paused;
     }
 
     private ConfiguredInstruction(InstructionType<R> instruction, ValueSupplierList<R> arguments, ValueConsumerList<R> valueConsumers, @Nullable InstructionExecution<R> execution) {
@@ -71,7 +73,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     }
 
     public void tick(R minion) {
-        if(execution != null) {
+        if(execution != null && !paused) {
             if(execution.isDone(minion)) {
                 stop(minion);
             } else {
@@ -88,6 +90,21 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
             execution.stop(minion, valueConsumers);
             execution = null;
             listeners.forEach(listener -> listener.onStop(this));
+        }
+    }
+
+    public void updatePauseStatus(R runtime) {
+        boolean typeEnabled = runtime.isInstructionEnabled(instruction);
+        if(typeEnabled && paused) {
+            paused = false;
+            if(execution != null) {
+                execution.resume(runtime);
+            }
+        } else if(!typeEnabled && !paused) {
+            paused = true;
+            if(execution != null) {
+                execution.pause(runtime);
+            }
         }
     }
 
@@ -116,6 +133,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         view.put("arguments", minion.getArgumentListCodec(), arguments);
         view.put("valueConsumers", minion.getValueConsumerListCodec(), valueConsumers);
         view.putBoolean("running", isRunning());
+        view.putBoolean("paused", paused);
         if(execution != null) {
             execution.save(view.get("execution"), minion);
         }
@@ -130,6 +148,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         ValueConsumerList<R> valueConsumers = view.read("valueConsumers", minion.getValueConsumerListCodec()).orElseGet(ValueConsumerList::new);
 
         boolean running = view.getBoolean("running", false);
+        boolean paused = view.getBoolean("paused", false);
 
         SerializableListenerManager<ConfiguredInstructionListener> listeners = new SerializableListenerManager<>(MinionRegistries.INSTRUCTION_LISTENER_CODECS);
         listeners.load(view);
@@ -138,12 +157,12 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
             ReadView executionView = view.getReadView("execution");
             try {
                 InstructionExecution<R> execution = instructionType.loadExecution(executionView, minion);
-                return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, execution, listeners);
+                return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, execution, listeners, paused);
             } catch (Exception e) {
                 Minions.LOGGER.error("Error while loading execution", e);
             }
         }
 
-        return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, null, listeners);
+        return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, null, listeners, paused);
     }
 }

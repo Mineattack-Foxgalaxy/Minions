@@ -29,13 +29,23 @@ public class ActionExecution implements ContinuousInstructionExecution<MinionRun
     }
 
     @Override
+    public void pause(MinionRuntime runtime) {
+        runtime.getMinion().getMinionActionPack().stop(action);
+    }
+
+    @Override
+    public void resume(MinionRuntime runtime) {
+        runtime.getMinion().getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
+    }
+
+    @Override
     public void readArguments(ValueSupplierList<MinionRuntime> parameters, MinionRuntime minion) {}
 
     @Override
     public void save(WriteView view, MinionRuntime minion) {}
 
     @Override
-    public void load(ReadView view, MinionRuntime minion) {
-        minion.getMinion().getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
+    public void load(ReadView view, MinionRuntime runtime) {
+        runtime.getMinion().getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
     }
 }

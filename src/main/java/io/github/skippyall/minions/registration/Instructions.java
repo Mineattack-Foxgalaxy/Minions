@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.registration;
 
+import io.github.skippyall.minions.instruction.inventory.SwapItemExecution;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.Minions;
@@ -55,6 +56,12 @@ public class Instructions {
     public static final InstructionType<MinionRuntime> USE = register(
             "use",
             () -> new ActionExecution(EntityPlayerActionPack.ActionType.USE)
+    );
+
+    public static final InstructionType<MinionRuntime> SWAP_ITEM = register(
+            "swap_item",
+            SwapItemExecution::new,
+            List.of(SwapItemExecution.FROM_SLOT, SwapItemExecution.FROM_SCREEN, SwapItemExecution.TO_SLOT, SwapItemExecution.TO_SCREEN)
     );
 
     private static InstructionType<MinionRuntime> register(String id, Supplier<InstructionExecution<MinionRuntime>> factory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters) {

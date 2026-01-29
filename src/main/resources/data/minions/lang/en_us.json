@@ -37,6 +37,7 @@
   "minions.gui.instruction.argument.configure.type": "Type: %s",
   "minions.gui.instruction.argument.configure.type.unset": "Unset",
   "minions.gui.instruction.parameter": "%s: %s",
+  "minions.gui.instruction.argument": "Argument: %s",
 
   "minions.command.input.int.fail": "Not an integer",
   "minions.command.input.float.fail": "Not a number",
@@ -70,6 +71,7 @@
   "value_type.minions.turn_direction": "Turn Direction",
 
   "value_supplier_type.minions.fixed": "Value",
+  "value_supplier_type.minions.fixed.display": "Fixed Value: %s",
 
   "item.minions.attack_module": "Attack Module",
   "item.minions.interact_module": "Interact Module",

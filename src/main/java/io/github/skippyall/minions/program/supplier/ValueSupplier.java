@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -18,6 +19,8 @@ public interface ValueSupplier<T, R extends InstructionRuntime<R>> {
     ValueType<T> getValueType();
 
     ValueSupplierType<R> getType();
+
+    Text getDisplayText();
 
     default <U,A extends ValueSupplier<U,R>> @Nullable A cast(ValueType<U> type) {
         if(getValueType() == type) {

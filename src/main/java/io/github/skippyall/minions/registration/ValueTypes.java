@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class ValueTypes {
     public static ValueType<Long> LONG = registerSimple(
@@ -23,7 +24,8 @@ public class ValueTypes {
                     player,
                     Text.literal("Integer"),
                     String.valueOf(oldValue)
-            )
+            ),
+            value -> Text.literal(value.toString())
     );
 
     public static ValueType<Double> DOUBLE = registerSimple(
@@ -34,7 +36,16 @@ public class ValueTypes {
                     player,
                     Text.literal("Number"),
                     String.valueOf(oldValue)
-            )
+            ),
+            value -> Text.literal(value.toString())
+    );
+
+    public static ValueType<Boolean> BOOLEAN = registerSimple(
+            "boolean",
+            Codec.BOOL,
+            false,
+            ChoiceInput.inputBoolean(Text.literal("")),
+            value -> Text.literal(value.toString())
     );
 
     public static ValueType<String> STRING = registerSimple(
@@ -45,17 +56,25 @@ public class ValueTypes {
                     player,
                     Text.literal("Text"),
                     oldValue)
-            )
+            ),
+            value -> Text.literal("\"" + value + "\"")
     );
 
     public static ValueType<TurnDirection> TURN_DIRECTION = registerSimple(
             "turn_direction",
             TurnDirection.CODEC,
             TurnDirection.RIGHT,
-            ChoiceInput.createDialogOpener(TurnDirection.values())
+            ChoiceInput.createDialogOpener(TurnDirection.values()),
+            value -> Text.literal(value.name)
     );
 
-    private static <T> ValueType<T> registerSimple(String id, Codec<T> codec, T defaultValue, BiFunction<ServerPlayerEntity, T, CompletableFuture<T>> valueDialogOpener) {
+    private static <T> ValueType<T> registerSimple(
+            String id,
+            Codec<T> codec,
+            T defaultValue,
+            BiFunction<ServerPlayerEntity, T, CompletableFuture<T>> valueDialogOpener,
+            Function<T, Text> textDisplay
+    ) {
         Identifier identifier = Identifier.of(Minions.MOD_ID, id);
         return Registry.register(
                 MinionRegistries.VALUE_TYPES,
@@ -63,7 +82,8 @@ public class ValueTypes {
                 new ValueType<>(
                         codec,
                         defaultValue,
-                        valueDialogOpener
+                        valueDialogOpener,
+                        textDisplay
                 )
         );
     }

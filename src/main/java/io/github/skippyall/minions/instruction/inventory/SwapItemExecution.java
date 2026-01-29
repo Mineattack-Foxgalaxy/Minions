@@ -4,21 +4,28 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
+import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
-import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerInventory;
+import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 
 public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
+    public static final Parameter<Long> FROM_SLOT = new Parameter<>("from_slot", ValueTypes.LONG);
+    public static final Parameter<Boolean> FROM_SCREEN = new Parameter<>("from_screen", ValueTypes.BOOLEAN);
+    public static final Parameter<Long> TO_SLOT = new Parameter<>("to_slot", ValueTypes.LONG);
+    public static final Parameter<Boolean> TO_SCREEN = new Parameter<>("to_screen", ValueTypes.BOOLEAN);
+
     private int fromSlot;
     private boolean fromScreen;
     private int toSlot;
     private boolean toScreen;
+
+    private ItemStack cursor = ItemStack.EMPTY;
 
     @Override
     public void start(MinionRuntime runtime) {
@@ -38,35 +45,38 @@ public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
             return;
         }
 
+        simulateClick(minion, fromSlot, fromScreen);
+        simulateClick(minion, toSlot, toScreen);
+        simulateClick(minion, fromSlot, fromScreen);
+        minion.getInventory().offerOrDrop(cursor);
+    }
 
+    private ScreenHandler getScreen(MinionFakePlayer minion, boolean screen) {
+        if(screen) {
+            return minion.currentScreenHandler;
+        } else  {
+            return minion.playerScreenHandler;
+        }
     }
 
     private boolean checkBounds(MinionFakePlayer minion, int slot, boolean screen) {
-        if(screen) {
-            return slot >= 0 && slot < minion.currentScreenHandler.slots.size();
-        } else {
-            return slot >= 0 && slot <= PlayerInventory.OFF_HAND_SLOT;
-        }
+        return slot >= 0 && slot < getScreen(minion, screen).slots.size();
     }
 
     private ItemStack getStack(MinionFakePlayer minion, int slot, boolean screen) {
-        if(screen) {
-            return minion.currentScreenHandler.getSlot(slot).getStack();
-        } else {
-            return minion.getInventory().getStack(slot);
-        }
+        return getScreen(minion, screen).getSlot(slot).getStack();
     }
 
     private boolean canExchange(MinionFakePlayer minion, int slotIndex, boolean screen, ItemStack newStack) {
-        if(screen) {
-            Slot slot = minion.currentScreenHandler.getSlot(slotIndex);
-            if(!slot.getStack().isEmpty() && !slot.canTakeItems(minion)) {
-                return false;
-            }
-            if(!newStack.isEmpty() && !slot.canInsert(newStack)) {
-                return false;
-            }
-        } else {
+        ScreenHandler screenHandler = getScreen(minion, screen);
+        Slot slot = screenHandler.getSlot(slotIndex);
+        if(!slot.getStack().isEmpty() && !slot.canTakeItems(minion)) {
+            return false;
+        }
+        if(!newStack.isEmpty() && !slot.canInsert(newStack)) {
+            return false;
+        }
+        /*else {
             if(slotIndex >= PlayerInventory.MAIN_SIZE && slotIndex < PlayerInventory.OFF_HAND_SLOT) {
                 if(!minion.canEquip(newStack, PlayerInventory.EQUIPMENT_SLOTS.get(slotIndex))) {
                     return false;
@@ -75,15 +85,17 @@ public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
                     return false;
                 }
             }
-        }
+        }*/
         return true;
     }
 
     private void simulateClick(MinionFakePlayer minion, int slotIndex, boolean screen) {
-        if(screen) {
-            minion.currentScreenHandler.onSlotClick(slotIndex, 0, SlotActionType.SWAP, minion);
-        } else {
-        }
+        ScreenHandler screenHandler = getScreen(minion, screen);
+        ItemStack previousCursor = screenHandler.getCursorStack();
+        screenHandler.setCursorStack(cursor);
+        screenHandler.onSlotClick(slotIndex, 0, SlotActionType.SWAP, minion);
+        cursor = screenHandler.getCursorStack();
+        screenHandler.setCursorStack(previousCursor);
     }
 
     @Override
@@ -93,7 +105,7 @@ public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
 
     @Override
     public boolean isDone(MinionRuntime runtime) {
-        return false;
+        return true;
     }
 
     @Override
@@ -103,7 +115,10 @@ public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
 
     @Override
     public void readArguments(ValueSupplierList<MinionRuntime> arguments, MinionRuntime runtime) {
-
+        fromSlot = Math.clamp(arguments.getValue(FROM_SLOT, runtime), 0, Integer.MAX_VALUE);
+        fromScreen = arguments.getValue(FROM_SCREEN, runtime);
+        toSlot = Math.clamp(arguments.getValue(TO_SLOT, runtime), 0, Integer.MAX_VALUE);
+        toScreen = arguments.getValue(TO_SCREEN, runtime);
     }
 
     @Override

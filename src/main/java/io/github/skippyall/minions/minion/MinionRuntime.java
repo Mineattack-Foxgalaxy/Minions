@@ -36,11 +36,24 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
     }
 
     public void disableInstructionType(InstructionType<MinionRuntime> instructionType) {
-
+        updatePausedStatus(instructionType);
     }
 
     public void enableInstructionType(InstructionType<MinionRuntime> instructionType) {
+        updatePausedStatus(instructionType);
+    }
 
+    public void updatePausedStatus(InstructionType<MinionRuntime> instructionType) {
+        for(ConfiguredInstruction<MinionRuntime> instruction : configuredInstructions.values()) {
+            if(instruction.getInstruction() == instructionType) {
+                instruction.updatePauseStatus(this);
+            }
+        }
+    }
+
+    @Override
+    public boolean isInstructionEnabled(InstructionType<MinionRuntime> type) {
+        return minion.getModuleInventory().hasInstruction(type);
     }
 
     public Set<String> getInstructionNames() {
