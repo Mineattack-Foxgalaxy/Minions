@@ -1,8 +1,8 @@
 package io.github.skippyall.minions.mixins.antimobcap;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.skippyall.minions.mixinhelper.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
-import io.github.skippyall.minions.mixinhelper.ChunkLevelManagerAccessor;
+import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
+import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManagerAccessor;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.server.network.ServerPlayerEntity;

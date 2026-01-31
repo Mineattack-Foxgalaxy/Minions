@@ -2,8 +2,8 @@ package io.github.skippyall.minions.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import io.github.skippyall.minions.mixinhelper.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
-import io.github.skippyall.minions.mixinhelper.ChunkLevelManagerAccessor;
+import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
+import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManagerAccessor;
 import io.github.skippyall.minions.mixins.antimobcap.ServerChunkManagerAccessor;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ChunkLevelManager;

@@ -63,6 +63,8 @@ dependencies {
     modImplementation include("eu.pb4:sgui:${project.sgui_version}")
     modImplementation include("xyz.nucleoid:server-translations-api:${project.server_translations_version}")
 
+    implementation include("com.electronwill.night-config:toml:${project.night_config_version}")
+
     modCompileOnly "maven.modrinth:universal-graves:${project.universal_graves_version}"
 }
 

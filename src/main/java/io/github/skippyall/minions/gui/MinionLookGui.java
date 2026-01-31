@@ -89,7 +89,7 @@ public class MinionLookGui extends SimpleGui {
     public void openRenameGui(ServerPlayerEntity player, ItemStack minionItem) {
         TextInput.inputSync(player, Text.translatable("minions.gui.look.rename.title"), "Minion", name -> MinionProfileUtils.checkMinionNameWithoutPrefix(player.getServer(), name))
                 .thenAccept(name -> {
-                    MinionItem.setData(player.getServer(), getData().withName(MinionProfileUtils.PREFIX + name), minionItem);
+                    MinionItem.setData(player.getServer(), getData().withName(MinionProfileUtils.getPrefix() + name), minionItem);
                     open();
                 });
     }

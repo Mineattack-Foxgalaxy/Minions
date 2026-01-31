@@ -19,6 +19,8 @@ public class Minions implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        MinionsConfig.get();
+
         MinionRegistration.register();
 
         PolymerUtil.register();
@@ -31,9 +33,7 @@ public class Minions implements ModInitializer {
             });
         });
 
-        CommandRegistrationCallback.EVENT.register((commandDispatcher, commandRegistryAccess, registrationEnvironment) -> {
-            MinionsCommand.register(commandDispatcher);
-        });
+        CommandRegistrationCallback.EVENT.register(MinionsCommand::register);
 
         /*ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, world) -> {
             if(blockEntity instanceof MinionTriggerBlockEntity) {

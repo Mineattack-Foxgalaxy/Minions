@@ -24,7 +24,7 @@ public class MinionArgument {
 
     public static MinionData parse(MinecraftServer server, String argument) throws CommandSyntaxException {
         Optional<MinionData> data = Optional.empty();
-        if(argument.startsWith(MinionProfileUtils.PREFIX)) {
+        if(argument.startsWith(MinionProfileUtils.getPrefix())) {
             data = MinionPersistentState.get(server).getMinionWithName(argument);
         } else {
             try {

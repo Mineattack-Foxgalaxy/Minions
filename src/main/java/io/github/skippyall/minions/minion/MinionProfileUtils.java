@@ -3,6 +3,7 @@ package io.github.skippyall.minions.minion;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.StringReader;
+import io.github.skippyall.minions.MinionsConfig;
 import io.github.skippyall.minions.gui.input.Result;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
@@ -13,7 +14,9 @@ import java.util.UUID;
 import static io.github.skippyall.minions.Minions.LOGGER;
 
 public class MinionProfileUtils {
-    public static final String PREFIX = "+";
+    public static String getPrefix() {
+        return MinionsConfig.get().minion.minionPrefix;
+    }
 
     public static GameProfile makeNewMinionProfile(UUID uuidMinion, String username, PropertyMap skin) {
         if(uuidMinion == null) {
@@ -35,15 +38,15 @@ public class MinionProfileUtils {
             }
         }
 
-        if((PREFIX + name).length() > 16)  {
+        if((getPrefix() + name).length() > 16)  {
             return new Result.Error<>(Text.translatable("minions.generic.name.too_long"));
         }
 
-        if(!StringHelper.isValidPlayerName(PREFIX + name)) {
+        if(!StringHelper.isValidPlayerName(getPrefix() + name)) {
             return new Result.Error<>(Text.translatable("minions.generic.name.invalid"));
         }
 
-        if(MinionPersistentState.get(server).isMinionNameTaken(PREFIX + name)) {
+        if(MinionPersistentState.get(server).isMinionNameTaken(getPrefix() + name)) {
             return new Result.Error<>(Text.translatable("minions.generic.name.taken"));
         }
 
