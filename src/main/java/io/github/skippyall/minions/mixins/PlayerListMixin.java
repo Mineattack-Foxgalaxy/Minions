@@ -8,6 +8,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.minion.fakeplayer.NetHandlerPlayServerFake;
+import io.github.skippyall.minions.registration.MinionConfigOptions;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.server.MinecraftServer;
@@ -61,7 +62,7 @@ public class PlayerListMixin {
 
     @WrapOperation(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V"))
     public void noLoginMessage(PlayerManager instance, Text message, boolean overlay, Operation<Void> original, @Local(argsOnly = true) ServerPlayerEntity player) {
-        if(!(player instanceof MinionFakePlayer)) {
+        if(!(player instanceof MinionFakePlayer minion && !minion.getData().config().getOption(MinionConfigOptions.sendLoginMessage))) {
             original.call(instance, message, overlay);
         }
     }
@@ -69,7 +70,7 @@ public class PlayerListMixin {
     @ModifyReceiver(method = "checkCanJoin", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
     public List<ServerPlayerEntity> noMinionCounting(List<ServerPlayerEntity> instance) {
         return instance.stream()
-                .filter(player -> !(player instanceof MinionFakePlayer))
+                .filter(player -> !(player instanceof MinionFakePlayer minion && !minion.getData().config().getOption(MinionConfigOptions.countForPlayerLimit)))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 }

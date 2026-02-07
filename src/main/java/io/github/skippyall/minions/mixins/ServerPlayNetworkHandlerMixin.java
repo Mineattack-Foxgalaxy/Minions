@@ -3,6 +3,7 @@ package io.github.skippyall.minions.mixins;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.registration.MinionConfigOptions;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +19,7 @@ public class ServerPlayNetworkHandlerMixin {
 
     @WrapOperation(method = "cleanUp", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V"))
     public void noLogoutMessage(PlayerManager instance, Text message, boolean overlay, Operation<Void> original) {
-        if(!(player instanceof MinionFakePlayer)) {
+        if(!(player instanceof MinionFakePlayer minion && !minion.getData().config().getOption(MinionConfigOptions.sendLogoutMessage))) {
             original.call(instance, message, overlay);
         }
     }

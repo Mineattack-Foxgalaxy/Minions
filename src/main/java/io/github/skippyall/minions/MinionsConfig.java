@@ -13,6 +13,8 @@ import com.electronwill.nightconfig.toml.TomlFormat;
 import com.electronwill.nightconfig.toml.TomlParser;
 import net.fabricmc.loader.api.FabricLoader;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static com.electronwill.nightconfig.core.serde.annotations.SerdeSkipDeserializingIf.SkipDeIf.IS_MISSING;
@@ -44,7 +46,15 @@ public class MinionsConfig {
     }
 
     private static Path getPath() {
-        return FabricLoader.getInstance().getConfigDir().resolve(Minions.MOD_ID + ".toml");
+        Path minionsDir = FabricLoader.getInstance().getConfigDir().resolve("minions");
+        if(!Files.isDirectory(minionsDir)) {
+            try {
+                Files.createDirectory(minionsDir);
+            } catch (IOException e) {
+                Minions.LOGGER.error("Could not create config dir", e);
+            }
+        }
+        return minionsDir.resolve(Minions.MOD_ID + ".toml");
     }
 
     public static MinionsConfig get() {
@@ -55,7 +65,6 @@ public class MinionsConfig {
     }
 
     public static void loadConfig() {
-        System.out.println("loading");
         try {
             CommentedConfig config = new TomlParser().parse(getPath(), (file, configFormat) -> {
                 CommentedConfig defaultConfig = ObjectSerializer.standard().serializeFields(new MinionsConfig(), TomlFormat::newConfig);
@@ -65,8 +74,7 @@ public class MinionsConfig {
 
             INSTANCE = ObjectDeserializer.standard().deserializeFields(config, MinionsConfig::new);
         } catch (SerdeException | ParsingException | WritingException e) {
-            System.out.println("[minions] Error while reading config");
-            e.printStackTrace();
+            Minions.LOGGER.error("Error while reading config", e);
             INSTANCE = new MinionsConfig();
         }
     }

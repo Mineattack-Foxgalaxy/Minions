@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.docs.ReferenceEntry;
 import io.github.skippyall.minions.gui.GuiDisplay;
+import io.github.skippyall.minions.minion.MinionConfig;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.skin.SkinProvider;
@@ -33,6 +34,7 @@ public class MinionRegistries {
     public static final Registry<Codec<? extends MinionListener>> MINION_LISTENER_CODECS = registry("minion_listener_codec");
     public static final Registry<MapCodec<? extends Clipboard>> CLIPBOARD_TYPES = registry("clipboard_type");
     public static final Registry<SpecialAbility> SPECIAL_ABILITIES = registry("special_ability");
+    public static final Registry<MinionConfig.Option<?>> MINION_CONFIG_OPTIONS = registry("minion_config_option");
 
     public static final RegistryKey<Registry<GuiDisplay>> GUI_DISPLAY = key("gui_display");
     public static final RegistryKey<Registry<ReferenceEntry>> REFERENCE_ENTRY = key("reference_entry");

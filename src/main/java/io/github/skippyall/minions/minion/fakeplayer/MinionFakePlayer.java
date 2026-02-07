@@ -3,6 +3,7 @@ package io.github.skippyall.minions.minion.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
+import io.github.skippyall.minions.registration.MinionConfigOptions;
 import io.github.skippyall.minions.registration.MinionItems;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.MinionData;
@@ -143,11 +144,11 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     }
 
     public boolean canSpawnMobs() {
-        return moduleInventory.hasAbility(SpecialAbilities.MOB_SPAWNING);
+        return moduleInventory.hasAbility(SpecialAbilities.MOB_SPAWNING) || getData().config().getOption(MinionConfigOptions.spawnAndDespawnMobs);
     }
 
     public boolean canDespawnMobs() {
-        return moduleInventory.hasAbility(SpecialAbilities.MOB_SPAWNING);
+        return canSpawnMobs();
     }
 
     @Override
