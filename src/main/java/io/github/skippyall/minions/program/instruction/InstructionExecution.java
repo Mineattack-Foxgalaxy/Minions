@@ -8,10 +8,6 @@ import net.minecraft.storage.WriteView;
 
 /**
  * Responsible for executing instructions.
- * When an instruction is executed:
- * <li>A new instance is created using the factory</li>
- * <li>{@link InstructionExecution#readArguments(ValueSupplierList, R) readFromParameters} is called</li>
- * <li>{@link InstructionExecution#start(R) start} is called</li>
  */
 public interface InstructionExecution<R extends InstructionRuntime<R>> {
     /**
@@ -26,18 +22,21 @@ public interface InstructionExecution<R extends InstructionRuntime<R>> {
     default void tick(R runtime) {}
 
     /**
-     * Called every tick to determine if the execution of this instruction should be stopped.
+     * Called before and after {@code tick} to determine if the execution of this instruction should be stopped.
      * @return <code>true</code> if the instruction is done, <code>false</code> otherwise.
      */
     boolean isDone(R runtime);
 
+    /**
+     * Called when the instruction is paused. This freezes the instruction in its current state.
+     */
     default void pause(R runtime) {}
 
     default void resume(R runtime) {}
 
     /**
      * Stops this execution. Is called when isDone returns true, but it may also be called before that.
-     * This should undo changes to the minion unless they are supposed to be permanent.
+     * This should undo temporary changes to the minion.
      *
      * @param runtime The runtime that was executing this instruction.
      */

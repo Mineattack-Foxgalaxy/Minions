@@ -26,7 +26,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         this.paused = paused;
     }
 
-    private ConfiguredInstruction(InstructionType<R> instruction, ValueSupplierList<R> arguments, ValueConsumerList<R> valueConsumers, @Nullable InstructionExecution<R> execution) {
+    public ConfiguredInstruction(InstructionType<R> instruction, ValueSupplierList<R> arguments, ValueConsumerList<R> valueConsumers, @Nullable InstructionExecution<R> execution) {
         this.instruction = instruction;
         this.arguments = arguments;
         this.valueConsumers = valueConsumers;

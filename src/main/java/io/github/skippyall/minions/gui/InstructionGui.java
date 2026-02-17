@@ -2,6 +2,7 @@ package io.github.skippyall.minions.gui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.gui.input.Result;
@@ -129,20 +130,22 @@ public class InstructionGui {
         gui.open();
     }
 
-    public static CompletableFuture<ValueSupplierType<MinionRuntime>> selectArgumentType(ServerPlayerEntity player, MinionFakePlayer minion, ConfiguredInstruction<MinionRuntime> instruction) {
+    public static CompletableFuture<ValueSupplierType<MinionRuntime>> selectArgumentType(ServerPlayerEntity player, MinionFakePlayer minion, ValueType<?> valueType, ConfiguredInstruction<MinionRuntime> instruction) {
         CompletableFuture<ValueSupplierType<MinionRuntime>> future = new CompletableFuture<>();
         SimpleGui gui = new InstructionBoundSimpleGui(ScreenHandlerType.GENERIC_9X3, player, minion, instruction);
         for (ValueSupplierType<MinionRuntime> type : MinionRegistries.VALUE_SUPPLIER_TYPES) {
-            gui.addSlot(new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_SUPPLIER_TYPES, type, player.getRegistryManager()))
-                    .setCallback(() -> future.complete(type))
-            );
+            if(type.isConfigurable(player, valueType, minion)) {
+                gui.addSlot(new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_SUPPLIER_TYPES, type, player.getRegistryManager()))
+                        .setCallback(() -> future.complete(type))
+                );
+            }
         }
         gui.open();
         return future;
     }
 
     public static <T> void configureTypeAndValue(String name, ConfiguredInstruction<MinionRuntime> instruction, Parameter<T> parameter, MinionFakePlayer minion, ServerPlayerEntity player) {
-        selectArgumentType(player, minion, instruction)
+        selectArgumentType(player, minion, parameter.type(), instruction)
                 .thenApply(type -> type.openConfiguration(player, parameter.type(), null)
                         .thenAccept(newArgument -> {
                             instruction.getArguments().setArgument(parameter, newArgument);

@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.minion;
 
+import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
@@ -16,10 +17,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
     private final MinionFakePlayer minion;
     private final Map<String, ConfiguredInstruction<MinionRuntime>> configuredInstructions = new HashMap<>();
+    private final Map<Integer, ConfiguredInstruction<MinionRuntime>> webSocketInstructions = new ConcurrentHashMap<>();
 
     public MinionRuntime(MinionFakePlayer minion) {
         this.minion = minion;
@@ -31,6 +34,10 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
 
     public void tick() {
         for (ConfiguredInstruction<MinionRuntime> instruction : configuredInstructions.values()) {
+            instruction.tick(this);
+        }
+
+        for(ConfiguredInstruction<MinionRuntime> instruction : webSocketInstructions.values()) {
             instruction.tick(this);
         }
     }
@@ -45,6 +52,11 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
 
     public void updatePausedStatus(InstructionType<MinionRuntime> instructionType) {
         for(ConfiguredInstruction<MinionRuntime> instruction : configuredInstructions.values()) {
+            if(instruction.getInstruction() == instructionType) {
+                instruction.updatePauseStatus(this);
+            }
+        }
+        for(ConfiguredInstruction<MinionRuntime> instruction : webSocketInstructions.values()) {
             if(instruction.getInstruction() == instructionType) {
                 instruction.updatePauseStatus(this);
             }
@@ -100,6 +112,16 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
                 minionListener.onInstructionsUpdate(minion);
             });
         }
+    }
+
+    public void addWebSocketInstruction(int id, ConfiguredInstruction<MinionRuntime> instruction) {
+        webSocketInstructions.put(id, instruction);
+        instruction.addListener(new ConfiguredInstructionListener() {
+            @Override
+            public void onStop(ConfiguredInstruction<?> instruction) {
+                webSocketInstructions.remove(id);
+            }
+        });
     }
 
     public void save(WriteView view) {

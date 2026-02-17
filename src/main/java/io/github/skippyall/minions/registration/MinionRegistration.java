@@ -13,6 +13,7 @@ public class MinionRegistration {
         MinionListeners.register();
         SkinProviders.register();
         SpecialAbilities.register();
+        ValueConsumers.register();
         ValueSuppliers.register();
         ValueTypes.register();
 

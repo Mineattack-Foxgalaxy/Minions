@@ -9,7 +9,8 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class SerializableListenerManager<T extends SerializableListenerManager.SerializableListener> extends ListenerManager<T> {
     private final Registry<Codec<? extends T>> registry;
@@ -18,7 +19,7 @@ public class SerializableListenerManager<T extends SerializableListenerManager.S
         this.registry = registry;
     }
 
-    public SerializableListenerManager(Registry<Codec<? extends T>> registry, List<T> listeners) {
+    private SerializableListenerManager(Registry<Codec<? extends T>> registry, Set<T> listeners) {
         super(listeners);
         this.registry = registry;
     }
@@ -28,7 +29,7 @@ public class SerializableListenerManager<T extends SerializableListenerManager.S
                     listener -> listener.getCodecId().map(registry::get).orElse(Codec.unit(null)),
                     codec -> codec.fieldOf("data")
             ).listOf().xmap(
-                    list -> new SerializableListenerManager<>(registry, new CopyOnWriteArrayList<>(list)),
+                    list -> new SerializableListenerManager<>(registry, new CopyOnWriteArraySet<>(list)),
                     manager -> {
                         List<T> serializableListeners = new ArrayList<>();
                         for(T listener : manager.listeners) {

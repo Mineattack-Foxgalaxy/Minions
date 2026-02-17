@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public class FixedValueSupplierType<R extends InstructionRuntime<R>> extends ValueSupplierType<R> {
+public class FixedValueSupplierType<R extends InstructionRuntime<R>> implements ValueSupplierType<R> {
     @Override
     public <T> Codec<FixedValueSupplier<T,R>> getCodec(ValueType<T> valueType) {
         return valueType.codec().xmap(value -> new FixedValueSupplier<>(this, valueType, value), FixedValueSupplier::getValue);

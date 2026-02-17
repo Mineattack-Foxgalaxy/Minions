@@ -64,6 +64,7 @@ dependencies {
     modImplementation include("xyz.nucleoid:server-translations-api:${project.server_translations_version}")
 
     implementation include("com.electronwill.night-config:toml:${project.night_config_version}")
+    compileOnly("io.netty:netty-codec-http:${project.netty_version}.Final")
 
     modCompileOnly "maven.modrinth:universal-graves:${project.universal_graves_version}"
 }
