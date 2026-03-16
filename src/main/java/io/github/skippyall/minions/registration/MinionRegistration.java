@@ -5,10 +5,12 @@ public class MinionRegistration {
         MinionRegistries.register();
 
         ClipboardTypes.register();
+        DocsEntryTypes.register();
         GuiDisplayTypes.register();
         Instructions.register();
         MinionBlocks.register();
         MinionComponentTypes.register();
+        MinionConfigOptions.register();
         MinionItems.register();
         MinionListeners.register();
         SkinProviders.register();

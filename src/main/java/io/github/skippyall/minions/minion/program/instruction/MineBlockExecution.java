@@ -1,5 +1,5 @@
 //partially code from https://github.com/gnembon/fabric-carpet (EntityPlayerActionPack)
-package io.github.skippyall.minions.instruction;
+package io.github.skippyall.minions.minion.program.instruction;
 
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;

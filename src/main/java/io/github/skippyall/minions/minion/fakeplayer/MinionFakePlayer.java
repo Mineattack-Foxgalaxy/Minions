@@ -23,6 +23,8 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.NetworkSide;
@@ -208,6 +210,21 @@ public class MinionFakePlayer extends ServerPlayerEntity {
             // the game not gonna crash violently.
         }
 
+    }
+
+    @Override
+    public boolean startRiding(Entity entityToRide, boolean force) {
+        if (super.startRiding(entityToRide, force)) {
+            // from ClientPacketListener.handleSetEntityPassengersPacket
+            if (entityToRide instanceof AbstractBoatEntity) {
+                this.lastYaw = entityToRide.getYaw();
+                this.setYaw(entityToRide.getYaw());
+                this.setHeadYaw(entityToRide.getHeadYaw());
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void shakeOff()

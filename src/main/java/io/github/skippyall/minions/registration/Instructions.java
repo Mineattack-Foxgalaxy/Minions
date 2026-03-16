@@ -1,17 +1,17 @@
 package io.github.skippyall.minions.registration;
 
-import io.github.skippyall.minions.instruction.inventory.SwapItemExecution;
+import io.github.skippyall.minions.minion.program.instruction.inventory.SwapItemExecution;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
-import io.github.skippyall.minions.instruction.ActionExecution;
-import io.github.skippyall.minions.instruction.MineBlockExecution;
-import io.github.skippyall.minions.instruction.move.ContinuousWalkExecution;
-import io.github.skippyall.minions.instruction.move.TurnExecution;
-import io.github.skippyall.minions.instruction.move.TurnVectorExecution;
-import io.github.skippyall.minions.instruction.move.WalkExecution;
+import io.github.skippyall.minions.minion.program.instruction.ActionExecution;
+import io.github.skippyall.minions.minion.program.instruction.MineBlockExecution;
+import io.github.skippyall.minions.minion.program.instruction.move.ContinuousWalkExecution;
+import io.github.skippyall.minions.minion.program.instruction.move.TurnExecution;
+import io.github.skippyall.minions.minion.program.instruction.move.TurnVectorExecution;
+import io.github.skippyall.minions.minion.program.instruction.move.WalkExecution;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;

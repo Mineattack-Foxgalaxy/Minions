@@ -2,12 +2,14 @@ package io.github.skippyall.minions.registration;
 
 import eu.pb4.polymer.core.api.block.PolymerBlockUtils;
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.block.input.AnalogInputBlock;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlock;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -34,6 +36,15 @@ public class MinionBlocks {
                     MINION_TRIGGER_ID,
                     FabricBlockEntityTypeBuilder.create(MinionTriggerBlockEntity::new, MINION_TRIGGER_BLOCK).build()
             );
+
+    public static final Identifier ANALOG_INPUT_BLOCK_ID = Identifier.of(Minions.MOD_ID, "analog_input");
+    public static final AnalogInputBlock ANALOG_INPUT_BLOCK = Registry.register(
+            Registries.BLOCK,
+            ANALOG_INPUT_BLOCK_ID,
+            new AnalogInputBlock(AbstractBlock.Settings.create()
+                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, ANALOG_INPUT_BLOCK_ID))
+            )
+    );
 
     public static void register() {
         PolymerBlockUtils.registerBlockEntity(MINION_TRIGGER_BE_TYPE);

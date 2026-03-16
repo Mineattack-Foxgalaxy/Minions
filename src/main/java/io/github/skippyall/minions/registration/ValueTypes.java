@@ -1,11 +1,12 @@
 package io.github.skippyall.minions.registration;
 
 import com.mojang.serialization.Codec;
+import io.github.skippyall.minions.program.value.SimpleValueType;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.gui.input.ChoiceInput;
 import io.github.skippyall.minions.gui.input.TextInput;
-import io.github.skippyall.minions.instruction.move.TurnDirection;
+import io.github.skippyall.minions.minion.program.instruction.move.TurnDirection;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -79,7 +80,7 @@ public class ValueTypes {
         return Registry.register(
                 MinionRegistries.VALUE_TYPES,
                 identifier,
-                new ValueType<>(
+                new SimpleValueType<>(
                         codec,
                         defaultValue,
                         valueDialogOpener,

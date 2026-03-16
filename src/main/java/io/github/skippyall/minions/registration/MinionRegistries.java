@@ -3,6 +3,7 @@ package io.github.skippyall.minions.registration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.docs.DocsEntry;
 import io.github.skippyall.minions.docs.ReferenceEntry;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.minion.MinionConfig;
@@ -35,9 +36,10 @@ public class MinionRegistries {
     public static final Registry<MapCodec<? extends Clipboard>> CLIPBOARD_TYPES = registry("clipboard_type");
     public static final Registry<SpecialAbility> SPECIAL_ABILITIES = registry("special_ability");
     public static final Registry<MinionConfig.Option<?>> MINION_CONFIG_OPTIONS = registry("minion_config_option");
+    public static final Registry<MapCodec<? extends DocsEntry>> DOCS_ENTRY_TYPES = registry("docs_entry_type");
 
     public static final RegistryKey<Registry<GuiDisplay>> GUI_DISPLAY = key("gui_display");
-    public static final RegistryKey<Registry<ReferenceEntry>> REFERENCE_ENTRY = key("reference_entry");
+    public static final RegistryKey<Registry<ReferenceEntry>> DOCS_ENTRY = key("docs_entry");
 
     private static <T> Registry<T> registry(String id) {
         return FabricRegistryBuilder.<T>createSimple(key(id)).attribute(RegistryAttribute.OPTIONAL).buildAndRegister();
@@ -49,6 +51,5 @@ public class MinionRegistries {
 
     public static void register() {
         DynamicRegistries.register(GUI_DISPLAY, GuiDisplay.CODEC);
-        DynamicRegistries.register(REFERENCE_ENTRY, ReferenceEntry.CODEC);
     }
 }

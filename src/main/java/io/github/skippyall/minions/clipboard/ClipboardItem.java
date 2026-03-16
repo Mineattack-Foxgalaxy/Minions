@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
@@ -38,6 +40,12 @@ public class ClipboardItem extends Item implements PolymerItem {
     public static ItemStack createInstructionReference(MinionFakePlayer minion, String instructionName) {
         ItemStack stack = new ItemStack(MinionItems.REFERENCE_ITEM);
         stack.set(MinionComponentTypes.REFERENCE, new InstructionClipboard(minion.getUuid(), instructionName, minion.getGameProfile().getName()));
+        return stack;
+    }
+
+    public static ItemStack createBlockPosReference(World world, BlockPos pos) {
+        ItemStack stack = new ItemStack(MinionItems.REFERENCE_ITEM);
+        stack.set(MinionComponentTypes.REFERENCE, new BlockPosClipboard(world.getRegistryKey(), pos));
         return stack;
     }
 }

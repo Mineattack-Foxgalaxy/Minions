@@ -13,7 +13,8 @@ public class MinionsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess access, CommandManager.RegistrationEnvironment environment) {
         LiteralArgumentBuilder<ServerCommandSource> builder = literal("minions")
                 .then(SpawnSubcommand.SPAWN)
-                .then(ListSubcommand.LIST);
+                .then(ListSubcommand.LIST)
+                .then(DocsSubcommand.DOCS);
 
         if(MinionsConfig.get().minion.enableMobCapHacks) {
             builder.then(MobCapDebugSubcommand.MOB_CAP_DEBUG);

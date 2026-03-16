@@ -2,6 +2,7 @@ package io.github.skippyall.minions.registration;
 
 import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.clipboard.BlockPosClipboard;
 import io.github.skippyall.minions.clipboard.InstructionClipboard;
 import io.github.skippyall.minions.clipboard.Clipboard;
 import net.minecraft.registry.Registry;
@@ -14,5 +15,6 @@ public class ClipboardTypes {
 
     static void register() {
         register("instruction", InstructionClipboard.CODEC);
+        register("position", BlockPosClipboard.CODEC);
     }
 }

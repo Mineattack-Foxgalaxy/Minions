@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.util;
+package io.github.skippyall.minions.polymer;
 
 import eu.pb4.polymer.networking.api.PolymerNetworking;
 import eu.pb4.polymer.networking.api.server.PolymerServerNetworking;
@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.util.Identifier;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-public class PolymerUtil {
+public class VersionSync {
     public static final int NETWORK_VERSION = 1;
 
     public static boolean isOnClient(PacketContext context) {
@@ -29,7 +29,7 @@ public class PolymerUtil {
 
         @Override
         public Id<? extends CustomPayload> getId() {
-            return null;
+            return PACKET_ID;
         }
     }
 

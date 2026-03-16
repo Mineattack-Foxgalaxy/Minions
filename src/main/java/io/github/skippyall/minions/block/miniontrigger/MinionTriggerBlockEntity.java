@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.block.miniontrigger;
 
+import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlockEntity;
 import io.github.skippyall.minions.listener.BlockEntityMinionListener;
 import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.minion.MinionRuntime;
@@ -15,28 +16,19 @@ import net.minecraft.util.math.BlockPos;
 import java.util.Optional;
 import java.util.UUID;
 
-public class MinionTriggerBlockEntity extends BlockEntity {
-    private UUID minionUuid;
-    private String instructionName = "";
-
+public class MinionTriggerBlockEntity extends InstructionBoundBlockEntity<MinionTriggerMinionListener> {
     public MinionTriggerBlockEntity(BlockPos pos, BlockState state) {
         super(MinionBlocks.MINION_TRIGGER_BE_TYPE, pos, state);
     }
 
-    public void removeListener() {
-        MinionTriggerMinionListener.removeListener(world, pos, minionUuid, instructionName);
+    @Override
+    protected MinionTriggerMinionListener createListener() {
+        return new MinionTriggerMinionListener(world.getRegistryKey(), pos, minionUuid, instructionName);
     }
 
-    public void addListener() {
-        MinionTriggerMinionListener.addListener(world, pos, minionUuid, instructionName);
-    }
-
-    public void setInstruction(UUID minionUuid, String instructionName) {
-        removeListener();
-        this.minionUuid = minionUuid;
-        this.instructionName = instructionName;
-        addListener();
-        markDirty();
+    @Override
+    protected Class<MinionTriggerMinionListener> getListenerClass() {
+        return MinionTriggerMinionListener.class;
     }
 
     public void updatePower() {
@@ -64,33 +56,6 @@ public class MinionTriggerBlockEntity extends BlockEntity {
             return 15;
         }
         return 0;
-    }
-
-    public Optional<MinionFakePlayer> getMinion() {
-        if(minionUuid != null && world != null && world.getPlayerByUuid(minionUuid) instanceof MinionFakePlayer minion) {
-            return Optional.of(minion);
-        }
-        return Optional.empty();
-    }
-
-    public UUID getMinionUuid() {
-        return minionUuid;
-    }
-
-    public String getInstructionName() {
-        return instructionName;
-    }
-
-    public Optional<ConfiguredInstruction<MinionRuntime>> getInstruction(MinionFakePlayer minion) {
-        return Optional.ofNullable(minion.getInstructionManager().getInstruction(instructionName));
-    }
-
-    public Optional<ConfiguredInstruction<MinionRuntime>> getInstruction() {
-        return getMinion().flatMap(this::getInstruction);
-    }
-
-    public MinionTriggerMinionListener getListener() {
-        return BlockEntityMinionListener.getListener(world, pos, minionUuid, MinionTriggerMinionListener.class);
     }
 
     @Override

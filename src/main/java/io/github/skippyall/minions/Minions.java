@@ -2,13 +2,16 @@ package io.github.skippyall.minions;
 
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import io.github.skippyall.minions.command.MinionsCommand;
+import io.github.skippyall.minions.docs.DocsManager;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.registration.MinionRegistration;
-import io.github.skippyall.minions.util.PolymerUtil;
+import io.github.skippyall.minions.polymer.VersionSync;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.resource.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +26,7 @@ public class Minions implements ModInitializer {
 
         MinionRegistration.register();
 
-        PolymerUtil.register();
+        VersionSync.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             MinionPersistentState.get(server).getMinionData().forEach((uuid, data) -> {
@@ -42,5 +45,7 @@ public class Minions implements ModInitializer {
         });*/
 
         PolymerResourcePackUtils.addModAssets(Minions.MOD_ID);
+
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DocsManager());
     }
 }

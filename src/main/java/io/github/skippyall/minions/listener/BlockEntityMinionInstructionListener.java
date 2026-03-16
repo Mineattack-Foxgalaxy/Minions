@@ -26,7 +26,7 @@ public abstract class BlockEntityMinionInstructionListener<E extends BlockEntity
     }
 
     @Override
-    protected void add(MinecraftServer server) {
+    public void add(MinecraftServer server) {
         super.add(server);
         if(minion != null) {
             registerInstructionListeners();

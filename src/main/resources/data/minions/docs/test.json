@@ -1,0 +1,12 @@
+{
+  "type": "minions:reference_entry",
+  "metadata": {
+    "title": "Hi"
+  },
+  "object": {
+    "registry": "minions:value_type",
+    "value": "minions:float"
+  },
+  "shortDescription": "Whatever floats your goat",
+  "longDescription": "A decimal value"
+}

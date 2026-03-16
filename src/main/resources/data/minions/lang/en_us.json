@@ -55,6 +55,7 @@
   "minions.command.minion.not_present": "This minion does not exist",
 
   "minions.reference.instruction.tooltip": "Linked to instruction %s in %s",
+  "minions.reference.block.tooltip": "Linked to block at %s",
 
   "instruction_type.minions.walk": "Walk",
   "instruction_type.minions.walk.description": "Walk forward a specified amount of blocks",
@@ -70,8 +71,11 @@
   "value_type.minions.string": "Text",
   "value_type.minions.turn_direction": "Turn Direction",
 
-  "value_supplier_type.minions.fixed": "Value",
+  "value_supplier_type.minions.fixed": "Fixed Value",
   "value_supplier_type.minions.fixed.display": "Fixed Value: %s",
+  "value_supplier_type.minions.analog_input": "Analog Input",
+  "value_supplier_type.minions.analog_input.display": "Analog Input at %s in %s",
+  "value_supplier_type.minions.analog_input.config.click_with_reference": "Click here with a position clipboard",
 
   "item.minions.attack_module": "Attack Module",
   "item.minions.interact_module": "Interact Module",

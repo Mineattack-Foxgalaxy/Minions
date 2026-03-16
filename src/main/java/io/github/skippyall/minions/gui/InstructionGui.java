@@ -100,18 +100,22 @@ public class InstructionGui {
     }
 
 
-    public static <T, A extends ValueSupplier<T, MinionRuntime>> void configureArgumentMenu(String instructionName, ConfiguredInstruction<MinionRuntime> instruction, Parameter<T> parameter, MinionFakePlayer minion, ServerPlayerEntity player) {
+    public static <T, A extends ValueSupplier<T, MinionRuntime>> void configureArgumentMenu(String instructionName, ConfiguredInstruction<MinionRuntime> instruction, Parameter<?> parameter, MinionFakePlayer minion, ServerPlayerEntity player) {
         if (!checkInstructionExists(instructionName, instruction, minion, player)) {
             return;
         }
 
-        @Nullable A argument = instruction.getArguments().getArgument(parameter);
+        @Nullable ValueSupplier<?, MinionRuntime> argument = instruction.getArguments().getArgument(parameter);
 
         if(argument == null) {
             configureTypeAndValue(instructionName, instruction, parameter, minion, player);
             return;
         }
 
+        configureArgumentHelper(instructionName, instruction, parameter, argument, minion, player);
+    }
+
+    private static <T> void configureArgumentHelper(String instructionName, ConfiguredInstruction<MinionRuntime> instruction, Parameter<?> parameter, ValueSupplier<T, MinionRuntime> argument, MinionFakePlayer minion, ServerPlayerEntity player) {
         SimpleGui gui = new InstructionBoundSimpleGui(ScreenHandlerType.GENERIC_3X3, player, minion, instruction);
 
         ItemStack displayStack = GuiDisplay.getDisplayStack(MinionRegistries.VALUE_SUPPLIER_TYPES, argument.getType(), player.getRegistryManager());

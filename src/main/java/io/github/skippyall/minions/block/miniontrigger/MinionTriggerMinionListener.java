@@ -36,21 +36,9 @@ public class MinionTriggerMinionListener extends BlockEntityMinionInstructionLis
     boolean runningCache;
     boolean incomingPowerCache;
 
-    private MinionTriggerMinionListener(RegistryKey<World> worldKey, BlockPos pos, UUID minionUuid, String instructionName) {
+    MinionTriggerMinionListener(RegistryKey<World> worldKey, BlockPos pos, UUID minionUuid, String instructionName) {
         super(worldKey, pos, minionUuid, MinionBlocks.MINION_TRIGGER_BE_TYPE);
         this.instructionName = Objects.requireNonNull(instructionName);
-    }
-
-    public static void addListener(World world, BlockPos pos, UUID minion, String instructionName) {
-        MinionTriggerMinionListener listener = new MinionTriggerMinionListener(world.getRegistryKey(), pos, minion, instructionName);
-        listener.add(world.getServer());
-    }
-
-    public static void removeListener(World world, BlockPos pos, UUID minion, String instructionName) {
-        MinionTriggerMinionListener old = getListener(world, pos, minion, MinionTriggerMinionListener.class);
-        if(old != null) {
-            old.remove(world.getServer());
-        }
     }
 
     @Override
@@ -88,7 +76,7 @@ public class MinionTriggerMinionListener extends BlockEntityMinionInstructionLis
     }
 
     @Override
-    protected void add(MinecraftServer server) {
+    public void add(MinecraftServer server) {
         super.add(server);
         runningCache = minion.getInstructionManager().getInstruction(instructionName).isRunning();
         updateComparatorsIfLoaded(server);

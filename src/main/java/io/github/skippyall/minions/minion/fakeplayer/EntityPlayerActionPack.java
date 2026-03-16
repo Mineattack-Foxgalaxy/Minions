@@ -190,7 +190,7 @@ public class EntityPlayerActionPack
         if (onlyRideables)
         {
             entities = player.getWorld().getOtherEntities(player, player.getBoundingBox().expand(3.0D, 1.0D, 3.0D),
-                    e -> (e instanceof MinecartEntity || e instanceof BoatEntity || e instanceof AbstractHorseEntity) && ((EntityAccessor)e).invokeCanAddPassenger(player));
+                    e -> (e instanceof MinecartEntity || e instanceof BoatEntity || e instanceof AbstractHorseEntity) && ((EntityAccessor)e).minions$canAddPassenger(player));
         }
         else
         {

@@ -2,6 +2,7 @@ package io.github.skippyall.minions.program.supplier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.skippyall.minions.program.value.SimpleValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.program.value.ValueType;
 import org.jetbrains.annotations.Nullable;

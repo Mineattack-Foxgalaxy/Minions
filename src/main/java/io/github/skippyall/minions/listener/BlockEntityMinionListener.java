@@ -94,7 +94,7 @@ public abstract class BlockEntityMinionListener<E extends BlockEntity> implement
         return false;
     }
 
-    protected void add(MinecraftServer server) {
+    public void add(MinecraftServer server) {
         MinionPersistentState.get(server).getMinionData(minionUuid).listeners().addListener(this);
         MinionPersistentState.get(server).markDirty();
         this.minion = (MinionFakePlayer) server.getPlayerManager().getPlayer(minionUuid);

@@ -8,35 +8,27 @@ import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.virtualentity.api.BlockWithElementHolder;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
+import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlock;
+import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlockEntity;
 import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.minion.MinionPersistentState;
-import io.github.skippyall.minions.clipboard.InstructionClipboard;
-import io.github.skippyall.minions.registration.MinionComponentTypes;
-import io.github.skippyall.minions.util.PolymerUtil;
+import io.github.skippyall.minions.polymer.VersionSync;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -47,7 +39,7 @@ import net.minecraft.world.block.WireOrientation;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock, PolymerKeepModel, PolymerClientDecoded, BlockWithElementHolder {
+public class MinionTriggerBlock extends InstructionBoundBlock implements PolymerBlock, PolymerKeepModel, PolymerClientDecoded, BlockWithElementHolder {
     public static final MapCodec<MinionTriggerBlock> CODEC = createCodec(MinionTriggerBlock::new);
 
     public static final BooleanProperty POWERED = BooleanProperty.of("powered");
@@ -74,41 +66,8 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-        super.onStateReplaced(state, world, pos, moved);
-        world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(MinionTriggerBlockEntity::removeListener);
-    }
-
-    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(POWERED);
-    }
-
-    @Override
-    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if(stack.get(MinionComponentTypes.REFERENCE) instanceof InstructionClipboard instruction) {
-            world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(be -> {
-                be.setInstruction(instruction.selectedMinion(), instruction.selectedInstruction());
-                player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), SoundCategory.BLOCKS, 1, 1);
-                stack.decrement(1);
-            });
-            return ActionResult.SUCCESS;
-        }
-
-        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
-    }
-
-    @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if(world.isClient()) {
-            return ActionResult.CONSUME;
-        }
-
-        world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(be -> {
-            String name = MinionPersistentState.get(world.getServer()).getMinionData(be.getMinionUuid()).name();
-            player.sendMessage(Text.translatable("minions.reference.instruction.tooltip", name, be.getInstructionName()), true);
-        });
-        return ActionResult.SUCCESS;
     }
 
     @Override
@@ -137,18 +96,18 @@ public class MinionTriggerBlock extends BlockWithEntity implements PolymerBlock,
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
-    }
-
-    @Override
     public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new MinionTriggerBlockEntity(pos, state);
     }
 
     @Override
+    protected BlockEntityType<MinionTriggerBlockEntity> getBlockEntityType() {
+        return MinionBlocks.MINION_TRIGGER_BE_TYPE;
+    }
+
+    @Override
     public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
-        return PolymerUtil.isOnClient(context) ? state : net.minecraft.block.Blocks.COMPARATOR.getDefaultState().with(AbstractRedstoneGateBlock.POWERED, state.get(POWERED));
+        return VersionSync.isOnClient(context) ? state : net.minecraft.block.Blocks.COMPARATOR.getDefaultState().with(AbstractRedstoneGateBlock.POWERED, state.get(POWERED));
     }
 
     @Override
