@@ -25,11 +25,11 @@ public interface Result<T, E> {
 
     boolean isSuccess();
 
-    @NotNull T getOrDefault(@NotNull T defaultValue);
+    T getOrDefault(T defaultValue);
 
-    @NotNull T getOrThrow();
+    T getOrThrow();
 
-    @NotNull E getErrorOrThrow();
+    E getErrorOrThrow();
 
     @NotNull Optional<T> getOptional();
 
@@ -37,24 +37,24 @@ public interface Result<T, E> {
 
     void ifError(@NotNull Consumer<Error<T, E>> handler);
 
-    record Success<T, E>(@NotNull T result) implements Result<T, E> {
+    record Success<T, E>(T result) implements Result<T, E> {
         @Override
         public boolean isSuccess() {
             return true;
         }
 
         @Override
-        public @NotNull T getOrDefault(@NotNull T defaultValue) {
+        public T getOrDefault(T defaultValue) {
             return result;
         }
 
         @Override
-        public @NotNull T getOrThrow() {
+        public T getOrThrow() {
             return result;
         }
 
         @Override
-        public @NotNull E getErrorOrThrow() {
+        public E getErrorOrThrow() {
             throw new RuntimeException("Result was not an Error");
         }
 
@@ -74,24 +74,25 @@ public interface Result<T, E> {
         }
     }
 
-    record Error<T, E>(@NotNull E message) implements Result<T, E> {
+    record Error<T, E>(E message) implements Result<T, E> {
         @Override
         public boolean isSuccess() {
             return false;
         }
 
         @Override
-        public @NotNull T getOrDefault(@NotNull T defaultValue) {
+        public T getOrDefault(
+                T defaultValue) {
             return defaultValue;
         }
 
         @Override
-        public @NotNull T getOrThrow() {
+        public T getOrThrow() {
             throw new RuntimeException("Result was an error: " + message);
         }
 
         @Override
-        public @NotNull E getErrorOrThrow() {
+        public E getErrorOrThrow() {
             return message;
         }
 

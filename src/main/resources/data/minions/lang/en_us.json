@@ -8,6 +8,7 @@
   "minions.gui.ok": "OK",
   "minions.gui.confirm": "Confirm",
   "minions.gui.abort": "Abort",
+  "minions.gui.back": "Back",
 
   "minions.gui.look.skin.name": "Name",
   "minions.gui.look.skin.name.title": "Enter a player name",
@@ -38,6 +39,8 @@
   "minions.gui.instruction.argument.configure.type.unset": "Unset",
   "minions.gui.instruction.parameter": "%s: %s",
   "minions.gui.instruction.argument": "Argument: %s",
+
+  "minions.gui.instruction.check.argument_not_set": "Argument %s is not set",
 
   "minions.command.input.int.fail": "Not an integer",
   "minions.command.input.float.fail": "Not a number",

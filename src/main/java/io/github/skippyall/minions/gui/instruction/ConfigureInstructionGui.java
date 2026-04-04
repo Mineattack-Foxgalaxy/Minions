@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.gui;
+package io.github.skippyall.minions.gui.instruction;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import io.github.skippyall.minions.gui.input.ChoiceInput;
@@ -108,7 +108,7 @@ public class ConfigureInstructionGui extends InstructionBoundSimpleGui {
         int slot = 12;
         for(Parameter<?> parameter : instruction.getInstruction().getParameters().reversed()) {
             setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getArgument(parameter), player.getRegistryManager())
-                    .setCallback(() -> InstructionGui.configureArgumentMenu(name, instruction, parameter, minion, player))
+                    .setCallback(() -> ArgumentGui.configureArgumentMenu(name, instruction, parameter, minion, player))
             );
             slot--;
         }

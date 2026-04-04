@@ -17,6 +17,7 @@ import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.consumer.ValueConsumerType;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.clipboard.Clipboard;
+import io.github.skippyall.minions.program.conversion.ValueConverterType;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
@@ -29,6 +30,8 @@ public class MinionRegistries {
     public static final Registry<ValueSupplierType<MinionRuntime>> VALUE_SUPPLIER_TYPES = registry("value_supplier_type");
     public static final Registry<ValueConsumerType<MinionRuntime>> VALUE_CONSUMER_TYPES = registry("value_consumer_type");
     public static final Registry<InstructionType<MinionRuntime>> INSTRUCTION_TYPES = registry("instruction_type");
+    public static final Registry<ValueConverterType<?>> VALUE_CONVERTER_TYPES = registry("value_converter_type");
+
     public static final Registry<SkinProvider> SKIN_PROVIDERS = registry("skin_provider");
     public static final Registry<Codec<? extends GuiDisplay>> GUI_DISPLAY_TYPE = registry("gui_display_type");
     public static final Registry<Codec<? extends ConfiguredInstructionListener>> INSTRUCTION_LISTENER_CODECS = registry("instruction_listener_codec");

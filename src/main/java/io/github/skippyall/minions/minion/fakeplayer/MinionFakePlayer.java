@@ -7,7 +7,7 @@ import io.github.skippyall.minions.registration.MinionConfigOptions;
 import io.github.skippyall.minions.registration.MinionItems;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.MinionData;
-import io.github.skippyall.minions.gui.MinionGui;
+import io.github.skippyall.minions.gui.minion.MinionGui;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionPersistentState;
@@ -24,7 +24,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractBoatEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.DisconnectionInfo;
 import net.minecraft.network.NetworkSide;
@@ -156,7 +155,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
         if(player instanceof ServerPlayerEntity spe) {
-            MinionGui.openInventory(spe, this);
+            new MinionGui(spe, this);
         }
         return ActionResult.CONSUME;
     }

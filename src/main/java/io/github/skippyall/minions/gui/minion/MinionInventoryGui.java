@@ -1,9 +1,8 @@
-package io.github.skippyall.minions.gui;
+package io.github.skippyall.minions.gui.minion;
 
-import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.module.ModuleInventory;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -11,51 +10,28 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.ArmorSlot;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-public class MinionGui {
-    public static void openInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
-        openServerSideInventory(player, minion);
+public class MinionInventoryGui extends MinionsGui {
+    protected final MinionGui parent;
+    private final MinionFakePlayer minion;
+
+    private SimpleGui gui;
+
+    public MinionInventoryGui(MinionGui parent) {
+        super(parent);
+        this.parent = parent;
+        this.minion = parent.getMinion();
     }
 
-    public static void openServerSideInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
-        SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, player, false);
-        gui.setTitle(minion.getName());
-
-        gui.setSlot(1, new GuiElementBuilder()
-                .setItem(Items.COMMAND_BLOCK)
-                .setName(Text.translatable("minions.gui.main.instructions"))
-                .setCallback((i, clickType, slotActionType) -> {
-                    InstructionGui.openInstructionMainMenu(minion, player);
-                })
-        );
-        gui.setSlot(3, new GuiElementBuilder()
-                .setItem(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
-                .setName(Text.translatable("minions.gui.main.modules"))
-                .setCallback(() -> {
-                    ModuleInventory.openModuleInventory(player, minion);
-                })
-        );
-        gui.setSlot(5, new GuiElementBuilder()
-                .setItem(Items.CHEST)
-                .setName(Text.translatable("minions.gui.main.inventory"))
-                .setCallback(() -> {
-                    openMinionInventory(player, minion);
-                })
-        );
-        gui.setSlot(7, new GuiElementBuilder()
-                .setItem(Items.BARRIER)
-                .setName(Text.translatable("minions.gui.main.pickup"))
-                .setCallback(() -> {
-                    minion.kill(minion.getWorld());
-                })
-        );
-        gui.open();
-    }
-
-    public static void openMinionInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
-        SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_9X6, player, false);
+    @Override
+    protected void open() {
+        gui = new SimpleGui(ScreenHandlerType.GENERIC_9X6, viewer, false) {
+            @Override
+            public void onClose() {
+                onBackingClosed();
+            }
+        };
         gui.setTitle(Text.translatable("minions.gui.inventory.title"));
 
         for(int i = 0; i < 18; i++) {
@@ -82,5 +58,10 @@ public class MinionGui {
             gui.setSlotRedirect(i + 45, new Slot(minion.getInventory(), i, 0, 0));
         }
         gui.open();
+    }
+
+    @Override
+    protected void onClose() {
+        gui.close();
     }
 }

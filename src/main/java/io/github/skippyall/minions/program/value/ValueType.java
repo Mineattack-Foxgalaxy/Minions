@@ -17,4 +17,10 @@ public interface ValueType<T> {
     Codec<T> codec();
 
     T defaultValue();
+
+    @Nullable T checkedCast(Object value);
+
+    default boolean isOf(Object value) {
+        return checkedCast(value) != null;
+    }
 }

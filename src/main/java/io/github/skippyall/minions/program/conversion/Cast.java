@@ -1,4 +1,6 @@
-package io.github.skippyall.minions.program.value;
+package io.github.skippyall.minions.program.conversion;
+
+import io.github.skippyall.minions.program.value.ValueType;
 
 public class Cast<F, T> {
     private final ValueType<F> from;

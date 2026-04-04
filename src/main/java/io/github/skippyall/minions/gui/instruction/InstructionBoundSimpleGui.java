@@ -1,5 +1,6 @@
-package io.github.skippyall.minions.gui;
+package io.github.skippyall.minions.gui.instruction;
 
+import io.github.skippyall.minions.gui.MinionBoundSimpleGui;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;

@@ -62,7 +62,7 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
 
     @Override
     public Text getDisplayText() {
-        return Text.translatable("value_supplier_type.minions.analog_input.display", analogInputPos.toString(), analogInputWorld.getValue());
+        return Text.translatable("value_supplier_type.minions.analog_input.display", analogInputPos.toString(), analogInputWorld.getValue().toString());
     }
 
     public static class AnalogInputSupplierType extends ValueSupplierType<MinionRuntime> {
@@ -75,12 +75,8 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
         }
 
         @Override
-        public <T> CompletableFuture<ValueSupplier<T, MinionRuntime>> openConfiguration(ServerPlayerEntity player, ValueType<T> valueType, @Nullable ValueSupplier<T, MinionRuntime> previous) {
-            if(valueType != ValueTypes.LONG) {
-                return CompletableFuture.failedFuture(new IllegalArgumentException("Value type " + valueType + " not allowed"));
-            }
-
-            CompletableFuture<ValueSupplier<T, MinionRuntime>> future = new CompletableFuture<>();
+        public <T> CompletableFuture<ValueSupplier<?, MinionRuntime>> openConfiguration(ServerPlayerEntity player, ValueType<T> valueType, @Nullable ValueSupplier<T, MinionRuntime> previous) {
+            CompletableFuture<ValueSupplier<?, MinionRuntime>> future = new CompletableFuture<>();
 
             SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, player, false);
             gui.setTitle(Text.translatable("value_supplier_type.minions.analog_input"));
@@ -89,11 +85,12 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
                     .setCallback(() -> {
                         ItemStack cursor = player.currentScreenHandler.getCursorStack();
                         if(cursor.isOf(MinionItems.REFERENCE_ITEM) && cursor.get(MinionComponentTypes.REFERENCE) instanceof BlockPosClipboard pos) {
-                            future.complete(new AnalogInputSupplier(pos.world(), pos.pos()).cast(valueType));
+                            future.complete(new AnalogInputSupplier(pos.world(), pos.pos()));
                         }
                     })
                     .setItemName(Text.translatable("value_supplier_type.minions.analog_input.config.click_with_reference"))
             );
+            gui.open();
             return future;
         }
     }

@@ -9,6 +9,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * Defines the semantics of an instruction and creates {@link InstructionExecution}
+ * InstructionTypes for minions can be registered to {@link io.github.skippyall.minions.registration.MinionRegistries#INSTRUCTION_TYPES}
+ * @param <R> The runtime that this instruction can be executed in
+ */
 public class InstructionType<R extends InstructionRuntime<R>> {
     private final List<Parameter<?>> parameters;
     private final List<Parameter<?>> returnParameters;

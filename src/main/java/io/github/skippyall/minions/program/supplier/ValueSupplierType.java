@@ -11,5 +11,5 @@ import java.util.concurrent.CompletableFuture;
 public abstract class ValueSupplierType<R extends InstructionRuntime<R>> {
     public abstract <T> Codec<? extends ValueSupplier<T,R>> getCodec(ValueType<T> type);
 
-    public abstract <T> CompletableFuture<? extends ValueSupplier<T,R>> openConfiguration(ServerPlayerEntity player, ValueType<T> valueType, @Nullable ValueSupplier<T,R> previous);
+    public abstract <T> CompletableFuture<? extends ValueSupplier<?,R>> openConfiguration(ServerPlayerEntity player, ValueType<T> valueType, @Nullable ValueSupplier<T,R> previous);
 }

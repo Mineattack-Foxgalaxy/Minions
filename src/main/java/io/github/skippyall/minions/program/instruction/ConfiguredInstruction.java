@@ -11,6 +11,10 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Holds an instruction, its configuration and is responsible for executing the instruction
+ * @param <R> The runtime holding this object
+ */
 public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     private final InstructionType<R> instruction;
     private final ValueSupplierList<R> arguments;
@@ -48,7 +52,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     }
 
     public boolean canRun() {
-        return instruction != null && arguments != null && arguments.hasArgumentForAll(instruction.getParameters());
+        return instruction != null && arguments != null && arguments.checkRun(instruction).isSuccess();
     }
 
     public boolean isRunning() {

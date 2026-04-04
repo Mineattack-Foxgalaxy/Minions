@@ -1,5 +1,6 @@
-package io.github.skippyall.minions.program.value;
+package io.github.skippyall.minions.program.conversion;
 
+import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.ValueTypes;
 import org.jetbrains.annotations.Nullable;
 
