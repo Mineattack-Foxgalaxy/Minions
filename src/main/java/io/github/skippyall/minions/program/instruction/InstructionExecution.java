@@ -1,8 +1,9 @@
 package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
+import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 
@@ -48,7 +49,7 @@ public interface InstructionExecution<R extends InstructionRuntime<R>> {
      * @param arguments The arguments to initialize the execution
      * @param runtime The runtime should be used to resolve the arguments
      */
-    void readArguments(ValueSupplierList<R> arguments, R runtime);
+    void readArguments(ParameterValueList arguments, R runtime);
 
     /**
      * Saves the execution, e.g. when the server is closed.
@@ -62,7 +63,7 @@ public interface InstructionExecution<R extends InstructionRuntime<R>> {
 
     interface Stateless<R extends InstructionRuntime<R>> extends InstructionExecution<R> {
         @Override
-        default void readArguments(ValueSupplierList<R> arguments, R runtime) {}
+        default void readArguments(ParameterValueList arguments, R runtime) {}
 
         @Override
         default void save(WriteView view, R runtime) {}

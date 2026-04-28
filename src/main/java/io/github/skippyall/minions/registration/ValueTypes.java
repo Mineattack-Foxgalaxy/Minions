@@ -1,15 +1,16 @@
 package io.github.skippyall.minions.registration;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.program.value.SimpleValueType;
-import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.gui.input.ChoiceInput;
 import io.github.skippyall.minions.gui.input.TextInput;
 import io.github.skippyall.minions.minion.program.instruction.move.TurnDirection;
+import io.github.skippyall.minions.program.value.SimpleValueType;
+import io.github.skippyall.minions.program.value.ValueType;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import java.util.concurrent.CompletableFuture;
 
 public class ValueTypes {
     public static ValueType<Long> LONG = register(
@@ -18,8 +19,8 @@ public class ValueTypes {
                     Codec.LONG,
                     0L,
                     o -> o instanceof Long l ? l : null,
-                    (player, oldValue) -> TextInput.inputLong(
-                            player,
+                    (parent, oldValue) -> TextInput.inputLong(
+                            parent,
                             Text.literal("Integer"),
                             String.valueOf(oldValue)
                     ),
@@ -33,8 +34,8 @@ public class ValueTypes {
                     Codec.DOUBLE,
                     0D,
                     o -> o instanceof Double d ? d : null,
-                    (player, oldValue) -> TextInput.inputDouble(
-                            player,
+                    (parent, oldValue) -> TextInput.inputDouble(
+                            parent,
                             Text.literal("Number"),
                             String.valueOf(oldValue)
                     ),
@@ -48,7 +49,8 @@ public class ValueTypes {
                     Codec.BOOL,
                     false,
                     o -> o instanceof Boolean b ? b : null,
-                    ChoiceInput.inputBoolean(Text.literal("")),
+                    //TODO Properly implement ChoiceInput
+                    (gui, value) -> CompletableFuture.completedFuture(value),//ChoiceInput.inputBoolean(Text.literal("")),
                     value -> Text.literal(value.toString())
             )
     );
@@ -59,8 +61,8 @@ public class ValueTypes {
                     Codec.STRING,
                     "",
                     o -> o instanceof String s ? s : null,
-                    ((player, oldValue) -> TextInput.inputString(
-                            player,
+                    ((parent, oldValue) -> TextInput.inputString(
+                            parent,
                             Text.literal("Text"),
                             oldValue)
                     ),
@@ -74,7 +76,8 @@ public class ValueTypes {
                     TurnDirection.CODEC,
                     TurnDirection.RIGHT,
                     o -> o instanceof TurnDirection d ? d : null,
-                    ChoiceInput.createDialogOpener(TurnDirection.values()),
+                    //TODO Properly implement ChoiceInput
+                    (parent, oldValue) -> CompletableFuture.completedFuture(oldValue), // ChoiceInput.createDialogOpener(TurnDirection.values()),
                     value -> Text.literal(value.name)
             )
     );

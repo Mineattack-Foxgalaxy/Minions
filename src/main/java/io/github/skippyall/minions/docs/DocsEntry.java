@@ -6,7 +6,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.dialog.body.DialogBody;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.List;
 import java.util.function.Function;

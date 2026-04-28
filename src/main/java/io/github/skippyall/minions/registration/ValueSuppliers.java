@@ -1,10 +1,10 @@
 package io.github.skippyall.minions.registration;
 
+import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.program.supplier.AnalogInputSupplier;
 import io.github.skippyall.minions.program.supplier.FixedValueSupplierType;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
-import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.minion.MinionRuntime;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 

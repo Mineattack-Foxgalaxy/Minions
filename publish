@@ -1,0 +1,2 @@
+#!/bin/bash
+bash gradlew publish -PfoxgalaxyPassword=$(read -s -p "Enter Password: ")

@@ -21,10 +21,10 @@ public class MinionMixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if(mixinClassName.startsWith("io.github.skippyall.mixins.compat.universal_graves.")) {
+        if(mixinClassName.startsWith("io.github.skippyall.minions.mixins.compat.universal_graves.")) {
             return MinionsConfig.get().compat.enableGravesCompat && FabricLoader.getInstance().isModLoaded("universal-graves");
         }
-        if(mixinClassName.startsWith("io.github.skippyall.mixins.antimobcap.")) {
+        if(mixinClassName.startsWith("io.github.skippyall.minions.mixins.antimobcap.")) {
             return MinionsConfig.get().minion.enableMobCapHacks;
         }
         return true;

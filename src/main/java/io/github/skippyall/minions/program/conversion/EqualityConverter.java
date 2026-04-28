@@ -1,16 +1,20 @@
 package io.github.skippyall.minions.program.conversion;
 
 import com.mojang.serialization.MapCodec;
+import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
+import io.github.skippyall.minions.registration.ValueConverters;
 import io.github.skippyall.minions.registration.ValueTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
     public static final MapCodec<EqualityConverter<?>> CODEC = MinionRegistries.VALUE_TYPES.getCodec().dispatchMap(
+            "value_type",
             EqualityConverter::getFrom,
             EqualityConverter::getCodec
     );
@@ -24,8 +28,8 @@ public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
     }
 
     @Override
-    public Boolean convert(F from) {
-        return compareValue.equals(from);
+    public Result<Boolean, Text> convert(F from) {
+        return new Result.Success<>(compareValue.equals(from));
     }
 
     @Override
@@ -40,7 +44,12 @@ public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
 
     @Override
     public ValueConverterType<?> getType() {
-        return null;
+        return ValueConverters.EQUALITY_CONVERTER;
+    }
+
+    @Override
+    public Text getDisplayText() {
+        return Text.translatable("value_converter.minions.equality.display", fromType.getDisplayText(compareValue));
     }
 
     private static <F> MapCodec<EqualityConverter<F>> getCodec(ValueType<F> fromType) {
@@ -60,14 +69,13 @@ public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
         }
 
         @Override
-        public <F,T> CompletableFuture<EqualityConverter<?>> configure(ServerPlayerEntity player, ValueType<F> from, ValueType<T> to, @Nullable EqualityConverter<?> old) {
-            if(to == ValueTypes.BOOLEAN) {
-                //noinspection unchecked
-                return from.openValueDialog(player, old != null && old.fromType == from ? (F) old.compareValue : null)
-                        .thenApply(compareValue -> new EqualityConverter<>(from, compareValue));
-            } else {
-                return CompletableFuture.failedFuture(new IllegalArgumentException("EqualityConverter does not support converting to " + to));
+        public <F,T> CompletableFuture<EqualityConverter<?>> configure(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter<?,?> old) {
+            F oldValue = null;
+            if(old instanceof EqualityConverter<?> eq && eq.fromType == from) {
+                oldValue = from.checkedCast(eq.compareValue);
             }
+            return from.openValueDialog(parent, oldValue)
+                    .thenApply(compareValue -> new EqualityConverter<>(from, compareValue));
         }
     }
 }

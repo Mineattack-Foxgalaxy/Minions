@@ -5,6 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.clipboard.BlockPosClipboard;
+import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.gui.minion.SimpleMinionsGui;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.supplier.ValueSupplier;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
@@ -17,7 +19,6 @@ import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -62,7 +63,7 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
 
     @Override
     public Text getDisplayText() {
-        return Text.translatable("value_supplier_type.minions.analog_input.display", analogInputPos.toString(), analogInputWorld.getValue().toString());
+        return Text.translatable("value_supplier.minions.analog_input.display", analogInputPos.toShortString(), analogInputWorld.getValue().toString());
     }
 
     public static class AnalogInputSupplierType extends ValueSupplierType<MinionRuntime> {
@@ -75,22 +76,29 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
         }
 
         @Override
-        public <T> CompletableFuture<ValueSupplier<?, MinionRuntime>> openConfiguration(ServerPlayerEntity player, ValueType<T> valueType, @Nullable ValueSupplier<T, MinionRuntime> previous) {
+        public <T> CompletableFuture<ValueSupplier<?, MinionRuntime>> openConfiguration(MinionsGui parent, ValueType<T> valueType, @Nullable ValueSupplier<?, MinionRuntime> previous) {
             CompletableFuture<ValueSupplier<?, MinionRuntime>> future = new CompletableFuture<>();
+            new SimpleMinionsGui(parent, (onClose, me) -> {
+                SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, parent.getViewer(), false) {
+                    @Override
+                    public void onClose() {
+                        onClose.run();
+                    }
+                };
+                gui.setTitle(Text.translatable("value_supplier.minions.analog_input"));
 
-            SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, player, false);
-            gui.setTitle(Text.translatable("value_supplier_type.minions.analog_input"));
-
-            gui.setSlot(4, new GuiElementBuilder(MinionItems.REFERENCE_ITEM)
-                    .setCallback(() -> {
-                        ItemStack cursor = player.currentScreenHandler.getCursorStack();
-                        if(cursor.isOf(MinionItems.REFERENCE_ITEM) && cursor.get(MinionComponentTypes.REFERENCE) instanceof BlockPosClipboard pos) {
-                            future.complete(new AnalogInputSupplier(pos.world(), pos.pos()));
-                        }
-                    })
-                    .setItemName(Text.translatable("value_supplier_type.minions.analog_input.config.click_with_reference"))
-            );
-            gui.open();
+                gui.setSlot(4, new GuiElementBuilder(MinionItems.REFERENCE_ITEM)
+                        .setCallback(() -> {
+                            ItemStack cursor = parent.getViewer().currentScreenHandler.getCursorStack();
+                            if (cursor.isOf(MinionItems.REFERENCE_ITEM) && cursor.get(MinionComponentTypes.REFERENCE) instanceof BlockPosClipboard pos) {
+                                future.complete(new AnalogInputSupplier(pos.world(), pos.pos()));
+                            }
+                        })
+                        .setItemName(Text.translatable("value_supplier.minions.analog_input.config.click_with_reference"))
+                );
+                gui.open();
+                return gui;
+            });
             return future;
         }
     }

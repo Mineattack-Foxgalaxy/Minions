@@ -2,8 +2,8 @@ package io.github.skippyall.minions.registration;
 
 import eu.pb4.polymer.core.api.other.PolymerComponent;
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.module.MinionModule;
 import io.github.skippyall.minions.clipboard.Clipboard;
+import io.github.skippyall.minions.module.MinionModule;
 import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
 import net.minecraft.component.ComponentType;
 import net.minecraft.registry.Registries;

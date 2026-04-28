@@ -1,20 +1,12 @@
 package io.github.skippyall.minions.block.miniontrigger;
 
 import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlockEntity;
-import io.github.skippyall.minions.listener.BlockEntityMinionListener;
 import io.github.skippyall.minions.registration.MinionBlocks;
-import io.github.skippyall.minions.minion.MinionRuntime;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.Optional;
-import java.util.UUID;
 
 public class MinionTriggerBlockEntity extends InstructionBoundBlockEntity<MinionTriggerMinionListener> {
     public MinionTriggerBlockEntity(BlockPos pos, BlockState state) {

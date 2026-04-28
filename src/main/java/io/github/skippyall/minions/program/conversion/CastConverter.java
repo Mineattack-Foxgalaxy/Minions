@@ -2,10 +2,14 @@ package io.github.skippyall.minions.program.conversion;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.gui.input.Result;
+import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueConverters;
-import net.minecraft.server.network.ServerPlayerEntity;
+import io.github.skippyall.minions.util.TranslationUtil;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -26,8 +30,8 @@ public class CastConverter<F,T> implements ValueConverter<F,T> {
     }
 
     @Override
-    public T convert(F fromValue) {
-        return Casts.getCast(from, to).cast(fromValue);
+    public Result<T, Text> convert(F fromValue) {
+        return Casts.castOrError(new TypedValue<>(fromValue, from), to);
     }
 
     @Override
@@ -45,6 +49,11 @@ public class CastConverter<F,T> implements ValueConverter<F,T> {
         return ValueConverters.CAST_CONVERTER;
     }
 
+    @Override
+    public Text getDisplayText() {
+        return Text.translatable("value_converter.minions.cast.display", Text.translatable(TranslationUtil.getTranslationKey(from, MinionRegistries.VALUE_TYPES)), Text.translatable(TranslationUtil.getTranslationKey(to, MinionRegistries.VALUE_TYPES)));
+    }
+
     public static class Type implements ValueConverterType<CastConverter<?,?>> {
         @Override
         public MapCodec<CastConverter<?, ?>> getCodec() {
@@ -57,7 +66,7 @@ public class CastConverter<F,T> implements ValueConverter<F,T> {
         }
 
         @Override
-        public <F,T> CompletableFuture<CastConverter<?,?>> configure(ServerPlayerEntity player, ValueType<F> from, ValueType<T> to, @Nullable CastConverter<?, ?> old) {
+        public <F,T> CompletableFuture<CastConverter<?,?>> configure(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter<?, ?> old) {
             return CompletableFuture.completedFuture(new CastConverter<>(from, to));
         }
     }

@@ -1,9 +1,9 @@
 package io.github.skippyall.minions.program.supplier;
 
 import com.mojang.serialization.Codec;
+import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
-import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -15,10 +15,10 @@ public class FixedValueSupplierType<R extends InstructionRuntime<R>> extends Val
     }
 
     @Override
-    public <V> CompletableFuture<FixedValueSupplier<V,R>> openConfiguration(ServerPlayerEntity player, ValueType<V> valueType, @Nullable ValueSupplier<V,R> previousValueSupplier) {
+    public <V> CompletableFuture<FixedValueSupplier<?,R>> openConfiguration(MinionsGui parent, ValueType<V> valueType, @Nullable ValueSupplier<?,R> previousValueSupplier) {
         return valueType.openValueDialog(
-                player,
-                previousValueSupplier instanceof FixedValueSupplier<V,R> val ? val.getValue() : valueType.defaultValue()
+                parent,
+                previousValueSupplier instanceof FixedValueSupplier<?,R> val && val.getValueType() == valueType ? valueType.checkedCast(val.getValue()) : valueType.defaultValue()
         ).thenApply(value -> new FixedValueSupplier<>(this, valueType, value));
     }
 }

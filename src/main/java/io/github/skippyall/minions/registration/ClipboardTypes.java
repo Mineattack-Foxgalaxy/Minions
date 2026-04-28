@@ -3,8 +3,8 @@ package io.github.skippyall.minions.registration;
 import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.clipboard.BlockPosClipboard;
-import io.github.skippyall.minions.clipboard.InstructionClipboard;
 import io.github.skippyall.minions.clipboard.Clipboard;
+import io.github.skippyall.minions.clipboard.InstructionClipboard;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 

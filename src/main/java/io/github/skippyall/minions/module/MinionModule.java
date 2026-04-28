@@ -2,9 +2,9 @@ package io.github.skippyall.minions.module;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.instruction.InstructionType;
+import io.github.skippyall.minions.registration.MinionRegistries;
 
 import java.util.List;
 

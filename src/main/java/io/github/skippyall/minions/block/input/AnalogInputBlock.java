@@ -16,7 +16,9 @@ public class AnalogInputBlock extends Block {
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        player.getInventory().offer(ClipboardItem.createBlockPosReference(world, pos), true);
+        if(!world.isClient) {
+            player.getInventory().offer(ClipboardItem.createBlockPosReference(world, pos), true);
+        }
         return ActionResult.SUCCESS;
     }
 }

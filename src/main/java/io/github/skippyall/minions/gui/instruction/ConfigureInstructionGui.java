@@ -1,78 +1,100 @@
 package io.github.skippyall.minions.gui.instruction;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
+import eu.pb4.sgui.api.gui.SimpleGui;
+import io.github.skippyall.minions.clipboard.ClipboardItem;
+import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.input.ChoiceInput;
+import io.github.skippyall.minions.gui.minion.GuiContext;
+import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
+import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.clipboard.ClipboardItem;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 
-public class ConfigureInstructionGui extends InstructionBoundSimpleGui {
+public class ConfigureInstructionGui extends MinionsGui implements ConfiguredInstructionListener, MinionListener {
     private String name;
+    private final ConfiguredInstruction<MinionRuntime> instruction;
+    private final MinionFakePlayer minion;
 
-    private ConfigureInstructionGui(ScreenHandlerType<?> type, ServerPlayerEntity player, MinionFakePlayer minion, ConfiguredInstruction<MinionRuntime> configuredInstruction, String name) {
-        super(type, player, minion, configuredInstruction);
-        this.name = name;
-        init();
-    }
-
-    public static void configureInstructionMenu(String name, ConfiguredInstruction<MinionRuntime> instruction, MinionFakePlayer minion, ServerPlayerEntity player) {
-        if(!InstructionGui.checkInstructionExists(name, instruction, minion, player)) {
-            return;
-        }
-
-        ConfigureInstructionGui gui = new ConfigureInstructionGui(ScreenHandlerType.GENERIC_9X3, player, minion, instruction, name);
-
-        gui.open();
-    }
+    private final GuiContext.Instruction context;
     
-    private void init() {
-        setTitle(Text.literal(name));
+    private SimpleGui gui;
+    
+    public ConfigureInstructionGui(MinionsGui parent, GuiContext.Instruction context) {
+        super(parent);
+        this.name = context.getName();
+        this.instruction = context.getInstruction();
+        this.minion = context.getMinion();
+        this.context = context;
+        minion.addMinionListener(this);
+        instruction.addListener(this);
+        open();
+    }
 
-        setSlot(7, new GuiElementBuilder(Items.ANVIL)
+    @Override
+    protected void open() {
+        gui = new SimpleGui(ScreenHandlerType.GENERIC_9X3, viewer, false) {
+            @Override
+            public void onClose() {
+                onBackingClosed();
+            }
+        };
+        
+        gui.setTitle(Text.literal(name));
+
+        gui.setSlot(7, new GuiElementBuilder(Items.ANVIL)
                 .setName(Text.translatable("minions.gui.instruction.configure.rename"))
-                .setCallback(() -> InstructionGui.inputInstructionName(minion, player, name).thenAccept(newName -> {
+                .setCallback(() -> InstructionGui.inputInstructionName(this, context, name).thenAccept(newName -> {
                     minion.getInstructionManager().setInstructionName(name, newName);
-                    configureInstructionMenu(newName, instruction, minion, player);
+                    reopen();
                 }))
         );
 
-        setSlot(8, new GuiElementBuilder(Items.LAVA_BUCKET)
+        gui.setSlot(8, new GuiElementBuilder(Items.LAVA_BUCKET)
                 .setName(Text.translatable("minions.gui.instruction.configure.delete"))
-                .setCallback(() -> ChoiceInput.confirm(player, Text.translatable("minions.gui.instruction.configure.delete.confirm", name))
+                .setCallback(() -> ChoiceInput.confirm(this, Text.translatable("minions.gui.instruction.configure.delete.confirm", name))
                         .thenAccept(v -> {
                             minion.getInstructionManager().removeInstruction(name);
-                            InstructionGui.instructionList(minion, player);
+                            close();
                         }))
         );
 
         updateSuppliers();
 
-        setSlot(13, InstructionGui.createInstructionElement(instruction.getInstruction(), player.getRegistryManager()));
+        gui.setSlot(13, InstructionGui.createInstructionElement(instruction.getInstruction(), viewer.getRegistryManager()));
 
-        setSlot(25, new GuiElementBuilder(Items.FEATHER)
+        gui.setSlot(25, new GuiElementBuilder(Items.FEATHER)
                 .setName(Text.translatable("minions.gui.instruction.configure.copy"))
                 .addLoreLine(Text.translatable("minions.gui.instruction.configure.copy.description"))
                 .setCallback(() -> {
-                    player.getInventory().offer(ClipboardItem.createInstructionReference(minion, name), true);
-                    player.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), SoundCategory.BLOCKS, 1, 1);
+                    viewer.getInventory().offer(ClipboardItem.createInstructionReference(minion, name), true);
+                    viewer.playSoundToPlayer(SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), SoundCategory.BLOCKS, 1, 1);
                 })
         );
 
         updateRunSlot();
+        gui.open();
+    }
+
+    @Override
+    protected void closeBacking() {
+        gui.close();
+        minion.removeMinionListener(this);
+        instruction.removeListener(this);
     }
 
     @Override
     public void onInstructionRename(MinionFakePlayer minion, ConfiguredInstruction<?> instruction, String oldName, String newName) {
-        this.setTitle(Text.literal(newName));
+        gui.setTitle(Text.literal(newName));
         name = newName;
+        context.setName(newName);
     }
 
     @Override
@@ -92,12 +114,12 @@ public class ConfigureInstructionGui extends InstructionBoundSimpleGui {
 
     private void updateRunSlot() {
         if(!instruction.isRunning()) {
-            setSlot(26, new GuiElementBuilder(Items.ARROW)
+            gui.setSlot(26, new GuiElementBuilder(Items.ARROW)
                     .setName(Text.translatable("minions.gui.instruction.run"))
                     .setCallback(() -> instruction.run(minion.getInstructionManager()))
             );
         } else {
-            setSlot(26, new GuiElementBuilder(Items.BARRIER)
+            gui.setSlot(26, new GuiElementBuilder(Items.BARRIER)
                     .setName(Text.translatable("minions.gui.instruction.stop"))
                     .setCallback(() -> instruction.stop(minion.getInstructionManager()))
             );
@@ -107,8 +129,8 @@ public class ConfigureInstructionGui extends InstructionBoundSimpleGui {
     private void updateSuppliers() {
         int slot = 12;
         for(Parameter<?> parameter : instruction.getInstruction().getParameters().reversed()) {
-            setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getArgument(parameter), player.getRegistryManager())
-                    .setCallback(() -> ArgumentGui.configureArgumentMenu(name, instruction, parameter, minion, player))
+            gui.setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getArgument(parameter), viewer.getRegistryManager())
+                    .setCallback(() -> new ArgumentGui(this, GuiContext.ValueSupplier.create(context, parameter)))
             );
             slot--;
         }

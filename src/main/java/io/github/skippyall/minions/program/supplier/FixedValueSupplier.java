@@ -39,6 +39,6 @@ public class FixedValueSupplier<T, R extends InstructionRuntime<R>> implements V
 
     @Override
     public Text getDisplayText() {
-        return Text.translatable("value_supplier_type.minions.fixed.display", valueType.getDisplayText(value));
+        return valueType.getDisplayText(value);
     }
 }

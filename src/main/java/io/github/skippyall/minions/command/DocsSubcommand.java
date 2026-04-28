@@ -12,8 +12,8 @@ import net.minecraft.util.Identifier;
 
 import java.util.concurrent.CompletableFuture;
 
-import static net.minecraft.server.command.CommandManager.literal;
 import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class DocsSubcommand {
     public static final LiteralArgumentBuilder<ServerCommandSource> DOCS = literal("docs")

@@ -1,6 +1,7 @@
 package io.github.skippyall.minions.program.conversion;
 
 import com.mojang.serialization.Codec;
+import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.text.Text;
@@ -8,7 +9,7 @@ import net.minecraft.text.Text;
 public interface ValueConverter<F,T> {
     Codec<ValueConverter<?,?>> CODEC = MinionRegistries.VALUE_CONVERTER_TYPES.getCodec().dispatch(ValueConverter::getType, ValueConverterType::getCodec);
 
-    T convert(F from);
+    Result<T, Text> convert(F from);
 
     ValueType<F> getFrom();
 

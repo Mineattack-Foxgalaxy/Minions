@@ -1,9 +1,9 @@
 package io.github.skippyall.minions.clipboard;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionItems;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,7 +22,7 @@ public class ClipboardItem extends Item implements PolymerItem {
 
     @Override
     public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
-        return Items.PAPER;
+        return /*VersionSync.isOnClient(context) ? this : */Items.PAPER;
     }
 
     @Override

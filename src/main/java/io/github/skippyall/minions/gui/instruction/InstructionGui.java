@@ -3,18 +3,20 @@ package io.github.skippyall.minions.gui.instruction;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.GuiDisplay;
-import io.github.skippyall.minions.gui.MinionBoundSimpleGui;
-import io.github.skippyall.minions.registration.MinionComponentTypes;
-import io.github.skippyall.minions.registration.MinionRegistries;
+import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.gui.input.TextInput;
+import io.github.skippyall.minions.gui.minion.GuiContext;
+import io.github.skippyall.minions.gui.minion.SimpleMinionsGui;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.MinionModule;
-import io.github.skippyall.minions.program.supplier.ValueSupplier;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.supplier.Parameter;
+import io.github.skippyall.minions.program.supplier.ValueSupplier;
+import io.github.skippyall.minions.registration.MinionComponentTypes;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -28,63 +30,50 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
 public class InstructionGui {
-    public static void openInstructionMainMenu(MinionFakePlayer minion, ServerPlayerEntity player) {
-        SimpleGui gui = new MinionBoundSimpleGui(ScreenHandlerType.GENERIC_3X3, player, minion);
-        gui.setTitle(Text.translatable("minions.gui.instruction.title"));
+    public static MinionsGui openInstructionMainMenu(MinionsGui parent, GuiContext.Minion context) {
+        return new SimpleMinionsGui(parent, (onClose, me) -> {
+            ServerPlayerEntity player = parent.getViewer();
 
-        gui.setSlot(3, new GuiElementBuilder()
-                .setItem(Items.BOOK)
-                .setName(Text.translatable("minions.gui.instruction.list"))
-                .setCallback(() -> instructionList(minion, player))
-        );
-        gui.setSlot(5, new GuiElementBuilder()
-                .setItem(Items.WRITABLE_BOOK)
-                .setName(Text.translatable("minions.gui.instruction.create"))
-                .setCallback(() -> createNewInstruction(minion, player))
-        );
+            SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, player, false) {
+                @Override
+                public void onClose() {
+                    onClose.run();
+                }
+            };
+            gui.setTitle(Text.translatable("minions.gui.instruction.title"));
 
-        gui.open();
-    }
-
-    public static void instructionList(MinionFakePlayer minion, ServerPlayerEntity player) {
-        SimpleGui gui = new MinionBoundSimpleGui(ScreenHandlerType.GENERIC_9X3, player, minion) {
-            @Override
-            public void onInstructionsUpdate(MinionFakePlayer minion) {
-                resetInstructionList(this, minion, player);
-            }
-        };
-        gui.setTitle(Text.translatable("minions.gui.instruction.title"));
-        resetInstructionList(gui, minion, player);
-
-        gui.open();
-    }
-
-    private static void resetInstructionList(SimpleGui gui, MinionFakePlayer minion, ServerPlayerEntity player) {
-        int i = 0;
-        for (String instructionName : minion.getInstructionManager().getInstructionNames()) {
-            ConfiguredInstruction<MinionRuntime> instruction = minion.getInstructionManager().getInstruction(instructionName);
-            gui.setSlot(i, new GuiElementBuilder(GuiDisplay.getGuiDisplayFor(MinionRegistries.INSTRUCTION_TYPES, instruction.getInstruction(), player.getRegistryManager()).createItemStack())
-                    .setName(Text.literal(instructionName))
-                    .setCallback(() -> ConfigureInstructionGui.configureInstructionMenu(instructionName, instruction, minion, player))
+            gui.setSlot(3, new GuiElementBuilder()
+                    .setItem(Items.BOOK)
+                    .setName(Text.translatable("minions.gui.instruction.list"))
+                    .setCallback(() -> new InstructionListGui(me, context))
             );
-            i++;
-        }
+            gui.setSlot(5, new GuiElementBuilder()
+                    .setItem(Items.WRITABLE_BOOK)
+                    .setName(Text.translatable("minions.gui.instruction.create"))
+                    .setCallback(() -> createNewInstruction(me, context))
+            );
+
+            gui.open();
+            return gui;
+        });
     }
 
-    public static void createNewInstruction(MinionFakePlayer minion, ServerPlayerEntity player) {
-        selectInstructionModuleMenu(minion, player).thenAccept(instructionType ->
-                inputInstructionName(minion, player, "Instruction").thenAccept(name -> {
+    public static void createNewInstruction(MinionsGui parent, GuiContext.Minion context) {
+        MinionFakePlayer minion = context.getMinion();
+        ServerPlayerEntity viewer = parent.getViewer();
+        selectInstructionModuleMenu(parent, context).thenAccept(instructionType ->
+                inputInstructionName(parent, context, "Instruction").thenAccept(name -> {
                     if (!minion.isRemoved() && !minion.isDisconnected()) {
                         ConfiguredInstruction<MinionRuntime> configuredInstruction = minion.getInstructionManager().createInstruction(name, instructionType);
-                        ConfigureInstructionGui.configureInstructionMenu(name, configuredInstruction, minion, player);
+                        new ConfigureInstructionGui(parent, GuiContext.Instruction.create(context, configuredInstruction, name));
                     }
                 })
         );
     }
 
-    public static CompletableFuture<String> inputInstructionName(MinionFakePlayer minion, ServerPlayerEntity player, String defaultValue) {
-        return TextInput.inputSync(player, Text.translatable("minions.gui.instruction.enter_name"), defaultValue, name -> {
-            if (minion.getInstructionManager().hasInstruction(name)) {
+    public static CompletableFuture<String> inputInstructionName(MinionsGui parent, GuiContext.Minion context, String defaultValue) {
+        return TextInput.inputSync(parent, Text.translatable("minions.gui.instruction.enter_name"), defaultValue, name -> {
+            if (context.getMinion().getInstructionManager().hasInstruction(name)) {
                 return new Result.Error<>(Text.translatable("minions.gui.instruction.name_already_used"));
             }
             return new Result.Success<>(name);
@@ -100,62 +89,71 @@ public class InstructionGui {
         return stillExists;
     }
 
-    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionModuleMenu(MinionFakePlayer minion, ServerPlayerEntity player) {
+    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionModuleMenu(MinionsGui parent, GuiContext.Minion context) {
+        MinionFakePlayer minion = context.getMinion();
+        ServerPlayerEntity viewer = parent.getViewer();
+
         if (minion.getModuleInventory().getModules().isEmpty()) {
-            player.sendMessage(Text.translatable("minions.gui.instruction.no_modules"));
+            viewer.sendMessage(Text.translatable("minions.gui.instruction.no_modules"));
             return CompletableFuture.failedFuture(new NoSuchElementException("No modules"));
         }
 
         CompletableFuture<InstructionType<MinionRuntime>> future = new CompletableFuture<>();
 
-        SimpleGui gui = new MinionBoundSimpleGui(ScreenHandlerType.GENERIC_9X3, player, minion) {
-            @Override
-            public void onClose() {
-                if (!future.isDone()) {
-                    future.cancel(false);
+        new SimpleMinionsGui(parent, (closeHandler, me) -> {
+            SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_9X3, viewer, false) {
+                @Override
+                public void onClose() {
+                    if (!future.isDone()) {
+                        future.cancel(false);
+                    }
+                    closeHandler.run();
                 }
-                super.onClose();
-            }
-        };
-        gui.setTitle(Text.translatable("minions.gui.instruction.select_instruction"));
+            };
+            gui.setTitle(Text.translatable("minions.gui.instruction.select_instruction"));
 
-        for (int i = 0; i < minion.getModuleInventory().size(); i++) {
-            ItemStack moduleItem = minion.getModuleInventory().getStack(i);
-            MinionModule module = moduleItem.get(MinionComponentTypes.MODULE);
-            if (module != null && !module.instructions().isEmpty()) {
-                gui.addSlot(new GuiElementBuilder(moduleItem)
-                        .setCallback(() -> selectInstructionMenu(module, minion, player)
-                                .thenApply(future::complete)
-                        )
-                );
+            for (int i = 0; i < minion.getModuleInventory().size(); i++) {
+                ItemStack moduleItem = minion.getModuleInventory().getStack(i);
+                MinionModule module = moduleItem.get(MinionComponentTypes.MODULE);
+                if (module != null && !module.instructions().isEmpty()) {
+                    gui.addSlot(new GuiElementBuilder(moduleItem)
+                            .setCallback(() -> selectInstructionMenu(parent, context, module)
+                                    .thenApply(future::complete)
+                            )
+                    );
+                }
             }
-        }
 
-        gui.open();
+            gui.open();
+            return gui;
+        });
         return future;
     }
 
-    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionMenu(MinionModule module, MinionFakePlayer minion, ServerPlayerEntity player) {
+    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionMenu(MinionsGui parent, GuiContext.Minion context, MinionModule module) {
         CompletableFuture<InstructionType<MinionRuntime>> future = new CompletableFuture<>();
 
-        SimpleGui gui = new MinionBoundSimpleGui(ScreenHandlerType.GENERIC_9X3, player, minion) {
-            @Override
-            public void onClose() {
-                if (!future.isDone()) {
-                    future.cancel(false);
+        new SimpleMinionsGui(parent, (closeHandler, me) -> {
+            SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_9X3, parent.getViewer(), false) {
+                @Override
+                public void onClose() {
+                    if (!future.isDone()) {
+                        future.cancel(false);
+                    }
+                    closeHandler.run();
                 }
-                super.onClose();
+            };
+            gui.setTitle(Text.translatable("minions.gui.instruction.select_instruction"));
+
+            for (InstructionType<MinionRuntime> instructionType : module.instructions()) {
+                gui.addSlot(createInstructionElement(instructionType, parent.getViewer().getRegistryManager())
+                        .setCallback(() -> future.complete(instructionType))
+                );
             }
-        };
-        gui.setTitle(Text.translatable("minions.gui.instruction.select_instruction"));
 
-        for (InstructionType<MinionRuntime> instructionType : module.instructions()) {
-            gui.addSlot(createInstructionElement(instructionType, player.getRegistryManager())
-                    .setCallback(() -> future.complete(instructionType))
-            );
-        }
-
-        gui.open();
+            gui.open();
+            return gui;
+        });
         return future;
     }
 

@@ -3,7 +3,7 @@ package io.github.skippyall.minions.minion.program.instruction.move;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.entity.MovementType;
 import net.minecraft.storage.ReadView;
@@ -29,8 +29,8 @@ public class WalkExecution implements InstructionExecution<MinionRuntime> {
     }
 
     @Override
-    public void readArguments(ValueSupplierList<MinionRuntime> parameters, MinionRuntime minion) {
-        totalBlocksToMove = parameters.getValue(blocksToMoveParam, minion).floatValue();
+    public void readArguments(ParameterValueList parameters, MinionRuntime minion) {
+        totalBlocksToMove = parameters.getValue(blocksToMoveParam).floatValue();
         blocksMoved = 0;
     }
 

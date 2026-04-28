@@ -3,8 +3,8 @@ package io.github.skippyall.minions.minion;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.listener.SerializableListenerManager;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.dynamic.Codecs;
@@ -27,7 +27,7 @@ public record MinionData(
                     Codecs.GAME_PROFILE_PROPERTY_MAP.optionalFieldOf("skin").forGetter(MinionData::skin),
                     Codec.BOOL.optionalFieldOf("isSpawned", false).forGetter(MinionData::isSpawned),
                     SerializableListenerManager.getCodec(MinionRegistries.MINION_LISTENER_CODECS).optionalFieldOf("listeners").xmap(
-                            optional -> optional.orElseGet(() -> new SerializableListenerManager<>(MinionRegistries.MINION_LISTENER_CODECS)),
+                            optional -> optional.orElseGet(SerializableListenerManager::new),
                             Optional::of
                     ).forGetter(MinionData::listeners),
                     MinionConfig.CODEC.optionalFieldOf("config", new MinionConfig()).forGetter(MinionData::config)
@@ -40,7 +40,7 @@ public record MinionData(
                 MinionProfileUtils.newDefaultMinionName(server),
                 Optional.empty(),
                 false,
-                new SerializableListenerManager<>(MinionRegistries.MINION_LISTENER_CODECS),
+                new SerializableListenerManager<>(),
                 new MinionConfig()
         );
     }

@@ -6,7 +6,7 @@ import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.storage.ReadView;
@@ -121,7 +121,7 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
     }
 
     @Override
-    public void readArguments(ValueSupplierList<MinionRuntime> arguments, MinionRuntime runtime) {
+    public void readArguments(ParameterValueList arguments, MinionRuntime runtime) {
 
     }
 

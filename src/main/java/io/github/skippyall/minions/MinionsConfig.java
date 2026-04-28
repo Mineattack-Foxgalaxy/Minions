@@ -8,7 +8,6 @@ import com.electronwill.nightconfig.core.serde.ObjectDeserializer;
 import com.electronwill.nightconfig.core.serde.ObjectSerializer;
 import com.electronwill.nightconfig.core.serde.SerdeException;
 import com.electronwill.nightconfig.core.serde.annotations.SerdeComment;
-import com.electronwill.nightconfig.core.serde.annotations.SerdeSkipDeserializingIf;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import com.electronwill.nightconfig.toml.TomlParser;
 import net.fabricmc.loader.api.FabricLoader;
@@ -17,31 +16,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.electronwill.nightconfig.core.serde.annotations.SerdeSkipDeserializingIf.SkipDeIf.IS_MISSING;
-
 public class MinionsConfig {
     private static MinionsConfig INSTANCE;
 
-    @SerdeSkipDeserializingIf(IS_MISSING)
     public Minion minion = new Minion();
 
     public static class Minion {
         @SerdeComment("The prefix for all minion names")
-        @SerdeSkipDeserializingIf(IS_MISSING)
         public String minionPrefix = "+";
 
         @SerdeComment("Makes minions not raise the mob cap if they can't spawn mobs.")
         @SerdeComment("Might cause incompatibilities.")
-        @SerdeSkipDeserializingIf(IS_MISSING)
         public boolean enableMobCapHacks = true;
     }
 
-    @SerdeSkipDeserializingIf(IS_MISSING)
     public Compat compat = new Compat();
 
     public static class Compat {
         @SerdeComment("Enables compat with Universal Graves, which allows everyone to pick up graves from minions")
-        @SerdeSkipDeserializingIf(IS_MISSING)
         public boolean enableGravesCompat = true;
     }
 
@@ -66,12 +58,15 @@ public class MinionsConfig {
 
     public static void loadConfig() {
         try {
+            CommentedConfig defaultConfig = ObjectSerializer.standard().serializeFields(new MinionsConfig(), TomlFormat::newConfig);
+
             CommentedConfig config = new TomlParser().parse(getPath(), (file, configFormat) -> {
-                CommentedConfig defaultConfig = ObjectSerializer.standard().serializeFields(new MinionsConfig(), TomlFormat::newConfig);
                 configFormat.createWriter().write(defaultConfig, file, WritingMode.REPLACE);
                 return true;
             });
 
+            //Always use default values when entries are missing
+            config.addAll(defaultConfig);
             INSTANCE = ObjectDeserializer.standard().deserializeFields(config, MinionsConfig::new);
         } catch (SerdeException | ParsingException | WritingException e) {
             Minions.LOGGER.error("Error while reading config", e);

@@ -2,7 +2,7 @@ package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import net.minecraft.storage.ReadView;
 
 import java.util.Collection;
@@ -33,9 +33,9 @@ public class InstructionType<R extends InstructionRuntime<R>> {
         return returnParameters;
     }
 
-    public InstructionExecution<R> createExecution(ValueSupplierList<R> parameters, R minion) {
+    public InstructionExecution<R> createExecution(ParameterValueList arguments, R minion) {
         InstructionExecution<R> execution = executionFactory.get();
-        execution.readArguments(parameters, minion);
+        execution.readArguments(arguments, minion);
         return execution;
     }
 

@@ -1,0 +1,11 @@
+{
+  "type": "minions:stack",
+  "data": {
+    "id": "minecraft:player_head",
+    "components": {
+      "minecraft:profile": {
+        "name": "CastCrafter"
+      }
+    }
+  }
+}

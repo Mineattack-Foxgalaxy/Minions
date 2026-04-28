@@ -4,6 +4,8 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.Displayable;
 import io.github.skippyall.minions.gui.GuiDisplay;
+import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.gui.minion.SimpleMinionsGui;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -69,6 +71,36 @@ public class ChoiceInput {
         );
 
         gui.open();
+        return future;
+    }
+
+    public static CompletableFuture<Void> confirm(MinionsGui parent, Text title) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        new SimpleMinionsGui(parent, (onClose, me) -> {
+            SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, parent.getViewer(), false) {
+                @Override
+                public void onClose() {
+                    future.cancel(false);
+                    onClose.run();
+                }
+            };
+
+            gui.setTitle(title);
+
+            gui.setSlot(3, new GuiElementBuilder(Items.REDSTONE_BLOCK)
+                    .setName(Text.translatable("minions.gui.abort"))
+                    .setCallback(() -> future.cancel(false))
+            );
+
+            gui.setSlot(5, new GuiElementBuilder(Items.EMERALD_BLOCK)
+                    .setName(Text.translatable("minions.gui.confirm"))
+                    .setCallback(() -> future.complete(null))
+            );
+
+            gui.open();
+            return gui;
+        });
         return future;
     }
 

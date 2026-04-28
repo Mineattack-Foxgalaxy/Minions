@@ -50,7 +50,7 @@ public record ReferenceEntry(Metadata metadata, RegistryKey<?> object, Text shor
             bodyElements.add(new ItemDialogBody(display.createItemStack(), Optional.empty(), false, false, 16, 16));
         }
         bodyElements.add(new PlainMessageDialogBody(Text.translatable(object.getValue().toTranslationKey(object.getRegistry().getPath())), 200));
-        bodyElements.add(new PlainMessageDialogBody(longDescription.copy().append("\n".repeat(100)), 200));
+        bodyElements.add(new PlainMessageDialogBody(longDescription, 200));
 
         return bodyElements;
     }

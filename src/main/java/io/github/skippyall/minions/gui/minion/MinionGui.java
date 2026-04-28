@@ -7,13 +7,8 @@ import io.github.skippyall.minions.gui.instruction.InstructionGui;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.ModuleInventory;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.ArmorSlot;
-import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -25,6 +20,7 @@ public class MinionGui extends MinionsGui implements MinionListener {
         super(viewer);
         this.minion = minion;
         minion.addMinionListener(this);
+        open();
     }
 
     public MinionFakePlayer getMinion() {
@@ -46,7 +42,7 @@ public class MinionGui extends MinionsGui implements MinionListener {
                 .setItem(Items.COMMAND_BLOCK)
                 .setName(Text.translatable("minions.gui.main.instructions"))
                 .setCallback(() -> {
-                    InstructionGui.openInstructionMainMenu(minion, viewer);
+                    InstructionGui.openInstructionMainMenu(this, GuiContext.Minion.create(GuiContext.create(viewer), minion));
                 })
         );
         gui.setSlot(3, new GuiElementBuilder()
@@ -75,7 +71,7 @@ public class MinionGui extends MinionsGui implements MinionListener {
     }
 
     @Override
-    protected void onClose() {
+    protected void closeBacking() {
         gui.close();
         minion.removeMinionListener(this);
     }
@@ -83,11 +79,5 @@ public class MinionGui extends MinionsGui implements MinionListener {
     @Override
     public void onMinionRemove(MinionFakePlayer minion) {
         close();
-    }
-
-    public static GuiElementBuilder backButton(Runnable onBack) {
-        return new GuiElementBuilder(Items.COMPASS)
-                .setItemName(Text.translatable("gui.back"))
-                .setCallback(onBack);
     }
 }

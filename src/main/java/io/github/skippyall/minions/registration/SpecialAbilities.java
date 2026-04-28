@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.registration;
 
-import io.github.skippyall.minions.module.MobSpawningAbility;
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.module.MobSpawningAbility;
 import io.github.skippyall.minions.module.SpecialAbility;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;

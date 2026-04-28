@@ -15,6 +15,7 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.Uuids;
@@ -46,7 +47,7 @@ public interface GuiDisplay {
 
     static <T> ItemStack getDisplayStackWithName(Registry<T> registry, T element, DynamicRegistryManager manager) {
         ItemStack stack = getDisplayStack(registry, element, manager);
-        stack.set(DataComponentTypes.ITEM_NAME, Text.translatable(TranslationUtil.getTranslationKey(element, registry)));
+        stack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable(TranslationUtil.getTranslationKey(element, registry)).styled(style -> style.withItalic(false).withColor(Formatting.WHITE)));
         return stack;
     }
 

@@ -7,6 +7,7 @@ import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Optional;
@@ -25,13 +26,17 @@ public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionLis
     protected abstract Class<L> getListenerClass();
 
     public void removeListener() {
-        L listener = getListener();
-        listener.remove(world.getServer());
+        if(world instanceof ServerWorld serverWorld) {
+            L listener = getListener();
+            listener.remove(serverWorld.getServer());
+        }
     }
 
     public void addListener() {
-        L listener = createListener();
-        listener.add(world.getServer());
+        if(world instanceof ServerWorld serverWorld) {
+            L listener = createListener();
+            listener.add(serverWorld.getServer());
+        }
     }
 
     public void setInstruction(UUID minionUuid, String instructionName) {

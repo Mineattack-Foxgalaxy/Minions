@@ -1,13 +1,13 @@
 package io.github.skippyall.minions.program;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.program.supplier.ValueSupplier;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
-import io.github.skippyall.minions.program.supplier.ValueSupplierType;
-import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.consumer.ValueConsumer;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.consumer.ValueConsumerType;
+import io.github.skippyall.minions.program.instruction.InstructionType;
+import io.github.skippyall.minions.program.supplier.ValueSupplier;
+import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import net.minecraft.registry.Registry;
 
 public interface InstructionRuntime<R extends InstructionRuntime<R>> {

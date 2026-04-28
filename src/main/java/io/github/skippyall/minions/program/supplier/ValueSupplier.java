@@ -2,9 +2,9 @@ package io.github.skippyall.minions.program.supplier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 

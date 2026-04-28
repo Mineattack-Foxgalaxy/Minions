@@ -5,7 +5,7 @@ import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -114,11 +114,11 @@ public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
     }
 
     @Override
-    public void readArguments(ValueSupplierList<MinionRuntime> arguments, MinionRuntime runtime) {
-        fromSlot = Math.clamp(arguments.getValue(FROM_SLOT, runtime), 0, Integer.MAX_VALUE);
-        fromScreen = arguments.getValue(FROM_SCREEN, runtime);
-        toSlot = Math.clamp(arguments.getValue(TO_SLOT, runtime), 0, Integer.MAX_VALUE);
-        toScreen = arguments.getValue(TO_SCREEN, runtime);
+    public void readArguments(ParameterValueList arguments, MinionRuntime runtime) {
+        fromSlot = Math.clamp(arguments.getValue(FROM_SLOT), 0, Integer.MAX_VALUE);
+        fromScreen = arguments.getValue(FROM_SCREEN);
+        toSlot = Math.clamp(arguments.getValue(TO_SLOT), 0, Integer.MAX_VALUE);
+        toScreen = arguments.getValue(TO_SCREEN);
     }
 
     @Override

@@ -1,0 +1,69 @@
+package io.github.skippyall.minions.gui.instruction;
+
+import eu.pb4.sgui.api.elements.GuiElementBuilder;
+import eu.pb4.sgui.api.gui.SimpleGui;
+import io.github.skippyall.minions.gui.GuiDisplay;
+import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.gui.minion.GuiContext;
+import io.github.skippyall.minions.minion.MinionListener;
+import io.github.skippyall.minions.minion.MinionRuntime;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
+import io.github.skippyall.minions.registration.MinionRegistries;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.text.Text;
+
+public class InstructionListGui extends MinionsGui implements MinionListener {
+    private final GuiContext.Minion context;
+    private final MinionFakePlayer minion;
+    private SimpleGui gui;
+
+    public InstructionListGui(MinionsGui parent, GuiContext.Minion context) {
+        super(parent);
+        this.context = context;
+        this.minion = context.getMinion();
+        open();
+    }
+
+    @Override
+    public void onInstructionsUpdate(MinionFakePlayer minion) {
+        resetInstructionList();
+    }
+
+    @Override
+    protected void open() {
+        minion.addMinionListener(this);
+        gui = new SimpleGui(ScreenHandlerType.GENERIC_9X3, viewer, false) {
+            @Override
+            public void onClose() {
+                onBackingClosed();
+            }
+        };
+        gui.setTitle(Text.translatable("minions.gui.instruction.title"));
+        resetInstructionList();
+        gui.open();
+    }
+
+    @Override
+    protected void reopen() {
+        gui.open();
+    }
+
+    @Override
+    protected void closeBacking() {
+        minion.removeMinionListener(this);
+        gui.close();
+    }
+
+    private void resetInstructionList() {
+        int i = 0;
+        for (String instructionName : minion.getInstructionManager().getInstructionNames()) {
+            ConfiguredInstruction<MinionRuntime> instruction = minion.getInstructionManager().getInstruction(instructionName);
+            gui.setSlot(i, new GuiElementBuilder(GuiDisplay.getGuiDisplayFor(MinionRegistries.INSTRUCTION_TYPES, instruction.getInstruction(), viewer.getRegistryManager()).createItemStack())
+                    .setName(Text.literal(instructionName))
+                    .setCallback(() -> new ConfigureInstructionGui(this, GuiContext.Instruction.create(context, instruction, instructionName)))
+            );
+            i++;
+        }
+    }
+}

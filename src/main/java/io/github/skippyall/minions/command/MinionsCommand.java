@@ -14,7 +14,8 @@ public class MinionsCommand {
         LiteralArgumentBuilder<ServerCommandSource> builder = literal("minions")
                 .then(SpawnSubcommand.SPAWN)
                 .then(ListSubcommand.LIST)
-                .then(DocsSubcommand.DOCS);
+                .then(DocsSubcommand.DOCS)
+                .then(TestSubcommand.TEST);
 
         if(MinionsConfig.get().minion.enableMobCapHacks) {
             builder.then(MobCapDebugSubcommand.MOB_CAP_DEBUG);

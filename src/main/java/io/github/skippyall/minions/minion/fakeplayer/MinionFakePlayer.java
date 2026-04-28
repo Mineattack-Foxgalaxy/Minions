@@ -3,18 +3,18 @@ package io.github.skippyall.minions.minion.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
-import io.github.skippyall.minions.registration.MinionConfigOptions;
-import io.github.skippyall.minions.registration.MinionItems;
-import io.github.skippyall.minions.minion.MinionListener;
-import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.gui.minion.MinionGui;
-import io.github.skippyall.minions.minion.MinionRuntime;
+import io.github.skippyall.minions.listener.SerializableListenerManager;
+import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.minion.MinionItem;
+import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.MinionProfileUtils;
+import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.module.ModuleInventory;
+import io.github.skippyall.minions.registration.MinionConfigOptions;
+import io.github.skippyall.minions.registration.MinionItems;
 import io.github.skippyall.minions.registration.SpecialAbilities;
-import io.github.skippyall.minions.listener.SerializableListenerManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -91,6 +91,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
         instance.setHealth(20.0F);
         instance.unsetRemoved();
         instance.getAttributeInstance(EntityAttributes.STEP_HEIGHT).setBaseValue(0.6F);
+        instance.getAttributeInstance(EntityAttributes.WAYPOINT_TRANSMIT_RANGE).setBaseValue(0);
         instance.interactionManager.changeGameMode(GameMode.SURVIVAL);
         server.getPlayerManager().sendToDimension(new EntitySetHeadYawS2CPacket(instance, (byte) (instance.headYaw * 256 / 360)), level.getRegistryKey());
         server.getPlayerManager().sendToDimension(EntityPositionSyncS2CPacket.create(instance), level.getRegistryKey());
@@ -281,7 +282,7 @@ public class MinionFakePlayer extends ServerPlayerEntity {
     @Override
     public void drop(ServerWorld world, DamageSource damageSource) {
         super.drop(world, damageSource);
-        ItemEntity entity = dropStack(world, toItemStack(getServer()));
+        ItemEntity entity = dropItem(toItemStack(world.getServer()), true, false);
         if (entity != null) {
             entity.setNeverDespawn();
         }

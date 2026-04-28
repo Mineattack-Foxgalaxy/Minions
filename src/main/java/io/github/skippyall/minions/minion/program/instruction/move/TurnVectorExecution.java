@@ -2,7 +2,7 @@ package io.github.skippyall.minions.minion.program.instruction.move;
 
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -14,10 +14,10 @@ public class TurnVectorExecution extends AbstractTurnExecution {
     public static final Parameter<Double> Z = new Parameter<>("z", ValueTypes.DOUBLE);
 
     @Override
-    public void readArguments(ValueSupplierList<MinionRuntime> arguments, MinionRuntime runtime) {
-        double x = arguments.getValue(X, runtime);
-        double y = arguments.getValue(Y, runtime);
-        double z = arguments.getValue(Z, runtime);
+    public void readArguments(ParameterValueList arguments, MinionRuntime runtime) {
+        double x = arguments.getValue(X);
+        double y = arguments.getValue(Y);
+        double z = arguments.getValue(Z);
 
         Vec3d vector = new Vec3d(x, y, z);
         Vec2f rotation = vectorToRotation(vector);

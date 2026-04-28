@@ -1,8 +1,8 @@
 package io.github.skippyall.minions.minion;
 
+import io.github.skippyall.minions.listener.SerializableListenerManager;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
-import io.github.skippyall.minions.listener.SerializableListenerManager;
 import org.jetbrains.annotations.Nullable;
 
 public interface MinionListener extends SerializableListenerManager.SerializableListener {

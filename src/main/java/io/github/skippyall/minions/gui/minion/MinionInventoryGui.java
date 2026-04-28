@@ -22,6 +22,7 @@ public class MinionInventoryGui extends MinionsGui {
         super(parent);
         this.parent = parent;
         this.minion = parent.getMinion();
+        open();
     }
 
     @Override
@@ -61,7 +62,7 @@ public class MinionInventoryGui extends MinionsGui {
     }
 
     @Override
-    protected void onClose() {
+    protected void closeBacking() {
         gui.close();
     }
 }

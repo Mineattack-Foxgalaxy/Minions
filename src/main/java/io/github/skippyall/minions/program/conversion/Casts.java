@@ -1,7 +1,12 @@
 package io.github.skippyall.minions.program.conversion;
 
+import io.github.skippyall.minions.gui.input.Result;
+import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.value.ValueType;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueTypes;
+import io.github.skippyall.minions.util.TranslationUtil;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public class Casts {
@@ -12,11 +17,11 @@ public class Casts {
         }
         if(from == ValueTypes.LONG && to == ValueTypes.DOUBLE) {
             //noinspection unchecked
-            return (Cast<F, T>) new Cast<>(ValueTypes.LONG, ValueTypes.DOUBLE, (v) -> (double)v);
+            return (Cast<F, T>) new Cast<>(ValueTypes.LONG, ValueTypes.DOUBLE, Long::doubleValue);
         }
         if(from == ValueTypes.DOUBLE && to == ValueTypes.LONG) {
             //noinspection unchecked
-            return (Cast<F, T>) new Cast.CastCrafter<>(ValueTypes.DOUBLE, ValueTypes.LONG, (v) -> (long)(double)v).lossy().craftCast();
+            return (Cast<F, T>) new Cast.CastCrafter<>(ValueTypes.DOUBLE, ValueTypes.LONG, Double::longValue).lossy().craftCast();
         }
         if((from == ValueTypes.DOUBLE || from == ValueTypes.LONG) && to == ValueTypes.STRING) {
             //noinspection unchecked
@@ -24,6 +29,23 @@ public class Casts {
         }
 
         return null;
+    }
+
+    public static <F,T> @Nullable T cast(TypedValue<F> from, ValueType<T> to) {
+        @Nullable Cast<F,T> cast = getCast(from.type(), to);
+        if(cast != null) {
+            return cast.cast(from.value());
+        } else {
+            return null;
+        }
+    }
+
+    public static <F,T> Result<T, Text> castOrError(TypedValue<F> from, ValueType<T> to) {
+        return Result.ofNullable(Casts.cast(from, to), () -> Text.translatable(
+                "value_converter.minions.cast.cast_failed",
+                from.type().getDisplayText(from.value()),
+                Text.translatable(TranslationUtil.getTranslationKey(to, MinionRegistries.VALUE_TYPES))
+        ));
     }
 
     public static boolean canCastSafely(ValueType<?> from, ValueType<?> to) {

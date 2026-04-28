@@ -8,7 +8,6 @@ import net.minecraft.dialog.AfterAction;
 import net.minecraft.dialog.DialogActionButtonData;
 import net.minecraft.dialog.DialogButtonData;
 import net.minecraft.dialog.DialogCommonData;
-import net.minecraft.dialog.action.DynamicRunCommandDialogAction;
 import net.minecraft.dialog.action.SimpleDialogAction;
 import net.minecraft.dialog.type.MultiActionDialog;
 import net.minecraft.registry.entry.RegistryEntry;

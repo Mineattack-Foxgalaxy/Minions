@@ -1,10 +1,12 @@
 package io.github.skippyall.minions.gui.input;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public interface Result<T, E> {
     static <T> Result<T, String> wrap(UnsafeOperation<T> toWrap) {
@@ -23,6 +25,22 @@ public interface Result<T, E> {
         }
     }
 
+    static <T, E> Result<T, E> ofNullable(@Nullable T value, E error) {
+        if(value != null) {
+            return new Success<>(value);
+        } else {
+            return new Error<>(error);
+        }
+    }
+
+    static <T, E> Result<T, E> ofNullable(@Nullable T value, Supplier<E> error) {
+        if(value != null) {
+            return new Success<>(value);
+        } else {
+            return new Error<>(error.get());
+        }
+    }
+
     boolean isSuccess();
 
     T getOrDefault(T defaultValue);
@@ -33,9 +51,17 @@ public interface Result<T, E> {
 
     @NotNull Optional<T> getOptional();
 
+    @NotNull Optional<E> getOptionalError();
+
     void ifSuccess(@NotNull Consumer<T> handler);
 
     void ifError(@NotNull Consumer<Error<T, E>> handler);
+
+    <U> Result<U,E> map(Function<T, U> mapper);
+
+    <U> Result<U,E> flatMap(Function<T, Result<U, E>> mapper);
+
+    <U> Result<T,U> mapError(Function<E, U> mapper);
 
     record Success<T, E>(T result) implements Result<T, E> {
         @Override
@@ -46,6 +72,11 @@ public interface Result<T, E> {
         @Override
         public T getOrDefault(T defaultValue) {
             return result;
+        }
+
+        @Override
+        public @NotNull Optional<E> getOptionalError() {
+            return Optional.empty();
         }
 
         @Override
@@ -60,7 +91,7 @@ public interface Result<T, E> {
 
         @Override
         public @NotNull Optional<T> getOptional() {
-            return Optional.of(result);
+            return Optional.ofNullable(result);
         }
 
         @Override
@@ -71,6 +102,21 @@ public interface Result<T, E> {
         @Override
         public void ifError(@NotNull Consumer<Error<T, E>> handler) {
 
+        }
+
+        @Override
+        public <U> Result<U, E> map(Function<T, U> mapper) {
+            return new Success<>(mapper.apply(result));
+        }
+
+        @Override
+        public <U> Result<U, E> flatMap(Function<T, Result<U, E>> mapper) {
+            return mapper.apply(result);
+        }
+
+        @Override
+        public <U> Result<T, U> mapError(Function<E, U> mapper) {
+            return new Success<>(result);
         }
     }
 
@@ -102,6 +148,11 @@ public interface Result<T, E> {
         }
 
         @Override
+        public @NotNull Optional<E> getOptionalError() {
+            return Optional.ofNullable(message);
+        }
+
+        @Override
         public void ifSuccess(@NotNull Consumer<T> handler) {
 
         }
@@ -109,6 +160,21 @@ public interface Result<T, E> {
         @Override
         public void ifError(@NotNull Consumer<Error<T, E>> handler) {
             handler.accept(this);
+        }
+
+        @Override
+        public <U> Result<U, E> map(Function<T, U> mapper) {
+            return new Error<>(message);
+        }
+
+        @Override
+        public <U> Result<U, E> flatMap(Function<T, Result<U, E>> mapper) {
+            return new Error<>(message);
+        }
+
+        @Override
+        public <U> Result<T, U> mapError(Function<E, U> mapper) {
+            return new Error<>(mapper.apply(message));
         }
     }
 

@@ -8,8 +8,8 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ValueConverters {
-    public static final EqualityConverter.EqualityConverterType EQUALITY_CONVERTER = register("equality_converter", new EqualityConverter.EqualityConverterType());
-    public static final CastConverter.Type CAST_CONVERTER = register("cast_converter", new CastConverter.Type());
+    public static final EqualityConverter.EqualityConverterType EQUALITY_CONVERTER = register("equality", new EqualityConverter.EqualityConverterType());
+    public static final CastConverter.Type CAST_CONVERTER = register("cast", new CastConverter.Type());
 
     private static <T extends ValueConverterType<?>> T register(String name, T type) {
         return Registry.register(MinionRegistries.VALUE_CONVERTER_TYPES, Identifier.of(Minions.MOD_ID, name), type);

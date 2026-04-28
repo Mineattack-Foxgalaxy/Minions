@@ -1,13 +1,13 @@
 package io.github.skippyall.minions.minion;
 
-import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.supplier.ValueSupplierType;
+import io.github.skippyall.minions.program.consumer.ValueConsumerType;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
-import io.github.skippyall.minions.program.consumer.ValueConsumerType;
+import io.github.skippyall.minions.program.supplier.ValueSupplierType;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.registry.Registry;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;

@@ -8,11 +8,10 @@ import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.virtualentity.api.BlockWithElementHolder;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
-import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlock;
-import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlockEntity;
-import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlock;
 import io.github.skippyall.minions.polymer.VersionSync;
+import io.github.skippyall.minions.registration.MinionBlocks;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +20,7 @@ import net.minecraft.block.SideShapeType;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -120,7 +120,7 @@ public class MinionTriggerBlock extends InstructionBoundBlock implements Polymer
         ElementHolder holder = new ElementHolder() {
             @Override
             public boolean startWatching(ServerPlayNetworkHandler player) {
-                if(PolymerResourcePackUtils.hasMainPack(player)) {
+                if(PolymerResourcePackUtils.hasMainPack(player) && !VersionSync.isOnClient(player)) {
                     return super.startWatching(player);
                 } else {
                     return false;
@@ -130,7 +130,9 @@ public class MinionTriggerBlock extends InstructionBoundBlock implements Polymer
         ItemStack stack = new ItemStack(Items.BARRIER);
         stack.set(DataComponentTypes.ITEM_MODEL, Identifier.of(Minions.MOD_ID, "minion_trigger_no_plate_" + (initialBlockState.get(MinionTriggerBlock.POWERED) ? "active" : "inactive")));
 
-        holder.addElement(new ItemDisplayElement(stack));
+        ItemDisplayElement element = new ItemDisplayElement(stack);
+        element.setItemDisplayContext(ItemDisplayContext.NONE);
+        holder.addElement(element);
         return holder;
     }
 }

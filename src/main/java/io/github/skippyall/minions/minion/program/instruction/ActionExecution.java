@@ -4,7 +4,7 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.instruction.execution.ContinuousInstructionExecution;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 
@@ -39,7 +39,7 @@ public class ActionExecution implements ContinuousInstructionExecution<MinionRun
     }
 
     @Override
-    public void readArguments(ValueSupplierList<MinionRuntime> parameters, MinionRuntime minion) {}
+    public void readArguments(ParameterValueList parameters, MinionRuntime minion) {}
 
     @Override
     public void save(WriteView view, MinionRuntime minion) {}
