@@ -9,13 +9,12 @@ import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
 import io.github.skippyall.minions.registration.MinionBlocks;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Uuids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
+import net.minecraft.world.level.Level;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,9 +23,9 @@ import java.util.UUID;
 public class MinionTriggerMinionListener extends BlockEntityMinionInstructionListener<MinionTriggerBlockEntity> {
     public static final Codec<MinionTriggerMinionListener> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    World.CODEC.fieldOf("world").forGetter(listener -> listener.worldKey),
+                    Level.RESOURCE_KEY_CODEC.fieldOf("world").forGetter(listener -> listener.worldKey),
                     BlockPos.CODEC.fieldOf("pos").forGetter(listener -> listener.pos),
-                    Uuids.CODEC.fieldOf("minionUuid").forGetter(listener -> listener.minionUuid),
+                    UUIDUtil.AUTHLIB_CODEC.fieldOf("minionUuid").forGetter(listener -> listener.minionUuid),
                     Codec.STRING.fieldOf("instructionName").forGetter(listener -> listener.instructionName)
             ).apply(instance, MinionTriggerMinionListener::new));
 
@@ -36,7 +35,7 @@ public class MinionTriggerMinionListener extends BlockEntityMinionInstructionLis
     boolean runningCache;
     boolean incomingPowerCache;
 
-    MinionTriggerMinionListener(RegistryKey<World> worldKey, BlockPos pos, UUID minionUuid, String instructionName) {
+    MinionTriggerMinionListener(ResourceKey<Level> worldKey, BlockPos pos, UUID minionUuid, String instructionName) {
         super(worldKey, pos, minionUuid, MinionBlocks.MINION_TRIGGER_BE_TYPE);
         this.instructionName = Objects.requireNonNull(instructionName);
     }
@@ -83,14 +82,14 @@ public class MinionTriggerMinionListener extends BlockEntityMinionInstructionLis
     }
 
     @Override
-    public Optional<Identifier> getCodecId() {
-        return Optional.of(Identifier.of(Minions.MOD_ID, "minion_trigger"));
+    public Optional<ResourceLocation> getCodecId() {
+        return Optional.of(ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger"));
     }
 
     public void updateComparatorsIfLoaded(MinecraftServer server) {
-        World world = server.getWorld(worldKey);
-        if(world.isPosLoaded(pos)) {
-            world.updateComparators(pos, MinionBlocks.MINION_TRIGGER_BLOCK);
+        Level world = server.getLevel(worldKey);
+        if(world.isLoaded(pos)) {
+            world.updateNeighbourForOutputSignal(pos, MinionBlocks.MINION_TRIGGER_BLOCK);
         }
     }
 

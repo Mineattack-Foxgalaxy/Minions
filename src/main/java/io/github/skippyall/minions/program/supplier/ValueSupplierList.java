@@ -9,7 +9,6 @@ import io.github.skippyall.minions.program.conversion.Casts;
 import io.github.skippyall.minions.program.conversion.ConverterList;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.value.TypedValue;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import net.minecraft.network.chat.Component;
 
 public class ValueSupplierList<R extends InstructionRuntime<R>> {
     private final Map<Parameter<?>, ValueSupplierEntry<?,R>> arguments = new HashMap<>();
@@ -77,17 +77,17 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
         return arguments.containsKey(parameter);
     }
 
-    public @Nullable Text checkHasArguments(Collection<Parameter<?>> checkParameters) {
+    public @Nullable Component checkHasArguments(Collection<Parameter<?>> checkParameters) {
         for(Parameter<?> parameter : checkParameters) {
             if(!hasArgumentFor(parameter)) {
-                return Text.translatable("minions.gui.instruction.check.argument_not_set", parameter.name());
+                return Component.translatable("minions.gui.instruction.check.argument_not_set", parameter.name());
             }
         }
         return null;
     }
 
-    public @Nullable Text checkRun(InstructionType<R> instructionType) {
-        @Nullable Text checkResult = checkHasArguments(instructionType.getParameters());
+    public @Nullable Component checkRun(InstructionType<R> instructionType) {
+        @Nullable Component checkResult = checkHasArguments(instructionType.getParameters());
         if(checkResult != null) {
             return checkResult;
         }
@@ -164,12 +164,12 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
         //Ich liebe generische Typen (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
         private <S> @Nullable P getValue(ValueSupplier<S, R> supplier, R runtime) {
             S value = supplier.resolve(runtime);
-            Result<TypedValue<?>, Text> convertedResult = converters.convert(new TypedValue<>(value, supplier.getValueType()));
+            Result<TypedValue<?>, Component> convertedResult = converters.convert(new TypedValue<>(value, supplier.getValueType()));
 
             return convertedResult.flatMap(convertedValue -> Casts.castOrError(convertedValue, parameter.type())).getOrDefault(null);
         }
 
-        public @Nullable Text check() {
+        public @Nullable Component check() {
             //TODO check it
             return null;
         }

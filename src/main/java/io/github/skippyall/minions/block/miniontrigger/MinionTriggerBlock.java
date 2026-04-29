@@ -12,91 +12,91 @@ import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlock;
 import io.github.skippyall.minions.polymer.VersionSync;
 import io.github.skippyall.minions.registration.MinionBlocks;
-import net.minecraft.block.AbstractRedstoneGateBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.SideShapeType;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemDisplayContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
-import net.minecraft.world.block.WireOrientation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DiodeBlock;
+import net.minecraft.world.level.block.SupportType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 public class MinionTriggerBlock extends InstructionBoundBlock implements PolymerBlock, PolymerKeepModel, PolymerClientDecoded, BlockWithElementHolder {
-    public static final MapCodec<MinionTriggerBlock> CODEC = createCodec(MinionTriggerBlock::new);
+    public static final MapCodec<MinionTriggerBlock> CODEC = simpleCodec(MinionTriggerBlock::new);
 
-    public static final BooleanProperty POWERED = BooleanProperty.of("powered");
-    public static final VoxelShape SHAPE = Block.createColumnShape(16.0, 0.0, 2.0);
+    public static final BooleanProperty POWERED = BooleanProperty.create("powered");
+    public static final VoxelShape SHAPE = Block.column(16.0, 0.0, 2.0);
 
-    public MinionTriggerBlock(Settings settings) {
+    public MinionTriggerBlock(Properties settings) {
         super(settings);
-        setDefaultState(getDefaultState().with(POWERED, false));
+        registerDefaultState(defaultBlockState().setValue(POWERED, false));
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        BlockPos blockPos = pos.down();
+    protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+        BlockPos blockPos = pos.below();
         return this.canPlaceAbove(world, blockPos, world.getBlockState(blockPos));
     }
 
-    protected boolean canPlaceAbove(WorldView world, BlockPos pos, BlockState state) {
-        return state.isSideSolid(world, pos, Direction.UP, SideShapeType.RIGID);
+    protected boolean canPlaceAbove(LevelReader world, BlockPos pos, BlockState state) {
+        return state.isFaceSturdy(world, pos, Direction.UP, SupportType.RIGID);
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(POWERED);
     }
 
     @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
-        if(!canPlaceAt(state, world, pos)) {
-            dropStacks(state, world, pos);
+    protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block sourceBlock, @Nullable Orientation wireOrientation, boolean notify) {
+        if(!canSurvive(state, world, pos)) {
+            dropResources(state, world, pos);
             world.removeBlock(pos, false);
             return;
         }
 
-        boolean newPower = world.isReceivingRedstonePower(pos);
-        if(state.get(POWERED) != newPower) {
-            world.setBlockState(pos, state.with(POWERED, newPower));
+        boolean newPower = world.hasNeighborSignal(pos);
+        if(state.getValue(POWERED) != newPower) {
+            world.setBlockAndUpdate(pos, state.setValue(POWERED, newPower));
             world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(MinionTriggerBlockEntity::updatePower);
         }
     }
 
     @Override
-    protected boolean hasComparatorOutput(BlockState state) {
+    protected boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos) {
         return world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).map(MinionTriggerBlockEntity::getComparatorOutput).orElse(0);
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new MinionTriggerBlockEntity(pos, state);
     }
 
@@ -107,19 +107,19 @@ public class MinionTriggerBlock extends InstructionBoundBlock implements Polymer
 
     @Override
     public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
-        return VersionSync.isOnClient(context) ? state : net.minecraft.block.Blocks.COMPARATOR.getDefaultState().with(AbstractRedstoneGateBlock.POWERED, state.get(POWERED));
+        return VersionSync.isOnClient(context) ? state : net.minecraft.world.level.block.Blocks.COMPARATOR.defaultBlockState().setValue(DiodeBlock.POWERED, state.getValue(POWERED));
     }
 
     @Override
-    public boolean handleMiningOnServer(ItemStack tool, BlockState state, BlockPos pos, ServerPlayerEntity player) {
+    public boolean handleMiningOnServer(ItemStack tool, BlockState state, BlockPos pos, ServerPlayer player) {
         return false;
     }
 
     @Override
-    public @Nullable ElementHolder createElementHolder(ServerWorld world, BlockPos pos, BlockState initialBlockState) {
+    public @Nullable ElementHolder createElementHolder(ServerLevel world, BlockPos pos, BlockState initialBlockState) {
         ElementHolder holder = new ElementHolder() {
             @Override
-            public boolean startWatching(ServerPlayNetworkHandler player) {
+            public boolean startWatching(ServerGamePacketListenerImpl player) {
                 if(PolymerResourcePackUtils.hasMainPack(player) && !VersionSync.isOnClient(player)) {
                     return super.startWatching(player);
                 } else {
@@ -128,7 +128,7 @@ public class MinionTriggerBlock extends InstructionBoundBlock implements Polymer
             }
         };
         ItemStack stack = new ItemStack(Items.BARRIER);
-        stack.set(DataComponentTypes.ITEM_MODEL, Identifier.of(Minions.MOD_ID, "minion_trigger_no_plate_" + (initialBlockState.get(MinionTriggerBlock.POWERED) ? "active" : "inactive")));
+        stack.set(DataComponents.ITEM_MODEL, ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger_no_plate_" + (initialBlockState.getValue(MinionTriggerBlock.POWERED) ? "active" : "inactive")));
 
         ItemDisplayElement element = new ItemDisplayElement(stack);
         element.setItemDisplayContext(ItemDisplayContext.NONE);

@@ -5,21 +5,20 @@ import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.clipboard.Clipboard;
 import io.github.skippyall.minions.module.MinionModule;
 import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
-import net.minecraft.component.ComponentType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Uuids;
-
+import net.minecraft.core.Registry;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import java.util.UUID;
 
 public class MinionComponentTypes {
-    public static final ComponentType<UUID> MINION_DATA = register("minion_data", ComponentType.<UUID>builder().codec(Uuids.CODEC).build());
-    public static final ComponentType<MinionModule> MODULE = register("minion_module", ComponentType.<MinionModule>builder().codec(MinionModule.CODEC).build());
-    public static final ComponentType<Clipboard> REFERENCE = register("reference", ComponentType.<Clipboard>builder().codec(Clipboard.CODEC).build());
+    public static final DataComponentType<UUID> MINION_DATA = register("minion_data", DataComponentType.<UUID>builder().persistent(UUIDUtil.AUTHLIB_CODEC).build());
+    public static final DataComponentType<MinionModule> MODULE = register("minion_module", DataComponentType.<MinionModule>builder().persistent(MinionModule.CODEC).build());
+    public static final DataComponentType<Clipboard> REFERENCE = register("reference", DataComponentType.<Clipboard>builder().persistent(Clipboard.CODEC).build());
 
-    private static <T extends ComponentType<?>> T register(String name, T type) {
-        Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(Minions.MOD_ID, name), type);
+    private static <T extends DataComponentType<?>> T register(String name, T type) {
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, name), type);
         PolymerComponent.registerDataComponent(type);
         return type;
     }

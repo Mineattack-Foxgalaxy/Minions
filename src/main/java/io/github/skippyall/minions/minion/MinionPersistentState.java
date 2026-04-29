@@ -2,20 +2,19 @@ package io.github.skippyall.minions.minion;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.PersistentState;
-import net.minecraft.world.PersistentStateType;
-import net.minecraft.world.World;
-
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-public class MinionPersistentState extends PersistentState {
+public class MinionPersistentState extends SavedData {
     public static final Codec<MinionPersistentState> CODEC = MinionData.CODEC.listOf().xmap(MinionPersistentState::new, MinionPersistentState::getMinionDataList);
 
-    public static PersistentStateType<MinionPersistentState> TYPE = new PersistentStateType<>("minion", MinionPersistentState::new, MinionPersistentState.CODEC, null);
+    public static SavedDataType<MinionPersistentState> TYPE = new SavedDataType<>("minion", MinionPersistentState::new, MinionPersistentState.CODEC, null);
 
     private final Map<UUID, MinionData> minionData = new HashMap<>();
 
@@ -43,7 +42,7 @@ public class MinionPersistentState extends PersistentState {
 
     public void updateMinionData(MinionData data) {
         minionData.put(data.uuid(), data);
-        markDirty();
+        setDirty();
     }
 
     public boolean isMinion(UUID uuid) {
@@ -61,6 +60,6 @@ public class MinionPersistentState extends PersistentState {
     }
 
     public static MinionPersistentState get(MinecraftServer server) {
-        return server.getWorld(World.OVERWORLD).getPersistentStateManager().getOrCreate(TYPE);
+        return server.getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(TYPE);
     }
 }

@@ -4,18 +4,18 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 //If only this mod was kotlin
 public class GuiContextImpl implements GuiContext {
-    private final ServerPlayerEntity viewer;
+    private final ServerPlayer viewer;
 
-    public GuiContextImpl(ServerPlayerEntity viewer) {
+    public GuiContextImpl(ServerPlayer viewer) {
         this.viewer = viewer;
     }
 
     @Override
-    public ServerPlayerEntity getViewer() {
+    public ServerPlayer getViewer() {
         return viewer;
     }
 
@@ -81,7 +81,7 @@ public class GuiContextImpl implements GuiContext {
         }
 
         @Override
-        public ServerPlayerEntity getViewer() {
+        public ServerPlayer getViewer() {
             return context.getViewer();
         }
     }

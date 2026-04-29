@@ -6,7 +6,7 @@ import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueTypes;
 import io.github.skippyall.minions.util.TranslationUtil;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 public class Casts {
@@ -40,11 +40,11 @@ public class Casts {
         }
     }
 
-    public static <F,T> Result<T, Text> castOrError(TypedValue<F> from, ValueType<T> to) {
-        return Result.ofNullable(Casts.cast(from, to), () -> Text.translatable(
+    public static <F,T> Result<T, Component> castOrError(TypedValue<F> from, ValueType<T> to) {
+        return Result.ofNullable(Casts.cast(from, to), () -> Component.translatable(
                 "value_converter.minions.cast.cast_failed",
                 from.type().getDisplayText(from.value()),
-                Text.translatable(TranslationUtil.getTranslationKey(to, MinionRegistries.VALUE_TYPES))
+                Component.translatable(TranslationUtil.getTranslationKey(to, MinionRegistries.VALUE_TYPES))
         ));
     }
 

@@ -7,13 +7,13 @@ import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueConverters;
 import io.github.skippyall.minions.registration.ValueTypes;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.network.chat.Component;
 
 public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
-    public static final MapCodec<EqualityConverter<?>> CODEC = MinionRegistries.VALUE_TYPES.getCodec().dispatchMap(
+    public static final MapCodec<EqualityConverter<?>> CODEC = MinionRegistries.VALUE_TYPES.byNameCodec().dispatchMap(
             "value_type",
             EqualityConverter::getFrom,
             EqualityConverter::getCodec
@@ -28,7 +28,7 @@ public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
     }
 
     @Override
-    public Result<Boolean, Text> convert(F from) {
+    public Result<Boolean, Component> convert(F from) {
         return new Result.Success<>(compareValue.equals(from));
     }
 
@@ -48,8 +48,8 @@ public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
     }
 
     @Override
-    public Text getDisplayText() {
-        return Text.translatable("value_converter.minions.equality.display", fromType.getDisplayText(compareValue));
+    public Component getDisplayText() {
+        return Component.translatable("value_converter.minions.equality.display", fromType.getDisplayText(compareValue));
     }
 
     private static <F> MapCodec<EqualityConverter<F>> getCodec(ValueType<F> fromType) {

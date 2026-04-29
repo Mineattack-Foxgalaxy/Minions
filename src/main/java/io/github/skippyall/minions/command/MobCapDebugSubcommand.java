@@ -4,21 +4,21 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
 import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManagerAccessor;
-import io.github.skippyall.minions.mixins.antimobcap.ServerChunkManagerAccessor;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ChunkLevelManager;
-import net.minecraft.text.Text;
+import io.github.skippyall.minions.mixins.antimobcap.ServerChunkCacheAccessor;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.DistanceManager;
 
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.literal;
 
 public class MobCapDebugSubcommand {
-    public static final LiteralArgumentBuilder<ServerCommandSource> MOB_CAP_DEBUG = literal("mobcapdebug")
+    public static final LiteralArgumentBuilder<CommandSourceStack> MOB_CAP_DEBUG = literal("mobcapdebug")
             .executes(MobCapDebugSubcommand::mobcapdebugCommand);
 
-    public static int mobcapdebugCommand(CommandContext<ServerCommandSource> context) {
-        ChunkLevelManager levelManager = ((ServerChunkManagerAccessor)context.getSource().getWorld().getChunkManager()).getLevelManager();
+    public static int mobcapdebugCommand(CommandContext<CommandSourceStack> context) {
+        DistanceManager levelManager = ((ServerChunkCacheAccessor)context.getSource().getLevel().getChunkSource()).getDistanceManager();
         int tickedChunkCount = ((ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor)((ChunkLevelManagerAccessor)levelManager).minions$getMinionless()).minions$getTickedChunkCount();
-        context.getSource().sendFeedback(() -> Text.of(String.valueOf(tickedChunkCount)), false);
+        context.getSource().sendSuccess(() -> Component.nullToEmpty(String.valueOf(tickedChunkCount)), false);
         return 0;
     }
 }

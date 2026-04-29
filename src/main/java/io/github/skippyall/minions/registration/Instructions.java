@@ -13,12 +13,11 @@ import io.github.skippyall.minions.minion.program.instruction.move.WalkExecution
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 
 public class Instructions {
     public static final InstructionType<MinionRuntime> WALK = register(
@@ -65,7 +64,7 @@ public class Instructions {
     );
 
     private static InstructionType<MinionRuntime> register(String id, Supplier<InstructionExecution<MinionRuntime>> factory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters) {
-        Identifier identifier = Identifier.of(Minions.MOD_ID, id);
+        ResourceLocation identifier = ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, id);
         return Registry.register(MinionRegistries.INSTRUCTION_TYPES, identifier, new InstructionType<>(factory, parameters, returnParameters));
     }
 

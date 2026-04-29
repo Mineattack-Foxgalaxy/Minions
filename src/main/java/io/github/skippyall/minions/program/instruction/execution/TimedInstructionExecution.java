@@ -2,8 +2,8 @@ package io.github.skippyall.minions.program.instruction.execution;
 
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * An <code>InstructionExecution</code> that takes a predefined time to execute.
@@ -32,12 +32,12 @@ public abstract class TimedInstructionExecution<R extends InstructionRuntime<R>>
     }
 
     @Override
-    public void save(WriteView view, R minion) {
+    public void save(ValueOutput view, R minion) {
         view.putInt("timer", timer);
     }
 
     @Override
-    public void load(ReadView view, R minion) {
-        timer = view.getInt("timer", 0);
+    public void load(ValueInput view, R minion) {
+        timer = view.getIntOr("timer", 0);
     }
 }

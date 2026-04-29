@@ -5,10 +5,9 @@ import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.StringReader;
 import io.github.skippyall.minions.MinionsConfig;
 import io.github.skippyall.minions.gui.input.Result;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.Text;
-import net.minecraft.util.StringHelper;
-
+import net.minecraft.util.StringUtil;
 import java.util.UUID;
 
 import static io.github.skippyall.minions.Minions.LOGGER;
@@ -31,23 +30,23 @@ public class MinionProfileUtils {
         return newProfile;
     }
 
-    public static Result<String, Text> checkMinionNameWithoutPrefix(MinecraftServer server, String name) {
+    public static Result<String, Component> checkMinionNameWithoutPrefix(MinecraftServer server, String name) {
         for(char c : name.toCharArray()) {
             if(!StringReader.isAllowedInUnquotedString(c)) {
-                return new Result.Error<>(Text.translatable("minions.generic.name.invalid_char"));
+                return new Result.Error<>(Component.translatable("minions.generic.name.invalid_char"));
             }
         }
 
         if((getPrefix() + name).length() > 16)  {
-            return new Result.Error<>(Text.translatable("minions.generic.name.too_long"));
+            return new Result.Error<>(Component.translatable("minions.generic.name.too_long"));
         }
 
-        if(!StringHelper.isValidPlayerName(getPrefix() + name)) {
-            return new Result.Error<>(Text.translatable("minions.generic.name.invalid"));
+        if(!StringUtil.isValidPlayerName(getPrefix() + name)) {
+            return new Result.Error<>(Component.translatable("minions.generic.name.invalid"));
         }
 
         if(MinionPersistentState.get(server).isMinionNameTaken(getPrefix() + name)) {
-            return new Result.Error<>(Text.translatable("minions.generic.name.taken"));
+            return new Result.Error<>(Component.translatable("minions.generic.name.taken"));
         }
 
         return new Result.Success<>(name);

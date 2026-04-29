@@ -33,7 +33,7 @@ public interface ValueConsumer<T,R extends InstructionRuntime<R>> {
                 "type",
                 ValueConsumer::getType,
                 type ->
-                        MinionRegistries.VALUE_TYPES.getCodec().<ValueConsumer<?,R>>dispatch(
+                        MinionRegistries.VALUE_TYPES.byNameCodec().<ValueConsumer<?,R>>dispatch(
                                 ValueConsumer::getValueType,
                                 valueType -> type.getCodec(valueType).fieldOf("valueType")
                         ).fieldOf("valueType")

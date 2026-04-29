@@ -2,15 +2,14 @@ package io.github.skippyall.minions.minion;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import net.minecraft.util.Identifier;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import net.minecraft.resources.ResourceLocation;
 
 public class MinionConfig {
     public static final Codec<MinionConfig> CODEC = Codec.<Option<?>, Object>dispatchedMap(
-            MinionRegistries.MINION_CONFIG_OPTIONS.getCodec(),
+            MinionRegistries.MINION_CONFIG_OPTIONS.byNameCodec(),
             Option::codec
     ).xmap(MinionConfig::new, config -> config.values);
 
@@ -44,11 +43,11 @@ public class MinionConfig {
         return Objects.hashCode(values);
     }
 
-    public static Option<Boolean> booleanOption(Identifier key, boolean defaultValue) {
+    public static Option<Boolean> booleanOption(ResourceLocation key, boolean defaultValue) {
         return new Option<>(key, defaultValue, Codec.BOOL);
     }
 
-    public record Option<T>(Identifier key, T defaultValue, Codec<T> codec) {
+    public record Option<T>(ResourceLocation key, T defaultValue, Codec<T> codec) {
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof Option<?> option)) return false;

@@ -6,26 +6,26 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Uuids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public abstract class BlockEntityMinionListener<E extends BlockEntity> implements MinionListener {
-    protected RegistryKey<World> worldKey;
+    protected ResourceKey<Level> worldKey;
     protected BlockPos pos;
     protected UUID minionUuid;
     protected BlockEntityType<E> type;
     protected @Nullable MinionFakePlayer minion;
 
-    protected BlockEntityMinionListener(RegistryKey<World> worldKey, BlockPos pos, UUID minionUuid, BlockEntityType<E> type) {
+    protected BlockEntityMinionListener(ResourceKey<Level> worldKey, BlockPos pos, UUID minionUuid, BlockEntityType<E> type) {
         this.worldKey = worldKey;
         this.pos = pos;
         this.minionUuid = minionUuid;
@@ -45,10 +45,10 @@ public abstract class BlockEntityMinionListener<E extends BlockEntity> implement
         this.minion = null;
     }
 
-    public static <T extends BlockEntityMinionListener<?>> T getListener(World world, BlockPos pos, UUID minionUuid, Class<T> clazz) {
+    public static <T extends BlockEntityMinionListener<?>> T getListener(Level world, BlockPos pos, UUID minionUuid, Class<T> clazz) {
         if(minionUuid != null) {
             for (MinionListener listener : MinionPersistentState.get(world.getServer()).getMinionData(minionUuid).listeners()) {
-                if (listener instanceof BlockEntityMinionListener<?> tl && tl.pos.equals(pos) && tl.worldKey.equals(world.getRegistryKey()) && clazz.isInstance(tl)) {
+                if (listener instanceof BlockEntityMinionListener<?> tl && tl.pos.equals(pos) && tl.worldKey.equals(world.dimension()) && clazz.isInstance(tl)) {
                     return clazz.cast(tl);
                 }
             }
@@ -56,18 +56,18 @@ public abstract class BlockEntityMinionListener<E extends BlockEntity> implement
         return null;
     }
 
-    public static <L extends BlockEntityMinionListener<?>> Codec<L> getCodec(Function3<RegistryKey<World>, BlockPos, UUID, L> constructor) {
+    public static <L extends BlockEntityMinionListener<?>> Codec<L> getCodec(Function3<ResourceKey<Level>, BlockPos, UUID, L> constructor) {
         return RecordCodecBuilder.create(instance ->
                 instance.group(
-                        World.CODEC.fieldOf("world").forGetter(listener -> listener.worldKey),
+                        Level.RESOURCE_KEY_CODEC.fieldOf("world").forGetter(listener -> listener.worldKey),
                         BlockPos.CODEC.fieldOf("pos").forGetter(listener -> listener.pos),
-                        Uuids.CODEC.fieldOf("minionUuid").forGetter(listener -> listener.minionUuid)
+                        UUIDUtil.AUTHLIB_CODEC.fieldOf("minionUuid").forGetter(listener -> listener.minionUuid)
                 ).apply(instance, constructor));
     }
 
     private BlockEntityState getBlockEntityState(MinecraftServer server) {
-        World world = server.getWorld(worldKey);
-        if(world == null || !world.isPosLoaded(pos)) {
+        Level world = server.getLevel(worldKey);
+        if(world == null || !world.isLoaded(pos)) {
             return BlockEntityState.UNLOADED;
         }
 
@@ -79,8 +79,8 @@ public abstract class BlockEntityMinionListener<E extends BlockEntity> implement
     }
 
     public Optional<E> getBlockEntity(MinecraftServer server) {
-        World world = server.getWorld(worldKey);
-        if(world != null && world.isPosLoaded(pos)) {
+        Level world = server.getLevel(worldKey);
+        if(world != null && world.isLoaded(pos)) {
             return world.getBlockEntity(pos, type);
         }
         return Optional.empty();
@@ -96,13 +96,13 @@ public abstract class BlockEntityMinionListener<E extends BlockEntity> implement
 
     public void add(MinecraftServer server) {
         MinionPersistentState.get(server).getMinionData(minionUuid).listeners().addListener(this);
-        MinionPersistentState.get(server).markDirty();
-        this.minion = (MinionFakePlayer) server.getPlayerManager().getPlayer(minionUuid);
+        MinionPersistentState.get(server).setDirty();
+        this.minion = (MinionFakePlayer) server.getPlayerList().getPlayer(minionUuid);
     }
 
     public void remove(MinecraftServer server) {
         MinionPersistentState.get(server).getMinionData(minionUuid).listeners().removeListener(this);
-        MinionPersistentState.get(server).markDirty();
+        MinionPersistentState.get(server).setDirty();
     }
 
     public enum BlockEntityState {

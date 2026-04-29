@@ -9,17 +9,17 @@ import com.mojang.authlib.GameProfile;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.minion.fakeplayer.NetHandlerPlayServerFake;
 import io.github.skippyall.minions.registration.MinionConfigOptions;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ConnectedClientData;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.storage.ReadView;
-import net.minecraft.text.Text;
-import net.minecraft.util.ErrorReporter;
+import net.minecraft.server.level.ClientInformation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.players.PlayerList;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.level.storage.ValueInput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Mixin(PlayerManager.class)
+@Mixin(PlayerList.class)
 public class PlayerListMixin {
 
-    @Inject(method = "loadPlayerData", at = @At(value = "RETURN", shift = At.Shift.BEFORE))
-    private void fixStartingPos(ServerPlayerEntity player, ErrorReporter errorReporter, CallbackInfoReturnable<Optional<ReadView>> cir)
+    @Inject(method = "load", at = @At(value = "RETURN", shift = At.Shift.BEFORE))
+    private void fixStartingPos(ServerPlayer player, ProblemReporter errorReporter, CallbackInfoReturnable<Optional<ValueInput>> cir)
     {
         if (player instanceof MinionFakePlayer)
         {
@@ -42,8 +42,8 @@ public class PlayerListMixin {
         }
     }
 
-    @WrapOperation(method = "onPlayerConnect", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/server/network/ConnectedClientData;)Lnet/minecraft/server/network/ServerPlayNetworkHandler;"))
-    private ServerPlayNetworkHandler replaceNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity serverPlayer, ConnectedClientData commonListenerCookie, Operation<ServerPlayNetworkHandler> original)
+    @WrapOperation(method = "placeNewPlayer", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/server/network/CommonListenerCookie;)Lnet/minecraft/server/network/ServerGamePacketListenerImpl;"))
+    private ServerGamePacketListenerImpl replaceNetworkHandler(MinecraftServer server, Connection connection, ServerPlayer serverPlayer, CommonListenerCookie commonListenerCookie, Operation<ServerGamePacketListenerImpl> original)
     {
         if (serverPlayer instanceof MinionFakePlayer fake) {
             return new NetHandlerPlayServerFake(server, connection, fake, commonListenerCookie);
@@ -52,23 +52,23 @@ public class PlayerListMixin {
         }
     }
 
-    @WrapOperation(method = "respawnPlayer", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/server/world/ServerWorld;Lcom/mojang/authlib/GameProfile;Lnet/minecraft/network/packet/c2s/common/SyncedClientOptions;)Lnet/minecraft/server/network/ServerPlayerEntity;"))
-    public ServerPlayerEntity makePlayerForRespawn(MinecraftServer minecraftServer, ServerWorld serverLevel, GameProfile gameProfile, SyncedClientOptions clientInformation, Operation<ServerPlayerEntity> original, ServerPlayerEntity serverPlayer, boolean bl) {
+    @WrapOperation(method = "respawn", at = @At(value = "NEW", target = "(Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/server/level/ServerLevel;Lcom/mojang/authlib/GameProfile;Lnet/minecraft/server/level/ClientInformation;)Lnet/minecraft/server/level/ServerPlayer;"))
+    public ServerPlayer makePlayerForRespawn(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ClientInformation clientInformation, Operation<ServerPlayer> original, ServerPlayer serverPlayer, boolean bl) {
         if (serverPlayer instanceof MinionFakePlayer minion) {
             return MinionFakePlayer.respawnFake(minecraftServer, serverLevel, gameProfile, clientInformation);
         }
         return original.call(minecraftServer, serverLevel, gameProfile, clientInformation);
     }
 
-    @WrapOperation(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;broadcast(Lnet/minecraft/text/Text;Z)V"))
-    public void noLoginMessage(PlayerManager instance, Text message, boolean overlay, Operation<Void> original, @Local(argsOnly = true) ServerPlayerEntity player) {
+    @WrapOperation(method = "placeNewPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"))
+    public void noLoginMessage(PlayerList instance, Component message, boolean overlay, Operation<Void> original, @Local(argsOnly = true) ServerPlayer player) {
         if(!(player instanceof MinionFakePlayer minion && !minion.getData().config().getOption(MinionConfigOptions.sendLoginMessage))) {
             original.call(instance, message, overlay);
         }
     }
 
-    @ModifyReceiver(method = "checkCanJoin", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
-    public List<ServerPlayerEntity> noMinionCounting(List<ServerPlayerEntity> instance) {
+    @ModifyReceiver(method = "canPlayerLogin", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
+    public List<ServerPlayer> noMinionCounting(List<ServerPlayer> instance) {
         return instance.stream()
                 .filter(player -> !(player instanceof MinionFakePlayer minion && !minion.getData().config().getOption(MinionConfigOptions.countForPlayerLimit)))
                 .collect(Collectors.toCollection(ArrayList::new));

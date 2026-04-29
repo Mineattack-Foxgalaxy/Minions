@@ -5,10 +5,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.listener.SerializableListenerManager;
 import io.github.skippyall.minions.registration.MinionRegistries;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Uuids;
-import net.minecraft.util.dynamic.Codecs;
-
+import net.minecraft.util.ExtraCodecs;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,9 +21,9 @@ public record MinionData(
 ) {
     public static final Codec<MinionData> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    Uuids.CODEC.fieldOf("uuid").forGetter(MinionData::uuid),
+                    UUIDUtil.AUTHLIB_CODEC.fieldOf("uuid").forGetter(MinionData::uuid),
                     Codec.STRING.fieldOf("name").forGetter(MinionData::name),
-                    Codecs.GAME_PROFILE_PROPERTY_MAP.optionalFieldOf("skin").forGetter(MinionData::skin),
+                    ExtraCodecs.PROPERTY_MAP.optionalFieldOf("skin").forGetter(MinionData::skin),
                     Codec.BOOL.optionalFieldOf("isSpawned", false).forGetter(MinionData::isSpawned),
                     SerializableListenerManager.getCodec(MinionRegistries.MINION_LISTENER_CODECS).optionalFieldOf("listeners").xmap(
                             optional -> optional.orElseGet(SerializableListenerManager::new),

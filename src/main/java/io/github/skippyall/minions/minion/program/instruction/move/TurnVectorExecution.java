@@ -4,9 +4,9 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.ValueTypes;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 public class TurnVectorExecution extends AbstractTurnExecution {
     public static final Parameter<Double> X = new Parameter<>("x", ValueTypes.DOUBLE);
@@ -19,18 +19,18 @@ public class TurnVectorExecution extends AbstractTurnExecution {
         double y = arguments.getValue(Y);
         double z = arguments.getValue(Z);
 
-        Vec3d vector = new Vec3d(x, y, z);
-        Vec2f rotation = vectorToRotation(vector);
+        Vec3 vector = new Vec3(x, y, z);
+        Vec2 rotation = vectorToRotation(vector);
         targetYaw = rotation.x;
         targetPitch = rotation.y;
     }
 
     //copied from Entity#lookAt (why no helper, Mojang?)
-    public static Vec2f vectorToRotation(Vec3d vector) {
+    public static Vec2 vectorToRotation(Vec3 vector) {
         double g = Math.sqrt(vector.x * vector.x + vector.z * vector.z);
-        float pitch = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(vector.y, g) * 180.0F / (float)Math.PI)));
-        float yaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(vector.z, vector.x) * 180.0F / (float)Math.PI) - 90.0F);
+        float pitch = Mth.wrapDegrees((float)(-(Mth.atan2(vector.y, g) * 180.0F / (float)Math.PI)));
+        float yaw = Mth.wrapDegrees((float)(Mth.atan2(vector.z, vector.x) * 180.0F / (float)Math.PI) - 90.0F);
 
-        return new Vec2f(yaw, pitch);
+        return new Vec2(yaw, pitch);
     }
 }

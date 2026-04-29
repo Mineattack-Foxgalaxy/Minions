@@ -1,0 +1,10 @@
+Module ohne Instruction nicht bei Instruction Auswahl vorschlagen ✓
+Mob Spawning durch Instruction an/aus
+Referenz kopieren als Item, das beim linken verschwindet ✓
+zurück-Button (Jain)
+Instructions stoppen / einfrieren bei Entfernung des Moduls ✓
+Verbindung mit Minion anzeigen ✓
+Schlagen auf Entities fixen ✓
+Signaländerung bei Trigger nach Tod des Minions mit Minion synchronisieren ✓
+Menüführung für Argumente verbessern (Nö)
+direkt Wert zeigen ✓

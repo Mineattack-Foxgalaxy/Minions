@@ -2,11 +2,11 @@ package io.github.skippyall.minions.block.miniontrigger;
 
 import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlockEntity;
 import io.github.skippyall.minions.registration.MinionBlocks;
-import net.minecraft.block.BlockState;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.util.Uuids;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class MinionTriggerBlockEntity extends InstructionBoundBlockEntity<MinionTriggerMinionListener> {
     public MinionTriggerBlockEntity(BlockPos pos, BlockState state) {
@@ -15,7 +15,7 @@ public class MinionTriggerBlockEntity extends InstructionBoundBlockEntity<Minion
 
     @Override
     protected MinionTriggerMinionListener createListener() {
-        return new MinionTriggerMinionListener(world.getRegistryKey(), pos, minionUuid, instructionName);
+        return new MinionTriggerMinionListener(level.dimension(), worldPosition, minionUuid, instructionName);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class MinionTriggerBlockEntity extends InstructionBoundBlockEntity<Minion
     }
 
     public void updatePower() {
-        boolean powered = getCachedState().get(MinionTriggerBlock.POWERED);
+        boolean powered = getBlockState().getValue(MinionTriggerBlock.POWERED);
 
         MinionTriggerMinionListener listener = getListener();
         if(listener != null) {
@@ -51,15 +51,15 @@ public class MinionTriggerBlockEntity extends InstructionBoundBlockEntity<Minion
     }
 
     @Override
-    protected void readData(ReadView view) {
-        minionUuid = view.read("minionUuid", Uuids.CODEC).orElse(null);
-        instructionName = view.getString("instructionName", "");
+    protected void loadAdditional(ValueInput view) {
+        minionUuid = view.read("minionUuid", UUIDUtil.AUTHLIB_CODEC).orElse(null);
+        instructionName = view.getStringOr("instructionName", "");
     }
 
     @Override
-    protected void writeData(WriteView view) {
+    protected void saveAdditional(ValueOutput view) {
         if(minionUuid != null) {
-            view.put("minionUuid", Uuids.CODEC, minionUuid);
+            view.store("minionUuid", UUIDUtil.AUTHLIB_CODEC, minionUuid);
         }
         view.putString("instructionName", instructionName);
     }

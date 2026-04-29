@@ -4,14 +4,14 @@ import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * Responsible for executing instructions.
  * When an instruction is executed:
  * <li>A new instance is created using the factory</li>
- * <li>{@link InstructionExecution#readArguments(ValueSupplierList, R) readFromParameters} is called</li>
+ * <li>{@link InstructionExecution#readArguments(ParameterValueList, R) readFromParameters} is called</li>
  * <li>{@link InstructionExecution#start(R) start} is called</li>
  */
 public interface InstructionExecution<R extends InstructionRuntime<R>> {
@@ -54,21 +54,21 @@ public interface InstructionExecution<R extends InstructionRuntime<R>> {
     /**
      * Saves the execution, e.g. when the server is closed.
      */
-    void save(WriteView view, R runtime);
+    void save(ValueOutput view, R runtime);
 
     /**
      * Loads the execution, e.g. when the server is started.
      */
-    void load(ReadView view, R runtime);
+    void load(ValueInput view, R runtime);
 
     interface Stateless<R extends InstructionRuntime<R>> extends InstructionExecution<R> {
         @Override
         default void readArguments(ParameterValueList arguments, R runtime) {}
 
         @Override
-        default void save(WriteView view, R runtime) {}
+        default void save(ValueOutput view, R runtime) {}
 
         @Override
-        default void load(ReadView view, R runtime) {}
+        default void load(ValueInput view, R runtime) {}
     }
 }

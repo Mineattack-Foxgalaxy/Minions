@@ -8,7 +8,7 @@ import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.supplier.ValueSupplier;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
-import net.minecraft.registry.Registry;
+import net.minecraft.core.Registry;
 
 public interface InstructionRuntime<R extends InstructionRuntime<R>> {
     Registry<ValueSupplierType<R>> getArgumentTypeRegistry();
@@ -20,7 +20,7 @@ public interface InstructionRuntime<R extends InstructionRuntime<R>> {
     boolean isInstructionEnabled(InstructionType<R> type);
 
     default Codec<ValueSupplierType<R>> getArgumentTypeCodec() {
-        return getArgumentTypeRegistry().getCodec();
+        return getArgumentTypeRegistry().byNameCodec();
     }
 
     default Codec<ValueSupplier<?,R>> getArgumentCodec() {
@@ -32,7 +32,7 @@ public interface InstructionRuntime<R extends InstructionRuntime<R>> {
     }
 
     default Codec<ValueConsumerType<R>> getValueConsumerTypeCodec() {
-        return getValueConsumerTypeRegistry().getCodec();
+        return getValueConsumerTypeRegistry().byNameCodec();
     }
 
     default Codec<ValueConsumer<?,R>> getValueConsumerCodec() {

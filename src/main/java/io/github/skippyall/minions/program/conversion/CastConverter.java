@@ -9,15 +9,15 @@ import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueConverters;
 import io.github.skippyall.minions.util.TranslationUtil;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.network.chat.Component;
 
 public class CastConverter<F,T> implements ValueConverter<F,T> {
     private static final MapCodec<CastConverter<?,?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                    MinionRegistries.VALUE_TYPES.getCodec().fieldOf("from").forGetter(CastConverter::getFrom),
-                    MinionRegistries.VALUE_TYPES.getCodec().fieldOf("to").forGetter(CastConverter::getTo)
+                    MinionRegistries.VALUE_TYPES.byNameCodec().fieldOf("from").forGetter(CastConverter::getFrom),
+                    MinionRegistries.VALUE_TYPES.byNameCodec().fieldOf("to").forGetter(CastConverter::getTo)
             ).apply(instance, CastConverter::new)
     );
 
@@ -30,7 +30,7 @@ public class CastConverter<F,T> implements ValueConverter<F,T> {
     }
 
     @Override
-    public Result<T, Text> convert(F fromValue) {
+    public Result<T, Component> convert(F fromValue) {
         return Casts.castOrError(new TypedValue<>(fromValue, from), to);
     }
 
@@ -50,8 +50,8 @@ public class CastConverter<F,T> implements ValueConverter<F,T> {
     }
 
     @Override
-    public Text getDisplayText() {
-        return Text.translatable("value_converter.minions.cast.display", Text.translatable(TranslationUtil.getTranslationKey(from, MinionRegistries.VALUE_TYPES)), Text.translatable(TranslationUtil.getTranslationKey(to, MinionRegistries.VALUE_TYPES)));
+    public Component getDisplayText() {
+        return Component.translatable("value_converter.minions.cast.display", Component.translatable(TranslationUtil.getTranslationKey(from, MinionRegistries.VALUE_TYPES)), Component.translatable(TranslationUtil.getTranslationKey(to, MinionRegistries.VALUE_TYPES)));
     }
 
     public static class Type implements ValueConverterType<CastConverter<?,?>> {

@@ -4,12 +4,12 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.supplier.Parameter;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public interface GuiContext {
-    ServerPlayerEntity getViewer();
+    ServerPlayer getViewer();
 
-    static GuiContext create(ServerPlayerEntity viewer) {
+    static GuiContext create(ServerPlayer viewer) {
         return new GuiContextImpl(viewer);
     }
 

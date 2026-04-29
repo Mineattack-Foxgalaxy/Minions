@@ -8,8 +8,8 @@ import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -146,27 +146,27 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         listeners.removeListener(listener);
     }
 
-    public void save(WriteView view, R runtime) {
-        view.put("instruction", runtime.getInstructionTypeRegistry().getCodec(), instruction);
-        view.put("arguments", runtime.getArgumentListCodec(), arguments);
-        view.put("valueConsumers", runtime.getValueConsumerListCodec(), valueConsumers);
+    public void save(ValueOutput view, R runtime) {
+        view.store("instruction", runtime.getInstructionTypeRegistry().byNameCodec(), instruction);
+        view.store("arguments", runtime.getArgumentListCodec(), arguments);
+        view.store("valueConsumers", runtime.getValueConsumerListCodec(), valueConsumers);
         view.putBoolean("running", isRunning());
         view.putBoolean("paused", paused);
-        view.put("listeners", SerializableListenerManager.getCodec(MinionRegistries.INSTRUCTION_LISTENER_CODECS), listeners);
+        view.store("listeners", SerializableListenerManager.getCodec(MinionRegistries.INSTRUCTION_LISTENER_CODECS), listeners);
 
         if(execution != null) {
-            execution.save(view.get("execution"), runtime);
+            execution.save(view.child("execution"), runtime);
         }
     }
 
-    public static <R extends InstructionRuntime<R>> ConfiguredInstruction<R> load(ReadView view, R minion) {
-        InstructionType<R> instructionType = view.read("instruction", minion.getInstructionTypeRegistry().getCodec()).orElseThrow();
+    public static <R extends InstructionRuntime<R>> ConfiguredInstruction<R> load(ValueInput view, R minion) {
+        InstructionType<R> instructionType = view.read("instruction", minion.getInstructionTypeRegistry().byNameCodec()).orElseThrow();
 
         ValueSupplierList<R> arguments = view.read("arguments", minion.getArgumentListCodec()).orElseGet(ValueSupplierList::new);
         ValueConsumerList<R> valueConsumers = view.read("valueConsumers", minion.getValueConsumerListCodec()).orElseGet(ValueConsumerList::new);
 
-        boolean running = view.getBoolean("running", false);
-        boolean paused = view.getBoolean("paused", false);
+        boolean running = view.getBooleanOr("running", false);
+        boolean paused = view.getBooleanOr("paused", false);
 
         SerializableListenerManager<ConfiguredInstructionListener> listeners = view.read(
                 "listeners",
@@ -174,7 +174,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         ).orElseGet(SerializableListenerManager::new);
 
         if(running) {
-            ReadView executionView = view.getReadView("execution");
+            ValueInput executionView = view.childOrEmpty("execution");
             try {
                 InstructionExecution<R> execution = instructionType.loadExecution(executionView, minion);
                 return new ConfiguredInstruction<>(instructionType, arguments, valueConsumers, execution, listeners, paused);

@@ -1,11 +1,11 @@
 package io.github.skippyall.minions.mixinhelper.antimobcap;
 
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ChunkLevelManager;
+import net.minecraft.server.level.DistanceManager;
+import net.minecraft.server.level.ServerPlayer;
 
 public interface ChunkLevelManagerAccessor {
-    ObjectSet<ServerPlayerEntity> minions$getPlayers(long chunkpos);
+    ObjectSet<ServerPlayer> minions$getPlayers(long chunkpos);
 
-    ChunkLevelManager.DistanceFromNearestPlayerTracker minions$getMinionless();
+    DistanceManager.FixedPlayerDistanceChunkTracker minions$getMinionless();
 }

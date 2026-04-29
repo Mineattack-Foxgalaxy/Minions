@@ -9,9 +9,9 @@ import io.github.skippyall.minions.program.conversion.ValueConverter;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Items;
 
 public class ConverterListGui extends MinionsGui {
     private ConverterList converters;
@@ -32,14 +32,14 @@ public class ConverterListGui extends MinionsGui {
 
     @Override
     protected void open() {
-        gui = new SimpleGui(ScreenHandlerType.GENERIC_9X3, viewer, false) {
+        gui = new SimpleGui(MenuType.GENERIC_9x3, viewer, false) {
             @Override
             public void onClose() {
                 onBackingClosed();
             }
         };
 
-        gui.setTitle(Text.translatable("minions.gui.instruction.converters"));
+        gui.setTitle(Component.translatable("minions.gui.instruction.converters"));
 
         updateConverters();
 
@@ -81,7 +81,7 @@ public class ConverterListGui extends MinionsGui {
                 ValueType<?> fromType = actualConverterIndex >= 1 ? converters.getConverters().get(actualConverterIndex - 1).getTo() : inputType;
                 ValueType<?> toType = actualConverterIndex < converters.getConverters().size() - 1 ? converters.getConverters().get(actualConverterIndex + 1).getFrom() : outputType;
 
-                gui.setSlot(slot, new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_CONVERTER_TYPES, converter.getType(), viewer.getRegistryManager()))
+                gui.setSlot(slot, new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_CONVERTER_TYPES, converter.getType(), viewer.registryAccess()))
                         .addLoreLine(converter.getDisplayText())
                         .setCallback(() -> new ConverterGui(this, converter, fromType, toType, converters, false, actualConverterIndex))
                 );
@@ -91,10 +91,10 @@ public class ConverterListGui extends MinionsGui {
                 ValueType<?> toType = actualConverterIndex < converters.getConverters().size() - 1 ? converters.getConverters().get(actualConverterIndex + 1).getFrom() : outputType;
 
                 gui.setSlot(slot + 1, new GuiElementBuilder(Items.MAGENTA_GLAZED_TERRACOTTA)
-                        .setName(Text.translatable(
+                        .setName(Component.translatable(
                                 "minions.gui.instruction.converters.cast",
-                                Text.translatable(TranslationUtil.getTranslationKey(fromType, MinionRegistries.VALUE_TYPES)),
-                                Text.translatable(TranslationUtil.getTranslationKey(toType, MinionRegistries.VALUE_TYPES))
+                                Component.translatable(TranslationUtil.getTranslationKey(fromType, MinionRegistries.VALUE_TYPES)),
+                                Component.translatable(TranslationUtil.getTranslationKey(toType, MinionRegistries.VALUE_TYPES))
                         ))
                         .setCallback(() -> new ConverterGui(this, null, fromType, toType, converters, true, actualConverterIndex + 1))
                 );

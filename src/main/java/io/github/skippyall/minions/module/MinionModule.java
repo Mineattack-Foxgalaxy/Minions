@@ -11,8 +11,8 @@ import java.util.List;
 public record MinionModule(List<InstructionType<MinionRuntime>> instructions, List<SpecialAbility> specialAbilities) {
     public static final Codec<MinionModule> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    MinionRegistries.INSTRUCTION_TYPES.getCodec().listOf().fieldOf("instructions").forGetter(MinionModule::instructions),
-                    MinionRegistries.SPECIAL_ABILITIES.getCodec().listOf().fieldOf("specialAbilities").forGetter(MinionModule::specialAbilities)
+                    MinionRegistries.INSTRUCTION_TYPES.byNameCodec().listOf().fieldOf("instructions").forGetter(MinionModule::instructions),
+                    MinionRegistries.SPECIAL_ABILITIES.byNameCodec().listOf().fieldOf("specialAbilities").forGetter(MinionModule::specialAbilities)
             ).apply(instance, MinionModule::new)
     );
 

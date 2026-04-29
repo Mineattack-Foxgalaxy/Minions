@@ -4,19 +4,19 @@ import eu.pb4.polymer.core.api.item.PolymerItem;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionItems;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 public class ClipboardItem extends Item implements PolymerItem {
-    public ClipboardItem(Settings settings) {
+    public ClipboardItem(Properties settings) {
         super(settings);
     }
 
@@ -26,26 +26,26 @@ public class ClipboardItem extends Item implements PolymerItem {
     }
 
     @Override
-    public @Nullable Identifier getPolymerItemModel(ItemStack stack, PacketContext context) {
+    public @Nullable ResourceLocation getPolymerItemModel(ItemStack stack, PacketContext context) {
         return null;
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipType tooltipType, PacketContext context) {
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, PacketContext context) {
         ItemStack stack = PolymerItem.super.getPolymerItemStack(itemStack, tooltipType, context);
-        stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
+        stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
         return stack;
     }
 
     public static ItemStack createInstructionReference(MinionFakePlayer minion, String instructionName) {
         ItemStack stack = new ItemStack(MinionItems.REFERENCE_ITEM);
-        stack.set(MinionComponentTypes.REFERENCE, new InstructionClipboard(minion.getUuid(), instructionName, minion.getGameProfile().getName()));
+        stack.set(MinionComponentTypes.REFERENCE, new InstructionClipboard(minion.getUUID(), instructionName, minion.getGameProfile().getName()));
         return stack;
     }
 
-    public static ItemStack createBlockPosReference(World world, BlockPos pos) {
+    public static ItemStack createBlockPosReference(Level world, BlockPos pos) {
         ItemStack stack = new ItemStack(MinionItems.REFERENCE_ITEM);
-        stack.set(MinionComponentTypes.REFERENCE, new BlockPosClipboard(world.getRegistryKey(), pos));
+        stack.set(MinionComponentTypes.REFERENCE, new BlockPosClipboard(world.dimension(), pos));
         return stack;
     }
 }

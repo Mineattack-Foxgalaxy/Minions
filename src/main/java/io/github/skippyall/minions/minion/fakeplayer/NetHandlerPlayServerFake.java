@@ -1,46 +1,46 @@
 //code from https://github.com/gnembon/fabric-carpet
 package io.github.skippyall.minions.minion.fakeplayer;
 
-import net.minecraft.entity.player.PlayerPosition;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.PositionFlag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ConnectedClientData;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.entity.PositionMoveRotation;
+import net.minecraft.world.entity.Relative;
 import java.util.Set;
 
-public class NetHandlerPlayServerFake extends ServerPlayNetworkHandler
+public class NetHandlerPlayServerFake extends ServerGamePacketListenerImpl
 {
-    public NetHandlerPlayServerFake(final MinecraftServer minecraftServer, final ClientConnection connection, final ServerPlayerEntity serverPlayer, final ConnectedClientData i)
+    public NetHandlerPlayServerFake(final MinecraftServer minecraftServer, final Connection connection, final ServerPlayer serverPlayer, final CommonListenerCookie i)
     {
         super(minecraftServer, connection, serverPlayer, i);
     }
 
     @Override
-    public void sendPacket(final Packet<?> packetIn)
+    public void send(final Packet<?> packetIn)
     {
     }
 
     @Override
-    public void disconnect(Text message)
+    public void disconnect(Component message)
     {
-        if (message.getContent() instanceof TranslatableTextContent text && (text.getKey().equals("multiplayer.disconnect.idling") || text.getKey().equals("multiplayer.disconnect.duplicate_login")))
+        if (message.getContents() instanceof TranslatableContents text && (text.getKey().equals("multiplayer.disconnect.idling") || text.getKey().equals("multiplayer.disconnect.duplicate_login")))
         {
             ((MinionFakePlayer) player).kill(message);
         }
     }
 
     @Override
-    public void requestTeleport(PlayerPosition pos, Set<PositionFlag> set)
+    public void teleport(PositionMoveRotation pos, Set<Relative> set)
     {
-        super.requestTeleport(pos, set);
-        if (player.getWorld().getPlayerByUuid(player.getUuid()) != null) {
-            syncWithPlayerPosition();
-            player.getWorld().getChunkManager().updatePosition(player);
+        super.teleport(pos, set);
+        if (player.level().getPlayerByUUID(player.getUUID()) != null) {
+            resetPosition();
+            player.level().getChunkSource().move(player);
         }
     }
 

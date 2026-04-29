@@ -6,31 +6,30 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.skippyall.minions.docs.DocsManager;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.Identifier;
-
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.resources.ResourceLocation;
 
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 
 public class DocsSubcommand {
-    public static final LiteralArgumentBuilder<ServerCommandSource> DOCS = literal("docs")
+    public static final LiteralArgumentBuilder<CommandSourceStack> DOCS = literal("docs")
             .then(
-                    argument("docName", IdentifierArgumentType.identifier())
+                    argument("docName", ResourceLocationArgument.id())
                             .suggests(DocsSubcommand::getSuggestions)
                             .executes(DocsSubcommand::execute)
             );
 
-    public static CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+    public static CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
         DocsManager.getDocsEntryIds().forEach(id -> builder.suggest(id.toString()));
         return CompletableFuture.completedFuture(builder.build());
     }
 
-    public static int execute(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        Identifier id = IdentifierArgumentType.getIdentifier(context, "docName");
-        DocsManager.showDocsEntry(context.getSource().getPlayerOrThrow(), id);
+    public static int execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ResourceLocation id = ResourceLocationArgument.getId(context, "docName");
+        DocsManager.showDocsEntry(context.getSource().getPlayerOrException(), id);
         return 1;
     }
 }

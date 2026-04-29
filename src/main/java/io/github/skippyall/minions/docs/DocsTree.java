@@ -2,16 +2,15 @@ package io.github.skippyall.minions.docs;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import net.minecraft.util.Identifier;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import net.minecraft.resources.ResourceLocation;
 
 public class DocsTree {
     private final BranchElement root;
-    private final Map<Identifier, DocElement> entries = new HashMap<>();
+    private final Map<ResourceLocation, DocElement> entries = new HashMap<>();
 
     public DocsTree(BranchElement root) {
         this.root = root;
@@ -30,7 +29,7 @@ public class DocsTree {
         return root;
     }
 
-    public DocElement getElement(Identifier id) {
+    public DocElement getElement(ResourceLocation id) {
         return entries.get(id);
     }
 
@@ -55,15 +54,15 @@ public class DocsTree {
     }
 
     public static final class DocElement extends Element {
-        public static final Codec<DocElement> CODEC = Identifier.CODEC.xmap(DocElement::new, DocElement::getId);
+        public static final Codec<DocElement> CODEC = ResourceLocation.CODEC.xmap(DocElement::new, DocElement::getId);
 
-        private final Identifier id;
+        private final ResourceLocation id;
 
-        public DocElement(Identifier element) {
+        public DocElement(ResourceLocation element) {
             this.id = element;
         }
 
-        public Identifier getId() {
+        public ResourceLocation getId() {
             return id;
         }
     }

@@ -4,20 +4,19 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.text.Text;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-public class ModuleInventory extends SimpleInventory {
+public class ModuleInventory extends SimpleContainer {
     private final Set<MinionModule> modules = new HashSet<>();
     private final Set<InstructionType<MinionRuntime>> instructions = new HashSet<>();
     private final Set<SpecialAbility> specialAbilities = new HashSet<>();
@@ -29,23 +28,23 @@ public class ModuleInventory extends SimpleInventory {
         this.minion = minion;
     }
 
-    public static void openModuleInventory(ServerPlayerEntity player, MinionFakePlayer minion) {
-        player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, player2) -> new ModuleInventoryScreenHandler(syncId, playerInventory, minion.getModuleInventory()), Text.translatable("minions.gui.modules.title", minion.getName())));
+    public static void openModuleInventory(ServerPlayer player, MinionFakePlayer minion) {
+        player.openMenu(new SimpleMenuProvider((syncId, playerInventory, player2) -> new ModuleInventoryScreenHandler(syncId, playerInventory, minion.getModuleInventory()), Component.translatable("minions.gui.modules.title", minion.getName())));
     }
 
     @Override
-    public int getMaxCountPerStack() {
+    public int getMaxStackSize() {
         return 1;
     }
 
     @Override
-    public boolean isValid(int slot, ItemStack stack) {
-        return (stack.getCount() <= getMaxCountPerStack()) && stack.contains(MinionComponentTypes.MODULE);
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return (stack.getCount() <= getMaxStackSize()) && stack.has(MinionComponentTypes.MODULE);
     }
 
     @Override
-    public void markDirty() {
-        super.markDirty();
+    public void setChanged() {
+        super.setChanged();
         updateModules();
     }
 
@@ -57,7 +56,7 @@ public class ModuleInventory extends SimpleInventory {
         modules.clear();
         instructions.clear();
         specialAbilities.clear();
-        for (ItemStack heldStack : heldStacks) {
+        for (ItemStack heldStack : items) {
             MinionModule module = heldStack.get(MinionComponentTypes.MODULE);
             if(module != null) {
                 modules.add(module);
@@ -91,13 +90,13 @@ public class ModuleInventory extends SimpleInventory {
         }
     }
 
-    public void readData(ReadView view) {
-        Inventories.readData(view, heldStacks);
+    public void readData(ValueInput view) {
+        ContainerHelper.loadAllItems(view, items);
         updateModules();
     }
 
-    public void writeData(WriteView view) {
-        Inventories.writeData(view, heldStacks);
+    public void writeData(ValueOutput view) {
+        ContainerHelper.saveAllItems(view, items);
     }
 
     public Collection<MinionModule> getModules() {

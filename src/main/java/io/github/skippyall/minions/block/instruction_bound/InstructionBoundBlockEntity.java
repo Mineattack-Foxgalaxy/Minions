@@ -4,14 +4,13 @@ import io.github.skippyall.minions.listener.BlockEntityMinionListener;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionListener<?>> extends BlockEntity {
     protected UUID minionUuid;
@@ -26,14 +25,14 @@ public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionLis
     protected abstract Class<L> getListenerClass();
 
     public void removeListener() {
-        if(world instanceof ServerWorld serverWorld) {
+        if(level instanceof ServerLevel serverWorld) {
             L listener = getListener();
             listener.remove(serverWorld.getServer());
         }
     }
 
     public void addListener() {
-        if(world instanceof ServerWorld serverWorld) {
+        if(level instanceof ServerLevel serverWorld) {
             L listener = createListener();
             listener.add(serverWorld.getServer());
         }
@@ -44,11 +43,11 @@ public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionLis
         this.minionUuid = minionUuid;
         this.instructionName = instructionName;
         addListener();
-        markDirty();
+        setChanged();
     }
 
     public Optional<MinionFakePlayer> getMinion() {
-        if(minionUuid != null && world != null && world.getPlayerByUuid(minionUuid) instanceof MinionFakePlayer minion) {
+        if(minionUuid != null && level != null && level.getPlayerByUUID(minionUuid) instanceof MinionFakePlayer minion) {
             return Optional.of(minion);
         }
         return Optional.empty();
@@ -71,6 +70,6 @@ public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionLis
     }
 
     public L getListener() {
-        return BlockEntityMinionListener.getListener(world, pos, minionUuid, getListenerClass());
+        return BlockEntityMinionListener.getListener(level, worldPosition, minionUuid, getListenerClass());
     }
 }

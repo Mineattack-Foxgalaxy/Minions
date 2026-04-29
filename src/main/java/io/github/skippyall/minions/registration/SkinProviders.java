@@ -5,8 +5,8 @@ import io.github.skippyall.minions.minion.skin.Base64SkinProvider;
 import io.github.skippyall.minions.minion.skin.NameSkinProvider;
 import io.github.skippyall.minions.minion.skin.SkinProvider;
 import io.github.skippyall.minions.minion.skin.UUIDSkinProvider;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 
 public class SkinProviders {
     public static NameSkinProvider NAME = register(new NameSkinProvider(), "name");
@@ -14,7 +14,7 @@ public class SkinProviders {
     public static Base64SkinProvider BASE64 = register(new Base64SkinProvider(), "base64");
 
     public static <T extends SkinProvider> T register(T skinProvider, String path) {
-        return Registry.register(MinionRegistries.SKIN_PROVIDERS, Identifier.of(Minions.MOD_ID, path), skinProvider);
+        return Registry.register(MinionRegistries.SKIN_PROVIDERS, ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, path), skinProvider);
     }
 
     public static void register() {

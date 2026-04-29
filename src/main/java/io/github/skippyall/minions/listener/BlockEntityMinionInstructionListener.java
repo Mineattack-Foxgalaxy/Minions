@@ -2,18 +2,17 @@ package io.github.skippyall.minions.listener;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import java.util.Map;
 import java.util.UUID;
 
 public abstract class BlockEntityMinionInstructionListener<E extends BlockEntity> extends BlockEntityMinionListener<E> {
-    protected BlockEntityMinionInstructionListener(RegistryKey<World> worldKey, BlockPos pos, UUID minionUuid, BlockEntityType<E> type) {
+    protected BlockEntityMinionInstructionListener(ResourceKey<Level> worldKey, BlockPos pos, UUID minionUuid, BlockEntityType<E> type) {
         super(worldKey, pos, minionUuid, type);
     }
 

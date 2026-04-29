@@ -6,18 +6,18 @@ import io.github.skippyall.minions.gui.Displayable;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.minion.SimpleMinionsGui;
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Items;
 
 public class ChoiceInput {
-    public static <T> BiFunction<ServerPlayerEntity, T, CompletableFuture<T>> createDialogOpener(ScreenHandlerType<?> screen, Text title, Function<T, GuiDisplay> displayFunction, T[] values, @Nullable T fallback) {
+    public static <T> BiFunction<ServerPlayer, T, CompletableFuture<T>> createDialogOpener(MenuType<?> screen, Component title, Function<T, GuiDisplay> displayFunction, T[] values, @Nullable T fallback) {
         return (player, object) -> {
             CompletableFuture<T> future = new CompletableFuture<>();
 
@@ -44,14 +44,14 @@ public class ChoiceInput {
         };
     }
 
-    public static <T extends Displayable> BiFunction<ServerPlayerEntity, T, CompletableFuture<T>> createDialogOpener(T[] values) {
-        return createDialogOpener(ScreenHandlerType.GENERIC_9X3, Text.empty(), t -> t != null ? t.getDisplay() : null, values, null);
+    public static <T extends Displayable> BiFunction<ServerPlayer, T, CompletableFuture<T>> createDialogOpener(T[] values) {
+        return createDialogOpener(MenuType.GENERIC_9x3, Component.empty(), t -> t != null ? t.getDisplay() : null, values, null);
     }
 
-    public static CompletableFuture<Void> confirm(ServerPlayerEntity player, Text title) {
+    public static CompletableFuture<Void> confirm(ServerPlayer player, Component title) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, player, false) {
+        SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, player, false) {
             @Override
             public void onClose() {
                 future.cancel(false);
@@ -61,12 +61,12 @@ public class ChoiceInput {
         gui.setTitle(title);
 
         gui.setSlot(3, new GuiElementBuilder(Items.REDSTONE_BLOCK)
-                .setName(Text.translatable("minions.gui.abort"))
+                .setName(Component.translatable("minions.gui.abort"))
                 .setCallback(() -> future.cancel(false))
         );
 
         gui.setSlot(5, new GuiElementBuilder(Items.EMERALD_BLOCK)
-                .setName(Text.translatable("minions.gui.confirm"))
+                .setName(Component.translatable("minions.gui.confirm"))
                 .setCallback(() -> future.complete(null))
         );
 
@@ -74,11 +74,11 @@ public class ChoiceInput {
         return future;
     }
 
-    public static CompletableFuture<Void> confirm(MinionsGui parent, Text title) {
+    public static CompletableFuture<Void> confirm(MinionsGui parent, Component title) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         new SimpleMinionsGui(parent, (onClose, me) -> {
-            SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, parent.getViewer(), false) {
+            SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, parent.getViewer(), false) {
                 @Override
                 public void onClose() {
                     future.cancel(false);
@@ -89,12 +89,12 @@ public class ChoiceInput {
             gui.setTitle(title);
 
             gui.setSlot(3, new GuiElementBuilder(Items.REDSTONE_BLOCK)
-                    .setName(Text.translatable("minions.gui.abort"))
+                    .setName(Component.translatable("minions.gui.abort"))
                     .setCallback(() -> future.cancel(false))
             );
 
             gui.setSlot(5, new GuiElementBuilder(Items.EMERALD_BLOCK)
-                    .setName(Text.translatable("minions.gui.confirm"))
+                    .setName(Component.translatable("minions.gui.confirm"))
                     .setCallback(() -> future.complete(null))
             );
 
@@ -104,8 +104,8 @@ public class ChoiceInput {
         return future;
     }
 
-    public static BiFunction<ServerPlayerEntity, Boolean, CompletableFuture<Boolean>> inputBoolean(Text title) {
-        return createDialogOpener(ScreenHandlerType.GENERIC_3X3, title, value -> {
+    public static BiFunction<ServerPlayer, Boolean, CompletableFuture<Boolean>> inputBoolean(Component title) {
+        return createDialogOpener(MenuType.GENERIC_3x3, title, value -> {
             if(value) {
                 return new GuiDisplay.ItemBased(Items.EMERALD_BLOCK);
             } else {

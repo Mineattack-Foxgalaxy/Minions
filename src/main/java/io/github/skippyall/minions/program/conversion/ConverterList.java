@@ -4,13 +4,13 @@ import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.value.ValueType;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+import net.minecraft.network.chat.Component;
 
 public class ConverterList {
     public static final Codec<ConverterList> CODEC = ValueConverter.CODEC.listOf().xmap(ConverterList::new, l -> l.converters);
@@ -41,7 +41,7 @@ public class ConverterList {
         return converters.getLast().getTo();
     }
 
-    public Result<TypedValue<?>, Text> convert(TypedValue<?> input) {
+    public Result<TypedValue<?>, Component> convert(TypedValue<?> input) {
         if(converters.isEmpty()) {
             return new Result.Success<>(input);
         } else {
@@ -50,21 +50,21 @@ public class ConverterList {
         }
     }
 
-    private <F,I,T> Result<TypedValue<?>, Text> convert(TypedValue<F> from, ValueConverter<I,T> converter, ListIterator<ValueConverter<?,?>> iterator) {
-        Result<I, Text> inter = Casts.castOrError(from, converter.getFrom());
-        if(inter instanceof Result.Error<I, Text> error) {
-            return new Result.Error<>(Text.translatable("minions.converter.list.passing_error", iterator.previousIndex(), error.message()));
+    private <F,I,T> Result<TypedValue<?>, Component> convert(TypedValue<F> from, ValueConverter<I,T> converter, ListIterator<ValueConverter<?,?>> iterator) {
+        Result<I, Component> inter = Casts.castOrError(from, converter.getFrom());
+        if(inter instanceof Result.Error<I, Component> error) {
+            return new Result.Error<>(Component.translatable("minions.converter.list.passing_error", iterator.previousIndex(), error.message()));
         }
-        Result<T, Text> to = converter.convert(inter.getOrThrow());
+        Result<T, Component> to = converter.convert(inter.getOrThrow());
 
-        if(iterator.hasNext() && to instanceof Result.Success<T, Text> success) {
+        if(iterator.hasNext() && to instanceof Result.Success<T, Component> success) {
             return convert(new TypedValue<>(success.result(), converter.getTo()), iterator.next(), iterator);
         } else {
             return to.map(v -> new TypedValue<>(v, converter.getTo()));
         }
     }
 
-    public Result<@Nullable Void, Text> check() {
+    public Result<@Nullable Void, Component> check() {
         return new Result.Success<>(null);
     }
 

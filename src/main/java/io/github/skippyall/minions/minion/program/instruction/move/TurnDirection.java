@@ -3,17 +3,16 @@ package io.github.skippyall.minions.minion.program.instruction.move;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.Displayable;
 import io.github.skippyall.minions.gui.GuiDisplay;
-import net.minecraft.util.StringIdentifiable;
-
 import java.util.UUID;
+import net.minecraft.util.StringRepresentable;
 
-public enum TurnDirection implements StringIdentifiable, Displayable {
+public enum TurnDirection implements StringRepresentable, Displayable {
     LEFT("left", -1, 0),
     UP("up", 0, -1),
     RIGHT("right", 1, 0),
     DOWN("down", 0, 1);
 
-    public static final Codec<TurnDirection> CODEC = StringIdentifiable.createCodec(TurnDirection::values);
+    public static final Codec<TurnDirection> CODEC = StringRepresentable.fromEnum(TurnDirection::values);
 
     private static final UUID MHF_ArrowLeft = UUID.fromString("a68f0b64-8d14-4000-a95f-4b9ba14f8df9");
     private static final UUID MHF_ArrowUp = UUID.fromString("fef039ef-e6cd-4987-9c84-26a3e6134277");
@@ -31,7 +30,7 @@ public enum TurnDirection implements StringIdentifiable, Displayable {
     }
 
     @Override
-    public String asString() {
+    public String getSerializedName() {
         return name;
     }
 

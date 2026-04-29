@@ -8,14 +8,13 @@ import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import net.minecraft.registry.Registry;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
     private final MinionFakePlayer minion;
@@ -102,19 +101,19 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
         }
     }
 
-    public void save(WriteView view) {
-        WriteView.ListView list = view.getList("configuredInstructions");
+    public void save(ValueOutput view) {
+        ValueOutput.ValueOutputList list = view.childrenList("configuredInstructions");
         for (Map.Entry<String, ConfiguredInstruction<MinionRuntime>> instruction : configuredInstructions.entrySet()) {
-            WriteView inner = list.add();
+            ValueOutput inner = list.addChild();
             inner.putString("name", instruction.getKey());
             instruction.getValue().save(inner, this);
         }
     }
 
-    public void load(ReadView view) {
-        ReadView.ListReadView list = view.getListReadView("configuredInstructions");
-        for (ReadView inner : list) {
-            Optional<String> name = inner.getOptionalString("name");
+    public void load(ValueInput view) {
+        ValueInput.ValueInputList list = view.childrenListOrEmpty("configuredInstructions");
+        for (ValueInput inner : list) {
+            Optional<String> name = inner.getString("name");
             if(name.isEmpty()) {
                 Minions.LOGGER.error("Tried deserializing configured instruction without a name of minion \"{}\":", minion.getGameProfile().getName());
                 continue;

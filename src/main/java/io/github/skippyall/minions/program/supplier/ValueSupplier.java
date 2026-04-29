@@ -5,7 +5,7 @@ import com.mojang.serialization.DataResult;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,7 +21,7 @@ public interface ValueSupplier<T, R extends InstructionRuntime<R>> {
 
     ValueSupplierType<R> getType();
 
-    Text getDisplayText();
+    Component getDisplayText();
 
     default <U,A extends ValueSupplier<U,R>> @Nullable A cast(ValueType<U> type) {
         if(getValueType() == type) {
@@ -49,7 +49,7 @@ public interface ValueSupplier<T, R extends InstructionRuntime<R>> {
                 "type",
                 ValueSupplier::getType,
                 type ->
-                        MinionRegistries.VALUE_TYPES.getCodec().<ValueSupplier<?,R>>partialDispatch(
+                        MinionRegistries.VALUE_TYPES.byNameCodec().<ValueSupplier<?,R>>partialDispatch(
                                 "type",
                                 s -> DataResult.success(s.getValueType()),
                                 valueType -> {

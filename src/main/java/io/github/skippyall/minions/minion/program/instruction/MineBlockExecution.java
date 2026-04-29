@@ -7,15 +7,15 @@ import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
-import net.minecraft.block.BlockState;
-import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
     private BlockPos currentBlock;
@@ -36,7 +36,7 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
                 done = true;
                 return;
             }
-            if (player.isBlockBreakingRestricted(player.getWorld(), hit.getBlockPos(), player.interactionManager.getGameMode())) {
+            if (player.blockActionRestricted(player.level(), hit.getBlockPos(), player.gameMode.getGameModeForPlayer())) {
                 done = true;
                 return;
             }
@@ -66,37 +66,37 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
             return;
         }
 
-        if (player.getWorld().getBlockState(currentBlock).isAir()) {
+        if (player.level().getBlockState(currentBlock).isAir()) {
             done = true;
             return;
         }
-        BlockState state = player.getWorld().getBlockState(currentBlock);
+        BlockState state = player.level().getBlockState(currentBlock);
         boolean blockBroken = false;
         if (first) {
             first = false;
-            player.interactionManager.processBlockBreakingAction(currentBlock, PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, newBlockHit.getSide(), player.getWorld().getTopYInclusive(), -1);
+            player.gameMode.handleBlockBreakAction(currentBlock, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, newBlockHit.getDirection(), player.level().getMaxY(), -1);
             boolean notAir = !state.isAir();
             if (notAir)
             {
-                state.onBlockBreakStart(player.getWorld(), currentBlock, player);
+                state.attack(player.level(), currentBlock, player);
             }
-            if (notAir && state.calcBlockBreakingDelta(player, player.getWorld(), currentBlock) >= 1)
+            if (notAir && state.getDestroyProgress(player, player.level(), currentBlock) >= 1)
             {
                 //instamine??
                 blockBroken = true;
             }
         } else {
-            currentBlockDamage += state.calcBlockBreakingDelta(player, player.getWorld(), currentBlock);
+            currentBlockDamage += state.getDestroyProgress(player, player.level(), currentBlock);
             if (currentBlockDamage >= 1) {
-                player.interactionManager.processBlockBreakingAction(currentBlock, PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, newBlockHit.getSide(), player.getWorld().getTopYInclusive(), -1);
+                player.gameMode.handleBlockBreakAction(currentBlock, ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, newBlockHit.getDirection(), player.level().getMaxY(), -1);
                 ap.blockHitDelay = 5;
                 blockBroken = true;
             }
-            player.getWorld().setBlockBreakingInfo(-1, currentBlock, (int) (currentBlockDamage * 10));
+            player.level().destroyBlockProgress(-1, currentBlock, (int) (currentBlockDamage * 10));
 
         }
-        player.updateLastActionTime();
-        player.swingHand(Hand.MAIN_HAND);
+        player.resetLastActionTime();
+        player.swing(InteractionHand.MAIN_HAND);
 
         if(blockBroken) {
             done = true;
@@ -115,8 +115,8 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
         EntityPlayerActionPack ap = player.getMinionActionPack();
 
         if(currentBlock != null) {
-            player.getWorld().setBlockBreakingInfo(-1, currentBlock, -1);
-            player.interactionManager.processBlockBreakingAction(currentBlock, PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, Direction.DOWN, player.getWorld().getTopYInclusive(), -1);
+            player.level().destroyBlockProgress(-1, currentBlock, -1);
+            player.gameMode.handleBlockBreakAction(currentBlock, ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, Direction.DOWN, player.level().getMaxY(), -1);
         }
     }
 
@@ -126,15 +126,15 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
     }
 
     @Override
-    public void save(WriteView view, MinionRuntime runtime) {
-        view.put("currentBlock", BlockPos.CODEC, currentBlock);
+    public void save(ValueOutput view, MinionRuntime runtime) {
+        view.store("currentBlock", BlockPos.CODEC, currentBlock);
         view.putFloat("currentBlockDamage", currentBlockDamage);
     }
 
     @Override
-    public void load(ReadView view, MinionRuntime runtime) {
+    public void load(ValueInput view, MinionRuntime runtime) {
         currentBlock = view.read("currentBlock", BlockPos.CODEC).orElse(null);
-        currentBlockDamage = view.getFloat("currentBlockDamage", 0);
+        currentBlockDamage = view.getFloatOr("currentBlockDamage", 0);
         if(currentBlock == null) {
             done = true;
         }

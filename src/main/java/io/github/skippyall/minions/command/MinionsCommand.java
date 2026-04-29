@@ -3,15 +3,15 @@ package io.github.skippyall.minions.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.skippyall.minions.MinionsConfig;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.literal;
 
 public class MinionsCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess access, CommandManager.RegistrationEnvironment environment) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = literal("minions")
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext access, Commands.CommandSelection environment) {
+        LiteralArgumentBuilder<CommandSourceStack> builder = literal("minions")
                 .then(SpawnSubcommand.SPAWN)
                 .then(ListSubcommand.LIST)
                 .then(DocsSubcommand.DOCS)

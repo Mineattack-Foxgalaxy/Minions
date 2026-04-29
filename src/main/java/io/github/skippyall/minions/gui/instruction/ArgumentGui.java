@@ -15,10 +15,10 @@ import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 public class ArgumentGui extends MinionsGui {
@@ -59,16 +59,16 @@ public class ArgumentGui extends MinionsGui {
 
     @Override
     protected void open() {
-        gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, viewer, false) {
+        gui = new SimpleGui(MenuType.GENERIC_3x3, viewer, false) {
             @Override
             public void onClose() {
                 onBackingClosed();
             }
         };
-        gui.setTitle(Text.translatable(
+        gui.setTitle(Component.translatable(
                 "minions.gui.instruction.argument.title",
                 parameter.name(),
-                Text.translatable(TranslationUtil.getTranslationKey(parameter.type(), MinionRegistries.VALUE_TYPES))
+                Component.translatable(TranslationUtil.getTranslationKey(parameter.type(), MinionRegistries.VALUE_TYPES))
         ));
 
         updateTypeConfiguration();
@@ -80,14 +80,14 @@ public class ArgumentGui extends MinionsGui {
     private void updateTypeConfiguration() {
         ItemStack displayStack;
         if(argumentType != null) {
-            displayStack = GuiDisplay.getDisplayStack(MinionRegistries.VALUE_SUPPLIER_TYPES, argumentType, viewer.getRegistryManager());
+            displayStack = GuiDisplay.getDisplayStack(MinionRegistries.VALUE_SUPPLIER_TYPES, argumentType, viewer.registryAccess());
         } else {
             displayStack = new ItemStack(Items.BARRIER);
         }
 
         gui.setSlot(3, new GuiElementBuilder(displayStack)
-                .setName(Text.translatable("minions.gui.instruction.argument.configure.type"))
-                .addLoreLine(Text.translatable(TranslationUtil.getTranslationKey(
+                .setName(Component.translatable("minions.gui.instruction.argument.configure.type"))
+                .addLoreLine(Component.translatable(TranslationUtil.getTranslationKey(
                         argumentType,
                         MinionRegistries.VALUE_SUPPLIER_TYPES,
                         "minions.gui.not_set"
@@ -99,8 +99,8 @@ public class ArgumentGui extends MinionsGui {
     private void updateArgumentConfiguration() {
         if(argumentType != null) {
             gui.setSlot(4, new GuiElementBuilder(Items.STRUCTURE_VOID)
-                    .setName(Text.translatable("minions.gui.instruction.argument.configure.data"))
-                    .addLoreLine(getArgument() != null ? getArgument().getDisplayText() : Text.translatable("minions.gui.not_set"))
+                    .setName(Component.translatable("minions.gui.instruction.argument.configure.data"))
+                    .addLoreLine(getArgument() != null ? getArgument().getDisplayText() : Component.translatable("minions.gui.not_set"))
                     .setCallback(() -> argumentType.openConfiguration(this, parameter.type(), getArgument())
                             .thenAccept(newArgument -> {
                                 setArgument(newArgument);
@@ -116,7 +116,7 @@ public class ArgumentGui extends MinionsGui {
     private void updateConverterConfiguration() {
         if(entry != null) {
             gui.setSlot(5, new GuiElementBuilder(Items.CRAFTER)
-                    .setName(Text.translatable("minions.gui.instruction.converters"))
+                    .setName(Component.translatable("minions.gui.instruction.converters"))
                     .setCallback(this::configureConvertersMenu)
             );
         }
@@ -145,8 +145,8 @@ public class ArgumentGui extends MinionsGui {
     }
 
     public void selectArgumentType() {
-        PaginatedList.createList(this, Text.translatable("minions.gui.instruction.argument.configure.type.title"), MinionRegistries.VALUE_SUPPLIER_TYPES, (type, me) ->
-                new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_SUPPLIER_TYPES, type, viewer.getRegistryManager()))
+        PaginatedList.createList(this, Component.translatable("minions.gui.instruction.argument.configure.type.title"), MinionRegistries.VALUE_SUPPLIER_TYPES, (type, me) ->
+                new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_SUPPLIER_TYPES, type, viewer.registryAccess()))
                         .setCallback(() -> {
                             setArgumentType(type);
                             me.close();

@@ -2,13 +2,13 @@
 package io.github.skippyall.minions.minion.fakeplayer;
 
 import io.netty.channel.embedded.EmbeddedChannel;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkSide;
-import net.minecraft.network.listener.PacketListener;
-import net.minecraft.network.state.NetworkState;
+import net.minecraft.network.Connection;
+import net.minecraft.network.PacketListener;
+import net.minecraft.network.ProtocolInfo;
+import net.minecraft.network.protocol.PacketFlow;
 
-public class FakeClientConnection extends ClientConnection {
-    public FakeClientConnection(NetworkSide p)
+public class FakeClientConnection extends Connection {
+    public FakeClientConnection(PacketFlow p)
     {
         super(p);
         // compat with adventure-platform-fabric. This does NOT trigger other vanilla handlers for establishing a channel
@@ -17,7 +17,7 @@ public class FakeClientConnection extends ClientConnection {
     }
 
     @Override
-    public void tryDisableAutoRead()
+    public void setReadOnly()
     {
     }
 
@@ -26,11 +26,11 @@ public class FakeClientConnection extends ClientConnection {
     }
 
     @Override
-    public void setInitialPacketListener(PacketListener packetListener)
+    public void setListenerForServerboundHandshake(PacketListener packetListener)
     {
     }
 
     @Override
-    public <T extends PacketListener> void transitionInbound(NetworkState<T> state, T packetListener) {
+    public <T extends PacketListener> void setupInboundProtocol(ProtocolInfo<T> state, T packetListener) {
     }
 }

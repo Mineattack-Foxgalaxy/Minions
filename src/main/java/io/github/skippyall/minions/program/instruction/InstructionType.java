@@ -3,11 +3,10 @@ package io.github.skippyall.minions.program.instruction;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
-import net.minecraft.storage.ReadView;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
+import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Defines the semantics of an instruction and creates {@link InstructionExecution}
@@ -39,7 +38,7 @@ public class InstructionType<R extends InstructionRuntime<R>> {
         return execution;
     }
 
-    public InstructionExecution<R> loadExecution(ReadView view, R minion) {
+    public InstructionExecution<R> loadExecution(ValueInput view, R minion) {
         InstructionExecution<R> execution = executionFactory.get();
         execution.load(view, minion);
         return execution;

@@ -6,42 +6,42 @@ import io.github.skippyall.minions.block.input.AnalogInputBlock;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlock;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 
 public class MinionBlocks {
-    public static final Identifier MINION_TRIGGER_ID = Identifier.of(Minions.MOD_ID, "minion_trigger");
+    public static final ResourceLocation MINION_TRIGGER_ID = ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger");
     public static final MinionTriggerBlock MINION_TRIGGER_BLOCK = Registry.register(
-            Registries.BLOCK,
+            BuiltInRegistries.BLOCK,
             MINION_TRIGGER_ID,
-            new MinionTriggerBlock(AbstractBlock.Settings.create()
-                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, MINION_TRIGGER_ID))
-                    .nonOpaque()
-                    .breakInstantly()
-                    .sounds(BlockSoundGroup.STONE)
-                    .pistonBehavior(PistonBehavior.DESTROY)
+            new MinionTriggerBlock(BlockBehaviour.Properties.of()
+                    .setId(ResourceKey.create(Registries.BLOCK, MINION_TRIGGER_ID))
+                    .noOcclusion()
+                    .instabreak()
+                    .sound(SoundType.STONE)
+                    .pushReaction(PushReaction.DESTROY)
             )
     );
     public static final BlockEntityType<MinionTriggerBlockEntity> MINION_TRIGGER_BE_TYPE =
             Registry.register(
-                    Registries.BLOCK_ENTITY_TYPE,
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
                     MINION_TRIGGER_ID,
                     FabricBlockEntityTypeBuilder.create(MinionTriggerBlockEntity::new, MINION_TRIGGER_BLOCK).build()
             );
 
-    public static final Identifier ANALOG_INPUT_BLOCK_ID = Identifier.of(Minions.MOD_ID, "analog_input");
+    public static final ResourceLocation ANALOG_INPUT_BLOCK_ID = ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "analog_input");
     public static final AnalogInputBlock ANALOG_INPUT_BLOCK = Registry.register(
-            Registries.BLOCK,
+            BuiltInRegistries.BLOCK,
             ANALOG_INPUT_BLOCK_ID,
-            new AnalogInputBlock(AbstractBlock.Settings.create()
-                    .registryKey(RegistryKey.of(RegistryKeys.BLOCK, ANALOG_INPUT_BLOCK_ID))
+            new AnalogInputBlock(BlockBehaviour.Properties.of()
+                    .setId(ResourceKey.create(Registries.BLOCK, ANALOG_INPUT_BLOCK_ID))
             )
     );
 

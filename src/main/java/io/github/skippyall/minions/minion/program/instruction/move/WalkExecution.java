@@ -5,9 +5,9 @@ import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.ValueTypes;
-import net.minecraft.entity.MovementType;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class WalkExecution implements InstructionExecution<MinionRuntime> {
     public static final Parameter<Double> blocksToMoveParam = new Parameter<>("blocksToMove", ValueTypes.DOUBLE);
@@ -18,8 +18,8 @@ public class WalkExecution implements InstructionExecution<MinionRuntime> {
 
     @Override
     public void tick(MinionRuntime minion) {
-        double speed = Math.min(minion.getMinion().getMovementSpeed(), totalBlocksToMove - blocksMoved);
-        minion.getMinion().move(MovementType.SELF, minion.getMinion().getHorizontalFacing().getDoubleVector().normalize().multiply(speed));
+        double speed = Math.min(minion.getMinion().getSpeed(), totalBlocksToMove - blocksMoved);
+        minion.getMinion().move(MoverType.SELF, minion.getMinion().getDirection().getUnitVec3().normalize().scale(speed));
         blocksMoved += speed;
     }
 
@@ -35,14 +35,14 @@ public class WalkExecution implements InstructionExecution<MinionRuntime> {
     }
 
     @Override
-    public void save(WriteView view, MinionRuntime minion) {
+    public void save(ValueOutput view, MinionRuntime minion) {
         view.putDouble("totalBlocksToMove", totalBlocksToMove);
         view.putDouble("blocksMoved", blocksMoved);
     }
 
     @Override
-    public void load(ReadView view, MinionRuntime minion) {
-        totalBlocksToMove = view.getDouble("totalBlocksToMove", 0F);
-        blocksMoved = view.getDouble("blocksMoved", 0F);
+    public void load(ValueInput view, MinionRuntime minion) {
+        totalBlocksToMove = view.getDoubleOr("totalBlocksToMove", 0F);
+        blocksMoved = view.getDoubleOr("blocksMoved", 0F);
     }
 }

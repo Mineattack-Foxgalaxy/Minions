@@ -6,11 +6,10 @@ import io.github.skippyall.minions.gui.input.TextInput;
 import io.github.skippyall.minions.minion.program.instruction.move.TurnDirection;
 import io.github.skippyall.minions.program.value.SimpleValueType;
 import io.github.skippyall.minions.program.value.ValueType;
-import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public class ValueTypes {
     public static ValueType<Long> LONG = register(
@@ -21,10 +20,10 @@ public class ValueTypes {
                     o -> o instanceof Long l ? l : null,
                     (parent, oldValue) -> TextInput.inputLong(
                             parent,
-                            Text.literal("Integer"),
+                            Component.literal("Integer"),
                             String.valueOf(oldValue)
                     ),
-                    value -> Text.literal(value.toString())
+                    value -> Component.literal(value.toString())
             )
     );
 
@@ -36,10 +35,10 @@ public class ValueTypes {
                     o -> o instanceof Double d ? d : null,
                     (parent, oldValue) -> TextInput.inputDouble(
                             parent,
-                            Text.literal("Number"),
+                            Component.literal("Number"),
                             String.valueOf(oldValue)
                     ),
-                    value -> Text.literal(value.toString())
+                    value -> Component.literal(value.toString())
             )
     );
 
@@ -51,7 +50,7 @@ public class ValueTypes {
                     o -> o instanceof Boolean b ? b : null,
                     //TODO Properly implement ChoiceInput
                     (gui, value) -> CompletableFuture.completedFuture(value),//ChoiceInput.inputBoolean(Text.literal("")),
-                    value -> Text.literal(value.toString())
+                    value -> Component.literal(value.toString())
             )
     );
 
@@ -63,10 +62,10 @@ public class ValueTypes {
                     o -> o instanceof String s ? s : null,
                     ((parent, oldValue) -> TextInput.inputString(
                             parent,
-                            Text.literal("Text"),
+                            Component.literal("Text"),
                             oldValue)
                     ),
-                    value -> Text.literal("\"" + value + "\"")
+                    value -> Component.literal("\"" + value + "\"")
             )
     );
 
@@ -78,7 +77,7 @@ public class ValueTypes {
                     o -> o instanceof TurnDirection d ? d : null,
                     //TODO Properly implement ChoiceInput
                     (parent, oldValue) -> CompletableFuture.completedFuture(oldValue), // ChoiceInput.createDialogOpener(TurnDirection.values()),
-                    value -> Text.literal(value.name)
+                    value -> Component.literal(value.name)
             )
     );
 
@@ -86,7 +85,7 @@ public class ValueTypes {
             String id,
             T type
     ) {
-        Identifier identifier = Identifier.of(Minions.MOD_ID, id);
+        ResourceLocation identifier = ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, id);
         Registry.register(
                 MinionRegistries.VALUE_TYPES,
                 identifier,

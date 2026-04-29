@@ -1,11 +1,11 @@
 package io.github.skippyall.minions.gui;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class MinionsGui {
     protected final @Nullable MinionsGui parent;
-    protected final ServerPlayerEntity viewer;
+    protected final ServerPlayer viewer;
     protected @Nullable MinionsGui child = null;
     private boolean open = true;
 
@@ -15,12 +15,12 @@ public abstract class MinionsGui {
         parent.child = this;
     }
 
-    public MinionsGui(ServerPlayerEntity viewer) {
+    public MinionsGui(ServerPlayer viewer) {
         this.viewer = viewer;
         this.parent = null;
     }
 
-    public ServerPlayerEntity getViewer() {
+    public ServerPlayer getViewer() {
         return viewer;
     }
 

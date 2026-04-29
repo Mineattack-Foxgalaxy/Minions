@@ -1,11 +1,11 @@
 package io.github.skippyall.minions.util;
 
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 
 public class TranslationUtil {
     public static <T> String getTranslationKey(T object, Registry<T> registry, String defaultKey) {
-        return getTranslationKey(object, registry, registry.getKey().getValue().getPath(), defaultKey);
+        return getTranslationKey(object, registry, registry.key().location().getPath(), defaultKey);
     }
 
     public static <T> String getTranslationKey(T object, Registry<T> registry, String prefix, String defaultKey) {
@@ -13,11 +13,11 @@ public class TranslationUtil {
             return defaultKey;
         }
 
-        Identifier id = registry.getId(object);
+        ResourceLocation id = registry.getKey(object);
         if(id == null) {
             return defaultKey;
         }
-        return id.toTranslationKey(prefix);
+        return id.toLanguageKey(prefix);
     }
 
     public static <T> String getTranslationKey(T object, Registry<T> registry) {

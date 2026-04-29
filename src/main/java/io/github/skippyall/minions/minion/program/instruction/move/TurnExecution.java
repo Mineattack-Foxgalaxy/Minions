@@ -17,7 +17,7 @@ public class TurnExecution extends AbstractTurnExecution {
         float turnYaw = maxAngle * direction.xFactor;
         float turnPitch = maxAngle * direction.yFactor;
 
-        targetYaw = minion.getMinion().getYaw() + turnYaw;
-        targetPitch = minion.getMinion().getPitch() + turnPitch;
+        targetYaw = minion.getMinion().getYRot() + turnYaw;
+        targetPitch = minion.getMinion().getXRot() + turnPitch;
     }
 }

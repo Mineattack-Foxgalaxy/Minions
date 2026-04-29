@@ -5,49 +5,48 @@ import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
-import net.minecraft.util.Uuids;
-
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public interface GuiDisplay {
-    Codec<GuiDisplay> CODEC = MinionRegistries.GUI_DISPLAY_TYPE.getCodec().dispatch(GuiDisplay::getCodec, codec -> codec.fieldOf("data"));
+    Codec<GuiDisplay> CODEC = MinionRegistries.GUI_DISPLAY_TYPE.byNameCodec().dispatch(GuiDisplay::getCodec, codec -> codec.fieldOf("data"));
     GuiDisplay DEFAULT_DISPLAY = new ItemBased(Items.BARRIER);
 
-    static GuiDisplay getGuiDisplay(Identifier id, DynamicRegistryManager manager) {
-        return manager.getOptional(MinionRegistries.GUI_DISPLAY).map(registry -> registry.get(id)).orElse(DEFAULT_DISPLAY);
+    static GuiDisplay getGuiDisplay(ResourceLocation id, RegistryAccess manager) {
+        return manager.lookup(MinionRegistries.GUI_DISPLAY).map(registry -> registry.getValue(id)).orElse(DEFAULT_DISPLAY);
     }
 
-    static <T> GuiDisplay getGuiDisplayFor(Registry<T> registry, T element, DynamicRegistryManager manager) {
-        Identifier elementId = registry.getId(element);
+    static <T> GuiDisplay getGuiDisplayFor(Registry<T> registry, T element, RegistryAccess manager) {
+        ResourceLocation elementId = registry.getKey(element);
         if(elementId == null) {
             return DEFAULT_DISPLAY;
         }
-        Identifier displayId = elementId.withPrefixedPath(registry.getKey().getValue().getPath() + "/");
+        ResourceLocation displayId = elementId.withPrefix(registry.key().location().getPath() + "/");
 
         return getGuiDisplay(displayId, manager);
     }
 
-    static <T> ItemStack getDisplayStack(Registry<T> registry, T element, DynamicRegistryManager manager) {
+    static <T> ItemStack getDisplayStack(Registry<T> registry, T element, RegistryAccess manager) {
         return getGuiDisplayFor(registry, element, manager).createItemStack();
     }
 
-    static <T> ItemStack getDisplayStackWithName(Registry<T> registry, T element, DynamicRegistryManager manager) {
+    static <T> ItemStack getDisplayStackWithName(Registry<T> registry, T element, RegistryAccess manager) {
         ItemStack stack = getDisplayStack(registry, element, manager);
-        stack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable(TranslationUtil.getTranslationKey(element, registry)).styled(style -> style.withItalic(false).withColor(Formatting.WHITE)));
+        stack.set(DataComponents.CUSTOM_NAME, Component.translatable(TranslationUtil.getTranslationKey(element, registry)).withStyle(style -> style.withItalic(false).withColor(ChatFormatting.WHITE)));
         return stack;
     }
 
@@ -56,18 +55,18 @@ public interface GuiDisplay {
     Codec<? extends GuiDisplay> getCodec();
 
     class ModelBased implements GuiDisplay {
-        public static final Codec<ModelBased> CODEC = Identifier.CODEC.xmap(ModelBased::new, display -> display.model);
+        public static final Codec<ModelBased> CODEC = ResourceLocation.CODEC.xmap(ModelBased::new, display -> display.model);
 
-        private final Identifier model;
+        private final ResourceLocation model;
 
-        public ModelBased(Identifier model) {
+        public ModelBased(ResourceLocation model) {
             this.model = model;
         }
 
         @Override
         public ItemStack createItemStack() {
             ItemStack stack = new ItemStack(Items.BARRIER);
-            stack.set(DataComponentTypes.ITEM_MODEL, model);
+            stack.set(DataComponents.ITEM_MODEL, model);
             return stack;
         }
 
@@ -78,7 +77,7 @@ public interface GuiDisplay {
     }
 
     class ItemBased implements GuiDisplay {
-        public static final Codec<ItemBased> CODEC = Registries.ITEM.getCodec().xmap(ItemBased::new, display -> display.item);
+        public static final Codec<ItemBased> CODEC = BuiltInRegistries.ITEM.byNameCodec().xmap(ItemBased::new, display -> display.item);
 
         private final Item item;
 
@@ -89,8 +88,8 @@ public interface GuiDisplay {
         @Override
         public ItemStack createItemStack() {
             ItemStack stack = new ItemStack(item);
-            stack.set(DataComponentTypes.TOOLTIP_DISPLAY, new TooltipDisplayComponent(true, ReferenceSortedSets.emptySet()));
-            stack.set(DataComponentTypes.RARITY, Rarity.COMMON);
+            stack.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, ReferenceSortedSets.emptySet()));
+            stack.set(DataComponents.RARITY, Rarity.COMMON);
             return stack;
         }
 
@@ -101,7 +100,7 @@ public interface GuiDisplay {
     }
 
     class HeadBased implements GuiDisplay {
-        public static final Codec<HeadBased> CODEC = Uuids.CODEC.xmap(HeadBased::new, display -> display.uuid);
+        public static final Codec<HeadBased> CODEC = UUIDUtil.AUTHLIB_CODEC.xmap(HeadBased::new, display -> display.uuid);
 
         private final UUID uuid;
 
@@ -112,7 +111,7 @@ public interface GuiDisplay {
         @Override
         public ItemStack createItemStack() {
             ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
-            stack.set(DataComponentTypes.PROFILE, new ProfileComponent(Optional.empty(), Optional.of(uuid), new PropertyMap()));
+            stack.set(DataComponents.PROFILE, new ResolvableProfile(Optional.empty(), Optional.of(uuid), new PropertyMap()));
             return stack;
         }
 

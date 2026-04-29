@@ -16,36 +16,36 @@ import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionItems;
 import io.github.skippyall.minions.registration.ValueSuppliers;
 import io.github.skippyall.minions.registration.ValueTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
     public static final Codec<AnalogInputSupplier> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    World.CODEC.fieldOf("analogInputWorld").forGetter(s -> s.analogInputWorld),
+                    Level.RESOURCE_KEY_CODEC.fieldOf("analogInputWorld").forGetter(s -> s.analogInputWorld),
                     BlockPos.CODEC.fieldOf("analogInputPos").forGetter(s -> s.analogInputPos)
             ).apply(instance, AnalogInputSupplier::new));
 
-    private final RegistryKey<World> analogInputWorld;
+    private final ResourceKey<Level> analogInputWorld;
     private final BlockPos analogInputPos;
 
-    public AnalogInputSupplier(RegistryKey<World> analogInputWorld, BlockPos analogInputPos) {
+    public AnalogInputSupplier(ResourceKey<Level> analogInputWorld, BlockPos analogInputPos) {
         this.analogInputWorld = analogInputWorld;
         this.analogInputPos = analogInputPos;
     }
 
     @Override
     public Long resolve(MinionRuntime minion) {
-        World world = minion.getMinion().getServer().getWorld(analogInputWorld);
-        if(world != null && world.isPosLoaded(analogInputPos) && world.getBlockState(analogInputPos).isOf(MinionBlocks.ANALOG_INPUT_BLOCK)) {
-            return (long) world.getReceivedRedstonePower(analogInputPos);
+        Level world = minion.getMinion().getServer().getLevel(analogInputWorld);
+        if(world != null && world.isLoaded(analogInputPos) && world.getBlockState(analogInputPos).is(MinionBlocks.ANALOG_INPUT_BLOCK)) {
+            return (long) world.getBestNeighborSignal(analogInputPos);
         } else {
             return 0L;
         }
@@ -62,8 +62,8 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
     }
 
     @Override
-    public Text getDisplayText() {
-        return Text.translatable("value_supplier.minions.analog_input.display", analogInputPos.toShortString(), analogInputWorld.getValue().toString());
+    public Component getDisplayText() {
+        return Component.translatable("value_supplier.minions.analog_input.display", analogInputPos.toShortString(), analogInputWorld.location().toString());
     }
 
     public static class AnalogInputSupplierType extends ValueSupplierType<MinionRuntime> {
@@ -79,22 +79,22 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
         public <T> CompletableFuture<ValueSupplier<?, MinionRuntime>> openConfiguration(MinionsGui parent, ValueType<T> valueType, @Nullable ValueSupplier<?, MinionRuntime> previous) {
             CompletableFuture<ValueSupplier<?, MinionRuntime>> future = new CompletableFuture<>();
             new SimpleMinionsGui(parent, (onClose, me) -> {
-                SimpleGui gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, parent.getViewer(), false) {
+                SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, parent.getViewer(), false) {
                     @Override
                     public void onClose() {
                         onClose.run();
                     }
                 };
-                gui.setTitle(Text.translatable("value_supplier.minions.analog_input"));
+                gui.setTitle(Component.translatable("value_supplier.minions.analog_input"));
 
                 gui.setSlot(4, new GuiElementBuilder(MinionItems.REFERENCE_ITEM)
                         .setCallback(() -> {
-                            ItemStack cursor = parent.getViewer().currentScreenHandler.getCursorStack();
-                            if (cursor.isOf(MinionItems.REFERENCE_ITEM) && cursor.get(MinionComponentTypes.REFERENCE) instanceof BlockPosClipboard pos) {
+                            ItemStack cursor = parent.getViewer().containerMenu.getCarried();
+                            if (cursor.is(MinionItems.REFERENCE_ITEM) && cursor.get(MinionComponentTypes.REFERENCE) instanceof BlockPosClipboard pos) {
                                 future.complete(new AnalogInputSupplier(pos.world(), pos.pos()));
                             }
                         })
-                        .setItemName(Text.translatable("value_supplier.minions.analog_input.config.click_with_reference"))
+                        .setItemName(Component.translatable("value_supplier.minions.analog_input.config.click_with_reference"))
                 );
                 gui.open();
                 return gui;

@@ -3,33 +3,32 @@ package io.github.skippyall.minions.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.skippyall.minions.Minions;
-import net.minecraft.block.Blocks;
-import net.minecraft.command.argument.BlockPosArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
-
 import java.util.Collection;
 import java.util.HashSet;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 
 public class TestSubcommand {
-    public static LiteralArgumentBuilder<ServerCommandSource> TEST = literal("test")
-            .then(argument("pos", BlockPosArgumentType.blockPos())
+    public static LiteralArgumentBuilder<CommandSourceStack> TEST = literal("test")
+            .then(argument("pos", BlockPosArgument.blockPos())
                     .executes(TestSubcommand::execute)
             );
 
 
-    private static int execute(CommandContext<ServerCommandSource> context) {
+    private static int execute(CommandContext<CommandSourceStack> context) {
         try {
-            BlockPos pos = BlockPosArgumentType.getBlockPos(context, "pos");
-            Collection<BlockPos> result = findInputs(context.getSource().getWorld(), pos);
+            BlockPos pos = BlockPosArgument.getBlockPos(context, "pos");
+            Collection<BlockPos> result = findInputs(context.getSource().getLevel(), pos);
             for (BlockPos resultPos : result) {
-                context.getSource().sendFeedback(() -> Text.literal(resultPos.toShortString()), false);
+                context.getSource().sendSuccess(() -> Component.literal(resultPos.toShortString()), false);
             }
         } catch (Throwable e) {
             Minions.LOGGER.error("Error", e);
@@ -37,7 +36,7 @@ public class TestSubcommand {
         return 0;
     }
 
-    private static Collection<BlockPos> findInputs(World world, BlockPos pos) {
+    private static Collection<BlockPos> findInputs(Level world, BlockPos pos) {
         //positions that are already processed
         Collection<BlockPos> visitedPositions = new HashSet<>();
         //positions we are currently looking at
@@ -53,7 +52,7 @@ public class TestSubcommand {
             for(BlockPos currentPosition : currentPositions) {
                 for(Direction dir : Direction.values()) {
                     //check each neighbor of the current positions
-                    BlockPos newPos = currentPosition.offset(dir);
+                    BlockPos newPos = currentPosition.relative(dir);
                     //Do not check blocks that were already checked
                     if(!visitedPositions.contains(newPos)) {
                         if (world.getBlockState(newPos).getBlock() == Blocks.REDSTONE_BLOCK) {

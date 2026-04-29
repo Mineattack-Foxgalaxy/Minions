@@ -10,10 +10,10 @@ import io.github.skippyall.minions.program.conversion.ValueConverter;
 import io.github.skippyall.minions.program.conversion.ValueConverterType;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import net.minecraft.item.Items;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.Text;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 public class ConverterGui extends MinionsGui {
@@ -42,14 +42,14 @@ public class ConverterGui extends MinionsGui {
 
     @Override
     protected void open() {
-        gui = new SimpleGui(ScreenHandlerType.GENERIC_3X3, viewer, false) {
+        gui = new SimpleGui(MenuType.GENERIC_3x3, viewer, false) {
             @Override
             public void onClose() {
                 onBackingClosed();
             }
         };
 
-        gui.setTitle(Text.translatable("minions.gui.instruction.converter.title"));
+        gui.setTitle(Component.translatable("minions.gui.instruction.converter.title"));
 
         updateTypeDisplay();
         updateConverterDisplay();
@@ -63,15 +63,15 @@ public class ConverterGui extends MinionsGui {
     }
 
     private void updateTypeDisplay() {
-        gui.setSlot(3, new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_CONVERTER_TYPES, valueConverterType, viewer.getRegistryManager()))
+        gui.setSlot(3, new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_CONVERTER_TYPES, valueConverterType, viewer.registryAccess()))
                 .setCallback(this::configureType)
         );
     }
 
     private void updateConverterDisplay() {
         gui.setSlot(5, new GuiElementBuilder(Items.STRUCTURE_VOID)
-                .setName(Text.translatable("minions.gui.instruction.converter.title"))
-                .addLoreLine(converter == null ? Text.translatable("minions.gui.not_set") : converter.getDisplayText())
+                .setName(Component.translatable("minions.gui.instruction.converter.title"))
+                .addLoreLine(converter == null ? Component.translatable("minions.gui.not_set") : converter.getDisplayText())
                 .setCallback(this::configureData)
         );
     }
@@ -100,10 +100,10 @@ public class ConverterGui extends MinionsGui {
     private void configureType() {
         PaginatedList.createList(
                 this,
-                Text.translatable("minions.gui.instruction.converter.type.title"),
+                Component.translatable("minions.gui.instruction.converter.type.title"),
                 MinionRegistries.VALUE_CONVERTER_TYPES,
                 (type, me) -> new GuiElementBuilder(
-                        GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_CONVERTER_TYPES, type, viewer.getRegistryManager())
+                        GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_CONVERTER_TYPES, type, viewer.registryAccess())
                 ).setCallback(() -> {
                     setType(type);
                     me.close();
@@ -123,7 +123,7 @@ public class ConverterGui extends MinionsGui {
         }
     }
 
-    public static GuiElementBuilder createConverterElement(ValueConverter<?,?> converter, DynamicRegistryManager manager) {
+    public static GuiElementBuilder createConverterElement(ValueConverter<?,?> converter, RegistryAccess manager) {
         GuiElementBuilder builder = new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_CONVERTER_TYPES, converter.getType(), manager));
         builder.addLoreLine(converter.getDisplayText());
         return builder;

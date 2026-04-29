@@ -11,7 +11,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.resource.ResourceType;
+import net.minecraft.server.packs.PackType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,7 @@ public class Minions implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             MinionPersistentState.get(server).getMinionData().forEach((uuid, data) -> {
                 if(data.isSpawned()) {
-                    MinionFakePlayer.spawnMinion(data, server.getOverworld(), null, null, true);
+                    MinionFakePlayer.spawnMinion(data, server.overworld(), null, null, true);
                 }
             });
         });
@@ -40,6 +40,6 @@ public class Minions implements ModInitializer {
 
         PolymerResourcePackUtils.addModAssets(Minions.MOD_ID);
 
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new DocsManager());
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new DocsManager());
     }
 }

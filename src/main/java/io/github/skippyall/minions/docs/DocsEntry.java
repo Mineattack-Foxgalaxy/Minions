@@ -4,18 +4,17 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import net.minecraft.dialog.body.DialogBody;
-import net.minecraft.registry.DynamicRegistryManager;
-
 import java.util.List;
 import java.util.function.Function;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.server.dialog.body.DialogBody;
 
 public interface DocsEntry {
-    Codec<DocsEntry> CODEC = MinionRegistries.DOCS_ENTRY_TYPES.getCodec().dispatch(DocsEntry::getCodec, Function.identity());
+    Codec<DocsEntry> CODEC = MinionRegistries.DOCS_ENTRY_TYPES.byNameCodec().dispatch(DocsEntry::getCodec, Function.identity());
 
     Metadata getMetadata();
 
-    List<DialogBody> getDialog(DynamicRegistryManager manager);
+    List<DialogBody> getDialog(RegistryAccess manager);
 
     MapCodec<? extends DocsEntry> getCodec();
 

@@ -10,8 +10,8 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.MenuType;
 
 public class InstructionListGui extends MinionsGui implements MinionListener {
     private final GuiContext.Minion context;
@@ -33,13 +33,13 @@ public class InstructionListGui extends MinionsGui implements MinionListener {
     @Override
     protected void open() {
         minion.addMinionListener(this);
-        gui = new SimpleGui(ScreenHandlerType.GENERIC_9X3, viewer, false) {
+        gui = new SimpleGui(MenuType.GENERIC_9x3, viewer, false) {
             @Override
             public void onClose() {
                 onBackingClosed();
             }
         };
-        gui.setTitle(Text.translatable("minions.gui.instruction.title"));
+        gui.setTitle(Component.translatable("minions.gui.instruction.title"));
         resetInstructionList();
         gui.open();
     }
@@ -59,8 +59,8 @@ public class InstructionListGui extends MinionsGui implements MinionListener {
         int i = 0;
         for (String instructionName : minion.getInstructionManager().getInstructionNames()) {
             ConfiguredInstruction<MinionRuntime> instruction = minion.getInstructionManager().getInstruction(instructionName);
-            gui.setSlot(i, new GuiElementBuilder(GuiDisplay.getGuiDisplayFor(MinionRegistries.INSTRUCTION_TYPES, instruction.getInstruction(), viewer.getRegistryManager()).createItemStack())
-                    .setName(Text.literal(instructionName))
+            gui.setSlot(i, new GuiElementBuilder(GuiDisplay.getGuiDisplayFor(MinionRegistries.INSTRUCTION_TYPES, instruction.getInstruction(), viewer.registryAccess()).createItemStack())
+                    .setName(Component.literal(instructionName))
                     .setCallback(() -> new ConfigureInstructionGui(this, GuiContext.Instruction.create(context, instruction, instructionName)))
             );
             i++;

@@ -2,7 +2,7 @@ package io.github.skippyall.minions.program.supplier;
 
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 /**
  * A supplier that always resolves to a fixed value
@@ -38,7 +38,7 @@ public class FixedValueSupplier<T, R extends InstructionRuntime<R>> implements V
     }
 
     @Override
-    public Text getDisplayText() {
+    public Component getDisplayText() {
         return valueType.getDisplayText(value);
     }
 }

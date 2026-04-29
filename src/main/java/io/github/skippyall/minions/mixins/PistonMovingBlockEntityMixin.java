@@ -3,39 +3,39 @@ package io.github.skippyall.minions.mixins;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.PistonBlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(PistonBlockEntity.class)
+@Mixin(PistonMovingBlockEntity.class)
 public abstract class PistonMovingBlockEntityMixin {
-    @WrapOperation(method = "pushEntities", at = @At(
+    @WrapOperation(method = "moveCollidedEntities", at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/entity/Entity;getPistonBehavior()Lnet/minecraft/block/piston/PistonBehavior;"
+            target = "Lnet/minecraft/world/entity/Entity;getPistonPushReaction()Lnet/minecraft/world/level/material/PushReaction;"
     ))
-    private static PistonBehavior moveFakePlayers(Entity entity, Operation<PistonBehavior> original, World world, BlockPos pos, float f, PistonBlockEntity pistonBlockEntity)
+    private static PushReaction moveFakePlayers(Entity entity, Operation<PushReaction> original, Level world, BlockPos pos, float f, PistonMovingBlockEntity pistonBlockEntity)
     {
-        if (entity instanceof MinionFakePlayer && pistonBlockEntity.getPushedBlock().isOf(Blocks.SLIME_BLOCK))
+        if (entity instanceof MinionFakePlayer && pistonBlockEntity.getMovedState().is(Blocks.SLIME_BLOCK))
         {
-            Vec3d vec3d = entity.getVelocity();
+            Vec3 vec3d = entity.getDeltaMovement();
             double x = vec3d.x;
             double y = vec3d.y;
             double z = vec3d.z;
             Direction direction = pistonBlockEntity.getMovementDirection();
             switch (direction.getAxis()) {
-                case X -> x = direction.getOffsetX();
-                case Y -> y = direction.getOffsetY();
-                case Z -> z = direction.getOffsetZ();
+                case X -> x = direction.getStepX();
+                case Y -> y = direction.getStepY();
+                case Z -> z = direction.getStepZ();
             }
 
-            entity.setVelocity(x, y, z);
+            entity.setDeltaMovement(x, y, z);
         }
         return original.call(entity);
     }

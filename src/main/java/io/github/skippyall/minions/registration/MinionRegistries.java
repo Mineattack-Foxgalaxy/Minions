@@ -21,9 +21,9 @@ import io.github.skippyall.minions.program.value.ValueType;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 
 public class MinionRegistries {
     public static final Registry<ValueType<?>> VALUE_TYPES = registry("value_type");
@@ -41,15 +41,15 @@ public class MinionRegistries {
     public static final Registry<MinionConfig.Option<?>> MINION_CONFIG_OPTIONS = registry("minion_config_option");
     public static final Registry<MapCodec<? extends DocsEntry>> DOCS_ENTRY_TYPES = registry("docs_entry_type");
 
-    public static final RegistryKey<Registry<GuiDisplay>> GUI_DISPLAY = key("gui_display");
-    public static final RegistryKey<Registry<ReferenceEntry>> DOCS_ENTRY = key("docs_entry");
+    public static final ResourceKey<Registry<GuiDisplay>> GUI_DISPLAY = key("gui_display");
+    public static final ResourceKey<Registry<ReferenceEntry>> DOCS_ENTRY = key("docs_entry");
 
     private static <T> Registry<T> registry(String id) {
         return FabricRegistryBuilder.<T>createSimple(key(id)).attribute(RegistryAttribute.OPTIONAL).buildAndRegister();
     }
 
-    private static <T> RegistryKey<Registry<T>> key(String name) {
-        return RegistryKey.ofRegistry(Identifier.of(Minions.MOD_ID, name));
+    private static <T> ResourceKey<Registry<T>> key(String name) {
+        return ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, name));
     }
 
     public static void register() {

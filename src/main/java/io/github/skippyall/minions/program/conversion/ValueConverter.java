@@ -4,12 +4,12 @@ import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public interface ValueConverter<F,T> {
-    Codec<ValueConverter<?,?>> CODEC = MinionRegistries.VALUE_CONVERTER_TYPES.getCodec().dispatch(ValueConverter::getType, ValueConverterType::getCodec);
+    Codec<ValueConverter<?,?>> CODEC = MinionRegistries.VALUE_CONVERTER_TYPES.byNameCodec().dispatch(ValueConverter::getType, ValueConverterType::getCodec);
 
-    Result<T, Text> convert(F from);
+    Result<T, Component> convert(F from);
 
     ValueType<F> getFrom();
 
@@ -17,7 +17,7 @@ public interface ValueConverter<F,T> {
 
     ValueConverterType<?> getType();
 
-    Text getDisplayText();
+    Component getDisplayText();
 
     default <F2,T2> ValueConverter<F2,T2> cast(ValueType<F2> from, ValueType<T2> to) {
         if(from == getFrom() && to == getTo()) {
