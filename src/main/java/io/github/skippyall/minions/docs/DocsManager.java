@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.dialog.ActionButton;
 import net.minecraft.server.dialog.CommonButtonData;
 import net.minecraft.server.dialog.CommonDialogData;
@@ -30,15 +30,15 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class DocsManager implements SimpleResourceReloadListener<Tuple<Map<ResourceLocation, DocsEntry>, DocsTree>> {
-    private static Map<ResourceLocation, DocsEntry> docs;
+public class DocsManager implements SimpleResourceReloadListener<Tuple<Map<Identifier, DocsEntry>, DocsTree>> {
+    private static Map<Identifier, DocsEntry> docs;
     private static DocsTree tree;
 
     public static DocsTree getTree() {
         return tree;
     }
 
-    public static void showDocsEntry(ServerPlayer player, ResourceLocation id) {
+    public static void showDocsEntry(ServerPlayer player, Identifier id) {
         DocsEntry entry = getDocsEntry(id);
         if(entry == null) {
             return;
@@ -48,11 +48,11 @@ public class DocsManager implements SimpleResourceReloadListener<Tuple<Map<Resou
         if(tree != null) {
             DocsTree.DocElement element = tree.getElement(id);
             if (element.previous() != null) {
-                ResourceLocation previousId = element.previous().getId();
+                Identifier previousId = element.previous().getId();
                 buttons.add(getDialogButton(Component.literal("<- ").append(Component.translatable(getDocsEntry(previousId).getMetadata().titleKey())), previousId.toString()));
             }
             if (element.next() != null) {
-                ResourceLocation nextId = element.next().getId();
+                Identifier nextId = element.next().getId();
                 buttons.add(getDialogButton(Component.translatable(getDocsEntry(nextId).getMetadata().titleKey()).append(Component.literal(" ->")), nextId.toString()));
             }
         }
@@ -87,21 +87,21 @@ public class DocsManager implements SimpleResourceReloadListener<Tuple<Map<Resou
         );
     }
 
-    public static DocsEntry getDocsEntry(ResourceLocation id) {
+    public static DocsEntry getDocsEntry(Identifier id) {
         return docs.get(id);
     }
 
-    public static Collection<ResourceLocation> getDocsEntryIds() {
+    public static Collection<Identifier> getDocsEntryIds() {
         return docs.keySet();
     }
 
     @Override
-    public CompletableFuture<Tuple<Map<ResourceLocation, DocsEntry>, DocsTree>> load(ResourceManager resourceManager, Executor executor) {
+    public CompletableFuture<Tuple<Map<Identifier, DocsEntry>, DocsTree>> load(ResourceManager resourceManager, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
-            Map<ResourceLocation, Resource> resources = resourceManager.listResources("docs", id -> id.getNamespace().equals(Minions.MOD_ID) && id.getPath().endsWith(".json"));
+            Map<Identifier, Resource> resources = resourceManager.listResources("docs", id -> id.getNamespace().equals(Minions.MOD_ID) && id.getPath().endsWith(".json"));
 
             final DocsTree.BranchElement[] root = {null};
-            Map<ResourceLocation, DocsEntry> docsEntries = new HashMap<>();
+            Map<Identifier, DocsEntry> docsEntries = new HashMap<>();
             resources.forEach((id, resource) -> {
                 try(Reader reader = resource.openAsReader()) {
                     if(id.getPath().equals("docs/tree.json")) {
@@ -109,7 +109,7 @@ public class DocsManager implements SimpleResourceReloadListener<Tuple<Map<Resou
                                 .ifSuccess(entry -> root[0] = entry.getFirst())
                                 .ifError(error -> Minions.LOGGER.warn("Could not parse docs tree {}: {}", id, error.message()));
                     } else {
-                        ResourceLocation docId = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath().substring("docs/".length(), id.getPath().length() - ".json".length()));
+                        Identifier docId = Identifier.fromNamespaceAndPath(id.getNamespace(), id.getPath().substring("docs/".length(), id.getPath().length() - ".json".length()));
                         DocsEntry.CODEC.decode(JsonOps.INSTANCE, StrictJsonParser.parse(reader))
                                 .ifSuccess(entry -> docsEntries.put(docId, entry.getFirst()))
                                 .ifError(error -> Minions.LOGGER.warn("Could not parse docs entry {}: {}", id, error.message()));
@@ -128,7 +128,7 @@ public class DocsManager implements SimpleResourceReloadListener<Tuple<Map<Resou
     }
 
     @Override
-    public CompletableFuture<Void> apply(Tuple<Map<ResourceLocation, DocsEntry>, DocsTree> o, ResourceManager resourceManager, Executor executor) {
+    public CompletableFuture<Void> apply(Tuple<Map<Identifier, DocsEntry>, DocsTree> o, ResourceManager resourceManager, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
             docs = o.getA();
             tree = o.getB();
@@ -137,7 +137,7 @@ public class DocsManager implements SimpleResourceReloadListener<Tuple<Map<Resou
     }
 
     @Override
-    public ResourceLocation getFabricId() {
-        return ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "docs");
+    public Identifier getFabricId() {
+        return Identifier.fromNamespaceAndPath(Minions.MOD_ID, "docs");
     }
 }

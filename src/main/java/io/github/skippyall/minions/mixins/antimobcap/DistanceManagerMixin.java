@@ -5,6 +5,10 @@ import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManager$Dist
 import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManagerAccessor;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import net.minecraft.core.SectionPos;
+import net.minecraft.server.level.DistanceManager;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.TicketStorage;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,10 +18,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.concurrent.Executor;
-import net.minecraft.core.SectionPos;
-import net.minecraft.server.level.DistanceManager;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.TicketStorage;
 
 @Mixin(DistanceManager.class)
 public class DistanceManagerMixin implements ChunkLevelManagerAccessor {

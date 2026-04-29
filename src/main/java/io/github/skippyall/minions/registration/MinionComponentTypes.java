@@ -4,12 +4,12 @@ import eu.pb4.polymer.core.api.other.PolymerComponent;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.clipboard.Clipboard;
 import io.github.skippyall.minions.module.MinionModule;
-import net.fabricmc.fabric.api.item.v1.ComponentTooltipAppenderRegistry;
+import net.fabricmc.fabric.api.item.v1.ItemComponentTooltipProviderRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import java.util.UUID;
 
 public class MinionComponentTypes {
@@ -18,12 +18,12 @@ public class MinionComponentTypes {
     public static final DataComponentType<Clipboard> REFERENCE = register("reference", DataComponentType.<Clipboard>builder().persistent(Clipboard.CODEC).build());
 
     private static <T extends DataComponentType<?>> T register(String name, T type) {
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, name), type);
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Identifier.fromNamespaceAndPath(Minions.MOD_ID, name), type);
         PolymerComponent.registerDataComponent(type);
         return type;
     }
 
     public static void register() {
-        ComponentTooltipAppenderRegistry.addFirst(MinionComponentTypes.REFERENCE);
+        ItemComponentTooltipProviderRegistry.addFirst(MinionComponentTypes.REFERENCE);
     }
 }

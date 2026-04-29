@@ -22,10 +22,7 @@ public class MinionProfileUtils {
             uuidMinion = UUID.randomUUID();
         }
 
-        GameProfile newProfile = new GameProfile(uuidMinion, username);
-        if (skin != null) {
-            newProfile.getProperties().putAll(skin);
-        }
+        GameProfile newProfile = new GameProfile(uuidMinion, username, skin != null ? skin : PropertyMap.EMPTY);
         LOGGER.info("Minion Profile: {}", newProfile);
         return newProfile;
     }

@@ -1,6 +1,8 @@
 package io.github.skippyall.minions.minion;
 
 import com.mojang.serialization.Codec;
+import io.github.skippyall.minions.Minions;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -14,7 +16,12 @@ import java.util.UUID;
 public class MinionPersistentState extends SavedData {
     public static final Codec<MinionPersistentState> CODEC = MinionData.CODEC.listOf().xmap(MinionPersistentState::new, MinionPersistentState::getMinionDataList);
 
-    public static SavedDataType<MinionPersistentState> TYPE = new SavedDataType<>("minion", MinionPersistentState::new, MinionPersistentState.CODEC, null);
+    public static SavedDataType<MinionPersistentState> TYPE = new SavedDataType<>(
+            Identifier.fromNamespaceAndPath(Minions.MOD_ID, "minion"),
+            MinionPersistentState::new,
+            MinionPersistentState.CODEC,
+            null
+    );
 
     private final Map<UUID, MinionData> minionData = new HashMap<>();
 

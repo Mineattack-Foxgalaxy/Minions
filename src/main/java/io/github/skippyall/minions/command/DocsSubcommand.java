@@ -6,10 +6,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.skippyall.minions.docs.DocsManager;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.resources.Identifier;
+
+import java.util.concurrent.CompletableFuture;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
@@ -17,7 +18,7 @@ import static net.minecraft.commands.Commands.literal;
 public class DocsSubcommand {
     public static final LiteralArgumentBuilder<CommandSourceStack> DOCS = literal("docs")
             .then(
-                    argument("docName", ResourceLocationArgument.id())
+                    argument("docName", IdentifierArgument.id())
                             .suggests(DocsSubcommand::getSuggestions)
                             .executes(DocsSubcommand::execute)
             );
@@ -28,7 +29,7 @@ public class DocsSubcommand {
     }
 
     public static int execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ResourceLocation id = ResourceLocationArgument.getId(context, "docName");
+        Identifier id = IdentifierArgument.getId(context, "docName");
         DocsManager.showDocsEntry(context.getSource().getPlayerOrException(), id);
         return 1;
     }

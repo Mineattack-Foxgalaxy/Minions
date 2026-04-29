@@ -1,35 +1,37 @@
 package io.github.skippyall.minions.registration;
 
-import eu.pb4.polymer.core.api.item.PolymerItemGroupUtils;
+import eu.pb4.polymer.core.api.item.PolymerCreativeModeTabUtils;
 import io.github.skippyall.minions.Minions;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MinionCreativeTab {
     public static CreativeModeTab group;
 
-    private static final List<ItemStack> items = new ArrayList<>();
+    private static final List<Item> items = new ArrayList<>();
 
     public static void add(Item entry) {
-        items.add(entry.getDefaultInstance());
+        items.add(entry);
     }
 
     public static void collectEntries(CreativeModeTab.ItemDisplayParameters displayContext, CreativeModeTab.Output entries) {
-        entries.acceptAll(items);
+        for(Item item : items) {
+            entries.accept(item);
+        }
     }
 
     public static void registerGroup() {
-        group = FabricItemGroup.builder()
+        group = FabricCreativeModeTab.builder()
                 .title(Component.translatable("minions.generic.mod_name"))
                 .icon(MinionItems.MINION_ITEM::getDefaultInstance)
                 .displayItems(MinionCreativeTab::collectEntries)
                 .build();
-        PolymerItemGroupUtils.registerPolymerItemGroup(ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "main"), group);
+        PolymerCreativeModeTabUtils.registerPolymerCreativeModeTab(Identifier.fromNamespaceAndPath(Minions.MOD_ID, "main"), group);
     }
 }

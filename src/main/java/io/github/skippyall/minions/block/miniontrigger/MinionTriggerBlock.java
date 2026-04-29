@@ -3,7 +3,6 @@ package io.github.skippyall.minions.block.miniontrigger;
 import com.mojang.serialization.MapCodec;
 import eu.pb4.polymer.core.api.block.PolymerBlock;
 import eu.pb4.polymer.core.api.utils.PolymerClientDecoded;
-import eu.pb4.polymer.core.api.utils.PolymerKeepModel;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.virtualentity.api.BlockWithElementHolder;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
@@ -12,10 +11,11 @@ import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlock;
 import io.github.skippyall.minions.polymer.VersionSync;
 import io.github.skippyall.minions.registration.MinionBlocks;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -37,9 +37,8 @@ import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.packettweaker.PacketContext;
 
-public class MinionTriggerBlock extends InstructionBoundBlock implements PolymerBlock, PolymerKeepModel, PolymerClientDecoded, BlockWithElementHolder {
+public class MinionTriggerBlock extends InstructionBoundBlock implements PolymerBlock, PolymerClientDecoded, BlockWithElementHolder {
     public static final MapCodec<MinionTriggerBlock> CODEC = simpleCodec(MinionTriggerBlock::new);
 
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
@@ -91,7 +90,7 @@ public class MinionTriggerBlock extends InstructionBoundBlock implements Polymer
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos) {
+    protected int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos, Direction direction) {
         return world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).map(MinionTriggerBlockEntity::getComparatorOutput).orElse(0);
     }
 
@@ -128,7 +127,7 @@ public class MinionTriggerBlock extends InstructionBoundBlock implements Polymer
             }
         };
         ItemStack stack = new ItemStack(Items.BARRIER);
-        stack.set(DataComponents.ITEM_MODEL, ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger_no_plate_" + (initialBlockState.getValue(MinionTriggerBlock.POWERED) ? "active" : "inactive")));
+        stack.set(DataComponents.ITEM_MODEL, Identifier.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger_no_plate_" + (initialBlockState.getValue(MinionTriggerBlock.POWERED) ? "active" : "inactive")));
 
         ItemDisplayElement element = new ItemDisplayElement(stack);
         element.setItemDisplayContext(ItemDisplayContext.NONE);

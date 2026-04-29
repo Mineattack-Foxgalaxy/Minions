@@ -22,8 +22,8 @@ import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 
 public class MinionRegistries {
     public static final Registry<ValueType<?>> VALUE_TYPES = registry("value_type");
@@ -45,11 +45,11 @@ public class MinionRegistries {
     public static final ResourceKey<Registry<ReferenceEntry>> DOCS_ENTRY = key("docs_entry");
 
     private static <T> Registry<T> registry(String id) {
-        return FabricRegistryBuilder.<T>createSimple(key(id)).attribute(RegistryAttribute.OPTIONAL).buildAndRegister();
+        return FabricRegistryBuilder.<T>create(key(id)).attribute(RegistryAttribute.OPTIONAL).buildAndRegister();
     }
 
     private static <T> ResourceKey<Registry<T>> key(String name) {
-        return ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, name));
+        return ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(Minions.MOD_ID, name));
     }
 
     public static void register() {

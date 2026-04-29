@@ -4,9 +4,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.skippyall.minions.minion.MinionData;
 import io.github.skippyall.minions.minion.MinionPersistentState;
-import java.util.Collection;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+
+import java.util.Collection;
 
 import static net.minecraft.commands.Commands.literal;
 

@@ -3,8 +3,9 @@ package io.github.skippyall.minions.minion.program.instruction.move;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.Displayable;
 import io.github.skippyall.minions.gui.GuiDisplay;
-import java.util.UUID;
 import net.minecraft.util.StringRepresentable;
+
+import java.util.UUID;
 
 public enum TurnDirection implements StringRepresentable, Displayable {
     LEFT("left", -1, 0),

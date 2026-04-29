@@ -34,7 +34,7 @@ public class ConverterListGui extends MinionsGui {
     protected void open() {
         gui = new SimpleGui(MenuType.GENERIC_9x3, viewer, false) {
             @Override
-            public void onClose() {
+            public void onPlayerClose(boolean success) {
                 onBackingClosed();
             }
         };

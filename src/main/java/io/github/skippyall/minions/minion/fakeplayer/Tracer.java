@@ -1,8 +1,6 @@
 //code from https://github.com/gnembon/fabric-carpet
 package io.github.skippyall.minions.minion.fakeplayer;
 
-import java.util.Optional;
-import java.util.function.Predicate;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -11,6 +9,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Optional;
+import java.util.function.Predicate;
 
 public class Tracer
 {

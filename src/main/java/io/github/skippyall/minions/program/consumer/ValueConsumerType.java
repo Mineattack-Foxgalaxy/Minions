@@ -3,10 +3,10 @@ package io.github.skippyall.minions.program.consumer;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.server.level.ServerPlayer;
 
 public abstract class ValueConsumerType<R extends InstructionRuntime<R>> {
     public abstract <T> Codec<? extends ValueConsumer<T,R>> getCodec(ValueType<T> type);

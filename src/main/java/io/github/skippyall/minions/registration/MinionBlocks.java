@@ -9,15 +9,15 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.PushReaction;
 
 public class MinionBlocks {
-    public static final ResourceLocation MINION_TRIGGER_ID = ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger");
+    public static final Identifier MINION_TRIGGER_ID = Identifier.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger");
     public static final MinionTriggerBlock MINION_TRIGGER_BLOCK = Registry.register(
             BuiltInRegistries.BLOCK,
             MINION_TRIGGER_ID,
@@ -36,7 +36,7 @@ public class MinionBlocks {
                     FabricBlockEntityTypeBuilder.create(MinionTriggerBlockEntity::new, MINION_TRIGGER_BLOCK).build()
             );
 
-    public static final ResourceLocation ANALOG_INPUT_BLOCK_ID = ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "analog_input");
+    public static final Identifier ANALOG_INPUT_BLOCK_ID = Identifier.fromNamespaceAndPath(Minions.MOD_ID, "analog_input");
     public static final AnalogInputBlock ANALOG_INPUT_BLOCK = Registry.register(
             BuiltInRegistries.BLOCK,
             ANALOG_INPUT_BLOCK_ID,

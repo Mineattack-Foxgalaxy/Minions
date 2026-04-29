@@ -1,11 +1,14 @@
 //code from https://github.com/gnembon/fabric-carpet
 package io.github.skippyall.minions.minion.fakeplayer;
 
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.ProtocolInfo;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
+import org.jspecify.annotations.Nullable;
 
 public class FakeClientConnection extends Connection {
     public FakeClientConnection(PacketFlow p)
@@ -14,6 +17,11 @@ public class FakeClientConnection extends Connection {
         // compat with adventure-platform-fabric. This does NOT trigger other vanilla handlers for establishing a channel
         // also makes #isOpen return true, allowing enderpearls to teleport fake players
         ((ClientConnectionInterface)this).setChannel(new EmbeddedChannel());
+    }
+
+    @Override
+    public void send(Packet<?> packet, @Nullable ChannelFutureListener listener, boolean flush) {
+
     }
 
     @Override

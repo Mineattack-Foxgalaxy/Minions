@@ -16,15 +16,15 @@ import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionItems;
 import io.github.skippyall.minions.registration.ValueSuppliers;
 import io.github.skippyall.minions.registration.ValueTypes;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.CompletableFuture;
 
 public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
     public static final Codec<AnalogInputSupplier> CODEC = RecordCodecBuilder.create(instance ->
@@ -63,7 +63,7 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
 
     @Override
     public Component getDisplayText() {
-        return Component.translatable("value_supplier.minions.analog_input.display", analogInputPos.toShortString(), analogInputWorld.location().toString());
+        return Component.translatable("value_supplier.minions.analog_input.display", analogInputPos.toShortString(), analogInputWorld.identifier().toString());
     }
 
     public static class AnalogInputSupplierType extends ValueSupplierType<MinionRuntime> {
@@ -81,7 +81,7 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
             new SimpleMinionsGui(parent, (onClose, me) -> {
                 SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, parent.getViewer(), false) {
                     @Override
-                    public void onClose() {
+                    public void onPlayerClose(boolean success) {
                         onClose.run();
                     }
                 };

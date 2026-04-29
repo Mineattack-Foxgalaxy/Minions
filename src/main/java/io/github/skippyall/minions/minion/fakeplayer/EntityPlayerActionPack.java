@@ -3,10 +3,6 @@ package io.github.skippyall.minions.minion.fakeplayer;
 
 
 import io.github.skippyall.minions.mixins.EntityAccessor;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,11 +14,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.world.entity.vehicle.minecart.Minecart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -30,6 +26,11 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class EntityPlayerActionPack
 {
@@ -215,7 +216,7 @@ public class EntityPlayerActionPack
         if (closest instanceof AbstractHorse && onlyRideables)
             ((AbstractHorse) closest).mobInteract(player, InteractionHand.MAIN_HAND);
         else
-            player.startRiding(closest, !onlyRideables);
+            player.startRiding(closest, !onlyRideables, true);
         return this;
     }
     public EntityPlayerActionPack dismount()
@@ -352,13 +353,13 @@ public class EntityPlayerActionPack
                                     boolean handWasEmpty = player.getItemInHand(hand).isEmpty();
                                     boolean itemFrameEmpty = (entity instanceof ItemFrame) && ((ItemFrame) entity).getItem().isEmpty();
                                     Vec3 relativeHitPos = entityHit.getLocation().subtract(entity.getX(), entity.getY(), entity.getZ());
-                                    if (entity.interactAt(player, relativeHitPos, hand).consumesAction())
+                                    if (entity.interact(player, hand, relativeHitPos).consumesAction())
                                     {
                                         ap.itemUseCooldown = 3;
                                         return true;
                                     }
                                     // fix for SS itemframe always returns CONSUME even if no action is performed
-                                    if (player.interactOn(entity, hand).consumesAction() && !(handWasEmpty && itemFrameEmpty))
+                                    if (player.interactOn(entity, hand, relativeHitPos).consumesAction() && !(handWasEmpty && itemFrameEmpty))
                                     {
                                         ap.itemUseCooldown = 3;
                                         return true;
@@ -485,7 +486,8 @@ public class EntityPlayerActionPack
                     {
                         if (action.limit == 1)
                         {
-                            if (player.onGround()) player.jumpFromGround(); // onGround
+                            if (player.onGround()) player.jumpFromGround();
+                            else if (!player.onClimbable()) player.tryToStartFallFlying();
                         }
                         else
                         {

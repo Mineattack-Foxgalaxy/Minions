@@ -1,13 +1,14 @@
 package io.github.skippyall.minions.minion;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
-import eu.pb4.polymer.core.api.item.PolymerItemUtils;
 import io.github.skippyall.minions.gui.MinionLookGui;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
+import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +24,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.function.Consumer;
 
@@ -33,7 +33,7 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     @Override
-    public @Nullable ResourceLocation getPolymerItemModel(ItemStack stack, PacketContext context) {
+    public @Nullable Identifier getPolymerItemModel(ItemStack stack, PacketContext context, HolderLookup.Provider lookup) {
         return null;
     }
 
@@ -43,8 +43,8 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     @Override
-    public ItemStack getPolymerItemStack(ItemStack stack, TooltipFlag tooltipType, PacketContext player) {
-        ItemStack out = PolymerItemUtils.createItemStack(stack, tooltipType, player);
+    public ItemStack getPolymerItemStack(ItemStack stack, TooltipFlag tooltipType, PacketContext player, HolderLookup.Provider lookup) {
+        ItemStack out = PolymerItem.super.getPolymerItemStack(stack, tooltipType, player, lookup);
         out.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
         return out;
     }
@@ -70,7 +70,7 @@ public class MinionItem extends Item implements PolymerItem {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if(!context.getLevel().isClientSide) {
+        if(!context.getLevel().isClientSide()) {
             MinionData data = getDataOrDefault(context.getLevel().getServer(), context.getItemInHand());
             MinionFakePlayer.spawnMinion(data, (ServerLevel) context.getLevel(), context.getClickedPos().getCenter().add(0,0.5,0), new Vec2(0, 0));
         }

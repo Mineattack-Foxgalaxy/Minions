@@ -3,6 +3,7 @@ package io.github.skippyall.minions.minion.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
+import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.gui.minion.MinionGui;
 import io.github.skippyall.minions.listener.SerializableListenerManager;
 import io.github.skippyall.minions.minion.MinionData;
@@ -15,6 +16,7 @@ import io.github.skippyall.minions.module.ModuleInventory;
 import io.github.skippyall.minions.registration.MinionConfigOptions;
 import io.github.skippyall.minions.registration.MinionItems;
 import io.github.skippyall.minions.registration.SpecialAbilities;
+import net.fabricmc.fabric.impl.networking.context.PacketContextImpl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.chat.Component;
@@ -29,6 +31,7 @@ import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -37,18 +40,20 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -82,7 +87,17 @@ public class MinionFakePlayer extends ServerPlayer {
         if(pos != null && rot != null) {
             instance.fixStartingPosition = () -> instance.snapTo(pos.x, pos.y, pos.z, rot.x, rot.y);
         }
-        server.getPlayerList().placeNewPlayer(new FakeClientConnection(PacketFlow.SERVERBOUND), instance, new CommonListenerCookie(profile, 0, instance.clientInformation(), false));
+        FakeClientConnection connection = new FakeClientConnection(PacketFlow.SERVERBOUND);
+        //noinspection UnstableApiUsage
+        connection.getPacketContext().set(PacketContextImpl.REGISTRY_ACCESS, server.registryAccess());
+        //noinspection UnstableApiUsage
+        connection.getPacketContext().set(PacketContextImpl.SERVER_INSTANCE, server);
+        //noinspection UnstableApiUsage
+        connection.getPacketContext().set(PacketContextImpl.GAME_PROFILE, profile);
+
+        server.getPlayerList().placeNewPlayer(connection, instance, new CommonListenerCookie(profile, 0, instance.clientInformation(), false));
+        loadPlayerData(instance);
+        instance.stopRiding(); // otherwise the created fake player will be on the vehicle
         System.out.println(instance.position());
         if(pos != null && rot != null) {
             instance.teleportTo(level, pos.x, pos.y, pos.z, Set.of(), rot.x, rot.y, true);
@@ -100,6 +115,19 @@ public class MinionFakePlayer extends ServerPlayer {
         instance.getAbilities().flying = false;
 
         instance.listeners().forEach(listener -> listener.onMinionSpawn(instance));
+    }
+
+    private static void loadPlayerData(MinionFakePlayer player)
+    {
+        try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(player.problemPath(), Minions.LOGGER))
+        {
+            Optional<ValueInput> optional = player.level().getServer().getPlayerList().loadPlayerData(player.nameAndId()).map((compoundTag) -> TagValueInput.create(scopedCollector, player.registryAccess(), compoundTag));
+            optional.ifPresent( valueInput -> {
+                player.load(valueInput);
+                player.loadAndSpawnEnderPearls(valueInput);
+                player.loadAndSpawnParentVehicle(valueInput);
+            });
+        }
     }
 
     public static MinionFakePlayer respawnFake(MinecraftServer server, ServerLevel level, GameProfile profile, ClientInformation cli)
@@ -153,17 +181,16 @@ public class MinionFakePlayer extends ServerPlayer {
         return canSpawnMobs();
     }
 
+    public MinecraftServer getServer() {
+        return level().getServer();
+    }
+
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if(player instanceof ServerPlayer spe) {
             new MinionGui(spe, this);
         }
         return InteractionResult.CONSUME;
-    }
-
-    @Override
-    public InteractionResult interactAt(Player player, Vec3 hitPos, InteractionHand hand) {
-        return interact(player, hand);
     }
 
     @Override
@@ -213,8 +240,8 @@ public class MinionFakePlayer extends ServerPlayer {
     }
 
     @Override
-    public boolean startRiding(Entity entityToRide, boolean force) {
-        if (super.startRiding(entityToRide, force)) {
+    public boolean startRiding(Entity entityToRide, boolean force, boolean sendEventAndTriggers) {
+        if (super.startRiding(entityToRide, force, sendEventAndTriggers)) {
             // from ClientPacketListener.handleSetEntityPassengersPacket
             if (entityToRide instanceof AbstractBoat) {
                 this.yRotO = entityToRide.getYRot();

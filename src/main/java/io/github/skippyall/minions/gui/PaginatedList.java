@@ -2,12 +2,13 @@ package io.github.skippyall.minions.gui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import java.util.List;
-import java.util.function.BiFunction;
 import net.minecraft.core.IdMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
+
+import java.util.List;
+import java.util.function.BiFunction;
 
 public class PaginatedList extends MinionsGui {
     private int page = 0;
@@ -28,7 +29,7 @@ public class PaginatedList extends MinionsGui {
     protected void open() {
         gui = new SimpleGui(MenuType.GENERIC_9x4, viewer, false) {
             @Override
-            public void onClose() {
+            public void onPlayerClose(boolean success) {
                 onBackingClosed();
             }
         };

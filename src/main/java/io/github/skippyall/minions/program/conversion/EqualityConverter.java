@@ -7,10 +7,10 @@ import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueConverters;
 import io.github.skippyall.minions.registration.ValueTypes;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.network.chat.Component;
 
 public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
     public static final MapCodec<EqualityConverter<?>> CODEC = MinionRegistries.VALUE_TYPES.byNameCodec().dispatchMap(

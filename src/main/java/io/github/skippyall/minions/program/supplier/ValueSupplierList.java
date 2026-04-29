@@ -9,6 +9,7 @@ import io.github.skippyall.minions.program.conversion.Casts;
 import io.github.skippyall.minions.program.conversion.ConverterList;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.value.TypedValue;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import net.minecraft.network.chat.Component;
 
 public class ValueSupplierList<R extends InstructionRuntime<R>> {
     private final Map<Parameter<?>, ValueSupplierEntry<?,R>> arguments = new HashMap<>();

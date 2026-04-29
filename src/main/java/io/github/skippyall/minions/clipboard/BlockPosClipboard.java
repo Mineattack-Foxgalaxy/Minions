@@ -2,7 +2,6 @@ package io.github.skippyall.minions.clipboard;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.Consumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
@@ -10,6 +9,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+
+import java.util.function.Consumer;
 
 public record BlockPosClipboard(ResourceKey<Level> world, BlockPos pos) implements Clipboard {
     public static final MapCodec<BlockPosClipboard> CODEC = RecordCodecBuilder.mapCodec(instance ->

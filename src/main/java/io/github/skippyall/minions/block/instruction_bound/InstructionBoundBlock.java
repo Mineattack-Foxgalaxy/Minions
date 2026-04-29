@@ -7,7 +7,9 @@ import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -30,10 +32,10 @@ public abstract class InstructionBoundBlock extends Block implements EntityBlock
 
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if(stack.get(MinionComponentTypes.REFERENCE) instanceof InstructionClipboard instruction) {
+        if(stack.get(MinionComponentTypes.REFERENCE) instanceof InstructionClipboard instruction && player instanceof ServerPlayer serverPlayer) {
             world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
                 be.setInstruction(instruction.selectedMinion(), instruction.selectedInstruction());
-                player.playNotifySound(SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.BLOCKS, 1, 1);
+                serverPlayer.connection.send(new ClientboundSoundPacket(SoundEvents.NOTE_BLOCK_CHIME, SoundSource.BLOCKS, pos.getX(), pos.getY(), pos.getZ(), 1, 1, 0));
                 stack.shrink(1);
             });
             return InteractionResult.SUCCESS;
@@ -50,7 +52,7 @@ public abstract class InstructionBoundBlock extends Block implements EntityBlock
 
         world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
             String name = MinionPersistentState.get(world.getServer()).getMinionData(be.getMinionUuid()).name();
-            player.displayClientMessage(Component.translatable("minions.reference.instruction.tooltip", name, be.getInstructionName()), true);
+            player.sendSystemMessage(Component.translatable("minions.reference.instruction.tooltip", name, be.getInstructionName()));
         });
         return InteractionResult.SUCCESS;
     }

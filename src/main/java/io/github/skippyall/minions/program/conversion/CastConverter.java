@@ -9,10 +9,10 @@ import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueConverters;
 import io.github.skippyall.minions.util.TranslationUtil;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.network.chat.Component;
 
 public class CastConverter<F,T> implements ValueConverter<F,T> {
     private static final MapCodec<CastConverter<?,?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(

@@ -44,7 +44,7 @@ public class ConverterGui extends MinionsGui {
     protected void open() {
         gui = new SimpleGui(MenuType.GENERIC_3x3, viewer, false) {
             @Override
-            public void onClose() {
+            public void onPlayerClose(boolean success) {
                 onBackingClosed();
             }
         };
@@ -54,11 +54,6 @@ public class ConverterGui extends MinionsGui {
         updateTypeDisplay();
         updateConverterDisplay();
 
-        gui.open();
-    }
-
-    @Override
-    protected void reopen() {
         gui.open();
     }
 

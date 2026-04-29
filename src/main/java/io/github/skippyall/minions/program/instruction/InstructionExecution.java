@@ -3,7 +3,6 @@ package io.github.skippyall.minions.program.instruction;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 

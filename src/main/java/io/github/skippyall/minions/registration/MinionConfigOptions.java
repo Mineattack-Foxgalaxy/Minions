@@ -3,7 +3,7 @@ package io.github.skippyall.minions.registration;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.MinionConfig;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import static io.github.skippyall.minions.minion.MinionConfig.booleanOption;
 
@@ -20,8 +20,8 @@ public class MinionConfigOptions {
         return Registry.register(MinionRegistries.MINION_CONFIG_OPTIONS, option.key(), option);
     }
 
-    private static ResourceLocation id(String name) {
-        return ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, name);
+    private static Identifier id(String name) {
+        return Identifier.fromNamespaceAndPath(Minions.MOD_ID, name);
     }
 
     public static void register() {}

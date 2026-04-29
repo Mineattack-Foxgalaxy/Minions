@@ -6,15 +6,15 @@ import io.github.skippyall.minions.gui.Displayable;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.minion.SimpleMinionsGui;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.Items;
 
 public class ChoiceInput {
     public static <T> BiFunction<ServerPlayer, T, CompletableFuture<T>> createDialogOpener(MenuType<?> screen, Component title, Function<T, GuiDisplay> displayFunction, T[] values, @Nullable T fallback) {
@@ -23,7 +23,7 @@ public class ChoiceInput {
 
             SimpleGui gui = new SimpleGui(screen, player, false) {
                 @Override
-                public void onClose() {
+                public void onPlayerClose(boolean success) {
                     if(fallback == null) {
                         future.cancel(false);
                     } else {
@@ -53,7 +53,7 @@ public class ChoiceInput {
 
         SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, player, false) {
             @Override
-            public void onClose() {
+            public void onPlayerClose(boolean success) {
                 future.cancel(false);
             }
         };
@@ -80,7 +80,7 @@ public class ChoiceInput {
         new SimpleMinionsGui(parent, (onClose, me) -> {
             SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, parent.getViewer(), false) {
                 @Override
-                public void onClose() {
+                public void onPlayerClose(boolean success) {
                     future.cancel(false);
                     onClose.run();
                 }

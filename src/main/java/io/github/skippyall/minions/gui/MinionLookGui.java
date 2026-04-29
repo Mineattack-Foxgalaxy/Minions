@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.gui;
 
+import com.mojang.authlib.GameProfile;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.input.TextInput;
@@ -9,7 +10,7 @@ import io.github.skippyall.minions.minion.MinionProfileUtils;
 import io.github.skippyall.minions.minion.skin.SkinProvider;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.SkinProviders;
-import java.util.Optional;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +18,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
+
+import java.util.Optional;
 
 public class MinionLookGui extends SimpleGui {
     private ItemStack minionItem;
@@ -47,11 +50,11 @@ public class MinionLookGui extends SimpleGui {
     private void updateSkin() {
         GuiElementBuilder builder = new GuiElementBuilder()
                 .setItem(Items.PLAYER_HEAD)
-                .setCallback(() -> currentSkinProvider.openSkinMenu(player).thenAccept(skin -> {
-                    MinionItem.setData(player.getServer(), getData().withSkin(skin), minionItem);
-                }));
-        if(MinionItem.getData(player.getServer(), minionItem) != null && MinionItem.getData(player.getServer(), minionItem).skin().isPresent()) {
-            builder.setComponent(DataComponents.PROFILE, new ResolvableProfile(Optional.empty(), Optional.empty(), getData().skin().get()));
+                .setCallback(() -> currentSkinProvider.openSkinMenu(player)
+                        .thenCompose(profile -> profile.resolveProfile(player.level().getServer().services().profileResolver()))
+                        .thenAccept(skin -> MinionItem.setData(player.level().getServer(), getData().withSkin(Optional.of(skin.properties())), minionItem)));
+        if(MinionItem.getData(player.level().getServer(), minionItem) != null && MinionItem.getData(player.level().getServer(), minionItem).skin().isPresent()) {
+            builder.setComponent(DataComponents.PROFILE, ResolvableProfile.createResolved(new GameProfile(FakePlayer.DEFAULT_UUID, "", getData().skin().get())));
         }
         setSlot(16, builder);
     }
@@ -76,7 +79,7 @@ public class MinionLookGui extends SimpleGui {
     }
 
     private MinionData getData() {
-        return MinionItem.getDataOrDefault(player.getServer(), minionItem);
+        return MinionItem.getDataOrDefault(player.level().getServer(), minionItem);
     }
 
     public static void open(ServerPlayer player, ItemStack minionItem) {
@@ -86,9 +89,9 @@ public class MinionLookGui extends SimpleGui {
     }
 
     public void openRenameGui(ServerPlayer player, ItemStack minionItem) {
-        TextInput.inputSync(player, Component.translatable("minions.gui.look.rename.title"), "Minion", name -> MinionProfileUtils.checkMinionNameWithoutPrefix(player.getServer(), name))
+        TextInput.inputSync(player, Component.translatable("minions.gui.look.rename.title"), "Minion", name -> MinionProfileUtils.checkMinionNameWithoutPrefix(player.level().getServer(), name))
                 .thenAccept(name -> {
-                    MinionItem.setData(player.getServer(), getData().withName(MinionProfileUtils.getPrefix() + name), minionItem);
+                    MinionItem.setData(player.level().getServer(), getData().withName(MinionProfileUtils.getPrefix() + name), minionItem);
                     open();
                 });
     }

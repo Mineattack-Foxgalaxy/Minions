@@ -1,14 +1,14 @@
 package io.github.skippyall.minions.mixins;
 
 import io.github.skippyall.minions.mixinhelper.EntityViewMixinHelper;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.EntityGetter;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.util.function.Predicate;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.EntityGetter;
 
 @Mixin(EntityGetter.class)
 public interface EntityGetterMixin {

@@ -4,13 +4,13 @@ import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.value.ValueType;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
-import net.minecraft.network.chat.Component;
 
 public class ConverterList {
     public static final Codec<ConverterList> CODEC = ValueConverter.CODEC.listOf().xmap(ConverterList::new, l -> l.converters);

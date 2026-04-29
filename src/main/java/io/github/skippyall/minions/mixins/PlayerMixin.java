@@ -16,7 +16,7 @@ public abstract class PlayerMixin {
      * To make sure player attacks are able to knockback fake players
      */
     @ModifyExpressionValue(
-            method = "attack",
+            method = "causeExtraKnockback",
             at = @At(
                     value = "FIELD",
                     target = "Lnet/minecraft/world/entity/Entity;hurtMarked:Z",

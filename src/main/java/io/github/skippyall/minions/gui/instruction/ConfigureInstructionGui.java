@@ -13,6 +13,7 @@ import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.inventory.MenuType;
@@ -42,7 +43,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
     protected void open() {
         gui = new SimpleGui(MenuType.GENERIC_9x3, viewer, false) {
             @Override
-            public void onClose() {
+            public void onPlayerClose(boolean success) {
                 onBackingClosed();
             }
         };
@@ -75,7 +76,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
                 .addLoreLine(Component.translatable("minions.gui.instruction.configure.copy.description"))
                 .setCallback(() -> {
                     viewer.getInventory().placeItemBackInInventory(ClipboardItem.createInstructionReference(minion, name), true);
-                    viewer.playNotifySound(SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.BLOCKS, 1, 1);
+                    viewer.connection.send(new ClientboundSoundEntityPacket(SoundEvents.NOTE_BLOCK_CHIME, SoundSource.BLOCKS, viewer, 1, 1, 0));
                 })
         );
 

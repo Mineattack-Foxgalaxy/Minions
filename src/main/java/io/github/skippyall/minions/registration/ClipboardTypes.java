@@ -6,11 +6,11 @@ import io.github.skippyall.minions.clipboard.BlockPosClipboard;
 import io.github.skippyall.minions.clipboard.Clipboard;
 import io.github.skippyall.minions.clipboard.InstructionClipboard;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ClipboardTypes {
     private static void register(String id, MapCodec<? extends Clipboard> codec) {
-        Registry.register(MinionRegistries.CLIPBOARD_TYPES, ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, id), codec);
+        Registry.register(MinionRegistries.CLIPBOARD_TYPES, Identifier.fromNamespaceAndPath(Minions.MOD_ID, id), codec);
     }
 
     static void register() {

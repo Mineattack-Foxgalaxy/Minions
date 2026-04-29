@@ -5,7 +5,7 @@ import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.minion.skin.Base64SkinProvider;
 import io.github.skippyall.minions.registration.MinionConfigOptions;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,7 +29,7 @@ public class MinecraftServerMixin {
     }
 
     @Inject(method = "handleCustomClickAction", at = @At("HEAD"), cancellable = true)
-    private void onCustomClickAction(ResourceLocation id, Optional<Tag> payload, CallbackInfo ci) {
+    private void onCustomClickAction(Identifier id, Optional<Tag> payload, CallbackInfo ci) {
         if(id.equals(Base64SkinProvider.CUSTOM_DIALOG_ACTION)) {
             Base64SkinProvider.onCustomDialogAction(payload);
             ci.cancel();

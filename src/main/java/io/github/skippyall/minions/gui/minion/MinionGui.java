@@ -31,7 +31,7 @@ public class MinionGui extends MinionsGui implements MinionListener {
     protected void open() {
         gui = new SimpleGui(MenuType.GENERIC_3x3, viewer, false) {
             @Override
-            public void onClose() {
+            public void onPlayerClose(boolean success) {
                 onBackingClosed();
             }
         };
@@ -62,11 +62,6 @@ public class MinionGui extends MinionsGui implements MinionListener {
                 .setName(Component.translatable("minions.gui.main.pickup"))
                 .setCallback(() -> minion.kill(minion.level()))
         );
-        gui.open();
-    }
-
-    @Override
-    protected void reopen() {
         gui.open();
     }
 

@@ -3,10 +3,11 @@ package io.github.skippyall.minions.program.instruction;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import net.minecraft.world.level.storage.ValueInput;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
-import net.minecraft.world.level.storage.ValueInput;
 
 /**
  * Defines the semantics of an instruction and creates {@link InstructionExecution}

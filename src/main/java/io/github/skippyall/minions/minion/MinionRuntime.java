@@ -8,13 +8,14 @@ import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import io.github.skippyall.minions.registration.MinionRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.core.Registry;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 
 public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
     private final MinionFakePlayer minion;
@@ -115,7 +116,7 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
         for (ValueInput inner : list) {
             Optional<String> name = inner.getString("name");
             if(name.isEmpty()) {
-                Minions.LOGGER.error("Tried deserializing configured instruction without a name of minion \"{}\":", minion.getGameProfile().getName());
+                Minions.LOGGER.error("Tried deserializing configured instruction without a name of minion \"{}\":", minion.getGameProfile().name());
                 continue;
             }
 
@@ -123,7 +124,7 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
                 ConfiguredInstruction<MinionRuntime> instruction = ConfiguredInstruction.load(inner, this);
                 configuredInstructions.put(name.get(), instruction);
             } catch (Exception e) {
-                Minions.LOGGER.error("Could not deserialize configured instruction \"{}\" of minion \"{}\":", name.get(), minion.getGameProfile().getName(), e);
+                Minions.LOGGER.error("Could not deserialize configured instruction \"{}\" of minion \"{}\":", name.get(), minion.getGameProfile().name(), e);
             }
         }
     }

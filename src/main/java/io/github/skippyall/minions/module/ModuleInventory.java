@@ -4,9 +4,6 @@ import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
@@ -15,6 +12,10 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ModuleInventory extends SimpleContainer {
     private final Set<MinionModule> modules = new HashSet<>();

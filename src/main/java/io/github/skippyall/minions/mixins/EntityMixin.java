@@ -22,6 +22,6 @@ public abstract class EntityMixin {
     @Inject(method = "isLocalInstanceAuthoritative", at = @At("HEAD"), cancellable = true)
     private void isFakePlayer(CallbackInfoReturnable<Boolean> cir)
     {
-        if (getControllingPassenger() instanceof MinionFakePlayer) cir.setReturnValue(!level.isClientSide);
+        if (getControllingPassenger() instanceof MinionFakePlayer) cir.setReturnValue(!level.isClientSide());
     }
 }

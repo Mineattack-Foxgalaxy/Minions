@@ -4,13 +4,13 @@ import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.module.MobSpawningAbility;
 import io.github.skippyall.minions.module.SpecialAbility;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class SpecialAbilities {
     public static final MobSpawningAbility MOB_SPAWNING = register("mob_spawning", new MobSpawningAbility());
 
     private static <T extends SpecialAbility> T register(String name, T type) {
-        Registry.register(MinionRegistries.SPECIAL_ABILITIES, ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, name), type);
+        Registry.register(MinionRegistries.SPECIAL_ABILITIES, Identifier.fromNamespaceAndPath(Minions.MOD_ID, name), type);
         return type;
     }
 

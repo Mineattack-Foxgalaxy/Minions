@@ -11,10 +11,11 @@ import io.github.skippyall.minions.program.instruction.ConfiguredInstructionList
 import io.github.skippyall.minions.registration.MinionBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -82,8 +83,8 @@ public class MinionTriggerMinionListener extends BlockEntityMinionInstructionLis
     }
 
     @Override
-    public Optional<ResourceLocation> getCodecId() {
-        return Optional.of(ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger"));
+    public Optional<Identifier> getCodecId() {
+        return Optional.of(Identifier.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger"));
     }
 
     public void updateComparatorsIfLoaded(MinecraftServer server) {

@@ -9,13 +9,14 @@ import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
+import net.minecraft.server.permissions.Permissions;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
 public class SpawnSubcommand {
     public static final LiteralArgumentBuilder<CommandSourceStack> SPAWN = literal("spawn")
-            .requires(source -> source.hasPermission(2))
+            .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
             .then(argument("minion", StringArgumentType.word())
                     .suggests(MinionArgument.SUGGESTION_PROVIDER)
                     .then(argument("pos", Vec3Argument.vec3())

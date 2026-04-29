@@ -8,7 +8,7 @@ import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
@@ -93,7 +93,7 @@ public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
         AbstractContainerMenu screenHandler = getScreen(minion, screen);
         ItemStack previousCursor = screenHandler.getCarried();
         screenHandler.setCarried(cursor);
-        screenHandler.clicked(slotIndex, 0, ClickType.SWAP, minion);
+        screenHandler.clicked(slotIndex, 0, ContainerInput.SWAP, minion);
         cursor = screenHandler.getCarried();
         screenHandler.setCarried(previousCursor);
     }

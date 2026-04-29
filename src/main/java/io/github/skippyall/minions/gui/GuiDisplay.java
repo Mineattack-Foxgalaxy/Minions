@@ -1,41 +1,42 @@
 package io.github.skippyall.minions.gui;
 
-import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
 import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
-import java.util.Optional;
-import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.component.TooltipDisplay;
 
+import java.util.UUID;
+
 public interface GuiDisplay {
     Codec<GuiDisplay> CODEC = MinionRegistries.GUI_DISPLAY_TYPE.byNameCodec().dispatch(GuiDisplay::getCodec, codec -> codec.fieldOf("data"));
     GuiDisplay DEFAULT_DISPLAY = new ItemBased(Items.BARRIER);
 
-    static GuiDisplay getGuiDisplay(ResourceLocation id, RegistryAccess manager) {
+    static GuiDisplay getGuiDisplay(Identifier id, RegistryAccess manager) {
         return manager.lookup(MinionRegistries.GUI_DISPLAY).map(registry -> registry.getValue(id)).orElse(DEFAULT_DISPLAY);
     }
 
     static <T> GuiDisplay getGuiDisplayFor(Registry<T> registry, T element, RegistryAccess manager) {
-        ResourceLocation elementId = registry.getKey(element);
+        Identifier elementId = registry.getKey(element);
         if(elementId == null) {
             return DEFAULT_DISPLAY;
         }
-        ResourceLocation displayId = elementId.withPrefix(registry.key().location().getPath() + "/");
+        Identifier displayId = elementId.withPrefix(registry.key().identifier().getPath() + "/");
 
         return getGuiDisplay(displayId, manager);
     }
@@ -50,24 +51,29 @@ public interface GuiDisplay {
         return stack;
     }
 
-    ItemStack createItemStack();
+    ItemStackTemplate createItemStackTemplate();
+
+    default ItemStack createItemStack() {
+        return createItemStackTemplate().create();
+    }
 
     Codec<? extends GuiDisplay> getCodec();
 
     class ModelBased implements GuiDisplay {
-        public static final Codec<ModelBased> CODEC = ResourceLocation.CODEC.xmap(ModelBased::new, display -> display.model);
+        public static final Codec<ModelBased> CODEC = Identifier.CODEC.xmap(ModelBased::new, display -> display.model);
 
-        private final ResourceLocation model;
+        private final Identifier model;
 
-        public ModelBased(ResourceLocation model) {
+        public ModelBased(Identifier model) {
             this.model = model;
         }
 
         @Override
-        public ItemStack createItemStack() {
-            ItemStack stack = new ItemStack(Items.BARRIER);
-            stack.set(DataComponents.ITEM_MODEL, model);
-            return stack;
+        public ItemStackTemplate createItemStackTemplate() {
+            return new ItemStackTemplate(Items.BARRIER, DataComponentPatch.builder()
+                    .set(DataComponents.ITEM_MODEL, model)
+                    .build()
+            );
         }
 
         @Override
@@ -86,11 +92,11 @@ public interface GuiDisplay {
         }
 
         @Override
-        public ItemStack createItemStack() {
-            ItemStack stack = new ItemStack(item);
-            stack.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, ReferenceSortedSets.emptySet()));
-            stack.set(DataComponents.RARITY, Rarity.COMMON);
-            return stack;
+        public ItemStackTemplate createItemStackTemplate() {
+            return new ItemStackTemplate(item, DataComponentPatch.builder()
+                    .set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, ReferenceSortedSets.emptySet()))
+                    .set(DataComponents.RARITY, Rarity.COMMON)
+                    .build());
         }
 
         @Override
@@ -109,10 +115,11 @@ public interface GuiDisplay {
         }
 
         @Override
-        public ItemStack createItemStack() {
-            ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
-            stack.set(DataComponents.PROFILE, new ResolvableProfile(Optional.empty(), Optional.of(uuid), new PropertyMap()));
-            return stack;
+        public ItemStackTemplate createItemStackTemplate() {
+            return new ItemStackTemplate(Items.PLAYER_HEAD, DataComponentPatch.builder()
+                    .set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(uuid))
+                    .build()
+            );
         }
 
         @Override
@@ -122,17 +129,17 @@ public interface GuiDisplay {
     }
 
     class StackBased implements GuiDisplay {
-        public static final Codec<StackBased> CODEC = ItemStack.CODEC.xmap(StackBased::new, StackBased::createItemStack);
+        public static final Codec<StackBased> CODEC = ItemStackTemplate.CODEC.xmap(StackBased::new, StackBased::createItemStackTemplate);
 
-        private final ItemStack stack;
+        private final ItemStackTemplate template;
 
-        public StackBased(ItemStack stack) {
-            this.stack = stack;
+        public StackBased(ItemStackTemplate template) {
+            this.template = template;
         }
 
         @Override
-        public ItemStack createItemStack() {
-            return stack;
+        public ItemStackTemplate createItemStackTemplate() {
+            return template;
         }
 
         @Override

@@ -1,3 +1,4 @@
+//code from https://github.com/gnembon/fabric-carpet
 package io.github.skippyall.minions.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
@@ -22,7 +23,7 @@ public abstract class TickRateManagerMixin {
 
         return !isActualPlayer(entity) && // not carrying players
                 ((EntityAccessor) entity)
-                        .minions$streamIntoPassengers()
+                        .minions$getIndirectPassengersStream()
                         .noneMatch(TickRateManagerMixin::isActualPlayer);
     }
 

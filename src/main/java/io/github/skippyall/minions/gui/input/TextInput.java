@@ -4,12 +4,13 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.minion.SimpleMinionsGui;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.Items;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class TextInput<T> extends AnvilInputGui {
     private final GuiElementBuilder valid = new GuiElementBuilder()
@@ -104,7 +105,7 @@ public class TextInput<T> extends AnvilInputGui {
     }
 
     @Override
-    public void onClose() {
+    public void onPlayerClose(boolean success) {
         if(!future.isDone() && !isConfirm) {
             future.cancel(false);
         }

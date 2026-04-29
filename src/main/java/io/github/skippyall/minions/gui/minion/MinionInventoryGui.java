@@ -29,7 +29,7 @@ public class MinionInventoryGui extends MinionsGui {
     protected void open() {
         gui = new SimpleGui(MenuType.GENERIC_9x6, viewer, false) {
             @Override
-            public void onClose() {
+            public void onPlayerClose(boolean success) {
                 onBackingClosed();
             }
         };
@@ -45,18 +45,18 @@ public class MinionInventoryGui extends MinionsGui {
         gui.setSlot(5, new ItemStack(Items.LEATHER_BOOTS));
         gui.setSlot(6, new ItemStack(Items.SHIELD));
 
-        gui.setSlotRedirect(2 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.HEAD, EquipmentSlot.HEAD.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
-        gui.setSlotRedirect(3 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.CHEST, EquipmentSlot.CHEST.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
-        gui.setSlotRedirect(4 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.LEGS, EquipmentSlot.LEGS.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
-        gui.setSlotRedirect(5 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.FEET, EquipmentSlot.FEET.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
-        gui.setSlotRedirect(6 + 9, new Slot(minion.getInventory(), Inventory.SLOT_OFFHAND, 0, 0));
+        gui.setSlot(2 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.HEAD, EquipmentSlot.HEAD.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
+        gui.setSlot(3 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.CHEST, EquipmentSlot.CHEST.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
+        gui.setSlot(4 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.LEGS, EquipmentSlot.LEGS.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
+        gui.setSlot(5 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.FEET, EquipmentSlot.FEET.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
+        gui.setSlot(6 + 9, new Slot(minion.getInventory(), Inventory.SLOT_OFFHAND, 0, 0));
 
         for (int i = Inventory.SELECTION_SIZE; i < Inventory.INVENTORY_SIZE; i++) {
-            gui.setSlotRedirect(i + 9, new Slot(minion.getInventory(), i, 0, 0));
+            gui.setSlot(i + 9, new Slot(minion.getInventory(), i, 0, 0));
         }
 
         for (int i = 0; i < Inventory.SELECTION_SIZE; i++) {
-            gui.setSlotRedirect(i + 45, new Slot(minion.getInventory(), i, 0, 0));
+            gui.setSlot(i + 45, new Slot(minion.getInventory(), i, 0, 0));
         }
         gui.open();
     }

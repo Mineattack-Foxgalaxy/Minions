@@ -35,30 +35,35 @@ public abstract class MinionsGui {
             return;
         }
 
-        close();
+        close(true);
     }
 
     public void close() {
+        close(false);
+    }
+
+    public void close(boolean alreadyClosed) {
         if(open) {
             if(parent != null) {
                 parent.child = null;
-                parent.reopen();
+                //parent.reopen();
             }
-            closeNoOpen(parent == null);
+            closeNoOpen(alreadyClosed);
         }
     }
 
     private void closeNoOpen(boolean closeBacking) {
-        if(child != null) {
+        open = false;
+        boolean hasChild = child != null;
+        if(hasChild) {
             child.closeNoOpen(closeBacking);
         }
         if(parent != null) {
             parent.child = null;
         }
-        if(closeBacking) {
+        if(closeBacking && !hasChild) {
             closeBacking();
         }
-        open = false;
     }
 
     protected abstract void closeBacking();

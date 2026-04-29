@@ -4,13 +4,14 @@ import io.github.skippyall.minions.listener.BlockEntityMinionListener;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
-import java.util.Optional;
-import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionListener<?>> extends BlockEntity {
     protected UUID minionUuid;

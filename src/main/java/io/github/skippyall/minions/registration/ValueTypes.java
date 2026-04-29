@@ -6,10 +6,11 @@ import io.github.skippyall.minions.gui.input.TextInput;
 import io.github.skippyall.minions.minion.program.instruction.move.TurnDirection;
 import io.github.skippyall.minions.program.value.SimpleValueType;
 import io.github.skippyall.minions.program.value.ValueType;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+
+import java.util.concurrent.CompletableFuture;
 
 public class ValueTypes {
     public static ValueType<Long> LONG = register(
@@ -85,7 +86,7 @@ public class ValueTypes {
             String id,
             T type
     ) {
-        ResourceLocation identifier = ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, id);
+        Identifier identifier = Identifier.fromNamespaceAndPath(Minions.MOD_ID, id);
         Registry.register(
                 MinionRegistries.VALUE_TYPES,
                 identifier,

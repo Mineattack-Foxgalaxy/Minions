@@ -18,16 +18,16 @@ import io.github.skippyall.minions.program.supplier.ValueSupplier;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.NoSuchElementException;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.NoSuchElementException;
+import java.util.concurrent.CompletableFuture;
 
 public class InstructionGui {
     public static MinionsGui openInstructionMainMenu(MinionsGui parent, GuiContext.Minion context) {
@@ -36,7 +36,7 @@ public class InstructionGui {
 
             SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, player, false) {
                 @Override
-                public void onClose() {
+                public void onPlayerClose(boolean success) {
                     onClose.run();
                 }
             };
@@ -103,7 +103,7 @@ public class InstructionGui {
         new SimpleMinionsGui(parent, (closeHandler, me) -> {
             SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x3, viewer, false) {
                 @Override
-                public void onClose() {
+                public void onPlayerClose(boolean success) {
                     if (!future.isDone()) {
                         future.cancel(false);
                     }
@@ -136,7 +136,7 @@ public class InstructionGui {
         new SimpleMinionsGui(parent, (closeHandler, me) -> {
             SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x3, parent.getViewer(), false) {
                 @Override
-                public void onClose() {
+                public void onPlayerClose(boolean success) {
                     if (!future.isDone()) {
                         future.cancel(false);
                     }

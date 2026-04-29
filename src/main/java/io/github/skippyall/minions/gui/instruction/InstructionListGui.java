@@ -35,17 +35,12 @@ public class InstructionListGui extends MinionsGui implements MinionListener {
         minion.addMinionListener(this);
         gui = new SimpleGui(MenuType.GENERIC_9x3, viewer, false) {
             @Override
-            public void onClose() {
+            public void onPlayerClose(boolean success) {
                 onBackingClosed();
             }
         };
         gui.setTitle(Component.translatable("minions.gui.instruction.title"));
         resetInstructionList();
-        gui.open();
-    }
-
-    @Override
-    protected void reopen() {
         gui.open();
     }
 

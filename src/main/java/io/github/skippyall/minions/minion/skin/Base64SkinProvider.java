@@ -1,20 +1,18 @@
 package io.github.skippyall.minions.minion.skin;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import io.github.skippyall.minions.Minions;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.dialog.ActionButton;
 import net.minecraft.server.dialog.CommonButtonData;
 import net.minecraft.server.dialog.CommonDialogData;
@@ -25,19 +23,26 @@ import net.minecraft.server.dialog.NoticeDialog;
 import net.minecraft.server.dialog.action.CustomAll;
 import net.minecraft.server.dialog.input.TextInput;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.component.ResolvableProfile;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class Base64SkinProvider implements SkinProvider {
-    public static final ResourceKey<Dialog> DIALOG = ResourceKey.create(Registries.DIALOG, ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "base_64_input"));
-    public static final ResourceLocation CUSTOM_DIALOG_ACTION = ResourceLocation.fromNamespaceAndPath(Minions.MOD_ID, "base_64_submit");
+    public static final ResourceKey<Dialog> DIALOG = ResourceKey.create(Registries.DIALOG, Identifier.fromNamespaceAndPath(Minions.MOD_ID, "base_64_input"));
+    public static final Identifier CUSTOM_DIALOG_ACTION = Identifier.fromNamespaceAndPath(Minions.MOD_ID, "base_64_submit");
 
     private static long dialogIdCounter = 0;
-    private static Map<Long, CompletableFuture<Optional<PropertyMap>>> futures = new HashMap<>();
+    private static Map<Long, CompletableFuture<ResolvableProfile>> futures = new HashMap<>();
 
     @Override
-    public CompletableFuture<Optional<PropertyMap>> openSkinMenu(ServerPlayer player) {
+    public CompletableFuture<ResolvableProfile> openSkinMenu(ServerPlayer player) {
         dialogIdCounter++;
         player.openDialog(getDialog());
-        CompletableFuture<Optional<PropertyMap>> future = new CompletableFuture<>();
+        CompletableFuture<ResolvableProfile> future = new CompletableFuture<>();
         futures.put(dialogIdCounter, future);
         return future;
     }
@@ -48,10 +53,11 @@ public class Base64SkinProvider implements SkinProvider {
             Optional<String> base64 = compound.getString("base_64");
             if(id.isPresent() && base64.isPresent() && !base64.get().isBlank()) {
                 if(futures.containsKey(id.get())) {
-                    PropertyMap map = new PropertyMap();
-                    map.put("textures", new Property("textures", base64.get().strip()));
+                    PropertyMap map = new PropertyMap(ImmutableMultimap.of(
+                            "textures", new Property("textures", base64.get().strip())
+                    ));
 
-                    futures.get(id.get()).complete(Optional.of(map));
+                    futures.get(id.get()).complete(ResolvableProfile.createResolved(new GameProfile(FakePlayer.DEFAULT_UUID, "", map)));
                     futures.remove(id.get());
                 }
             }
