@@ -45,6 +45,8 @@ public class MinionInventoryGui extends MinionsGui {
         gui.setSlot(5, new ItemStack(Items.LEATHER_BOOTS));
         gui.setSlot(6, new ItemStack(Items.SHIELD));
 
+        gui.setSlot(8, backButton());
+
         gui.setSlot(2 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.HEAD, EquipmentSlot.HEAD.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
         gui.setSlot(3 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.CHEST, EquipmentSlot.CHEST.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));
         gui.setSlot(4 + 9, new ArmorSlot(minion.getInventory(), minion, EquipmentSlot.LEGS, EquipmentSlot.LEGS.getIndex(Inventory.INVENTORY_SIZE), 0, 0, null));

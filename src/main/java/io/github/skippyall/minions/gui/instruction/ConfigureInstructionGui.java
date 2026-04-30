@@ -50,7 +50,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
         
         gui.setTitle(Component.literal(name));
 
-        gui.setSlot(7, new GuiElementBuilder(Items.ANVIL)
+        gui.setSlot(6, new GuiElementBuilder(Items.ANVIL)
                 .setName(Component.translatable("minions.gui.instruction.configure.rename"))
                 .setCallback(() -> InstructionGui.inputInstructionName(this, context, name).thenAccept(newName -> {
                     minion.getInstructionManager().setInstructionName(name, newName);
@@ -58,14 +58,18 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
                 }))
         );
 
-        gui.setSlot(8, new GuiElementBuilder(Items.LAVA_BUCKET)
+        gui.setSlot(7, new GuiElementBuilder(Items.LAVA_BUCKET)
                 .setName(Component.translatable("minions.gui.instruction.configure.delete"))
                 .setCallback(() -> ChoiceInput.confirm(this, Component.translatable("minions.gui.instruction.configure.delete.confirm", name))
-                        .thenAccept(v -> {
-                            minion.getInstructionManager().removeInstruction(name);
-                            close();
+                        .thenAccept((confirmed) -> {
+                            if(confirmed) {
+                                minion.getInstructionManager().removeInstruction(name);
+                                goBack();
+                            }
                         }))
         );
+
+        gui.setSlot(8, backButton());
 
         updateSuppliers();
 

@@ -3,12 +3,12 @@ package io.github.skippyall.minions.gui;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
-import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -21,11 +21,23 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.component.TooltipDisplay;
 
+import java.util.LinkedHashSet;
 import java.util.UUID;
 
 public interface GuiDisplay {
     Codec<GuiDisplay> CODEC = MinionRegistries.GUI_DISPLAY_TYPE.byNameCodec().dispatch(GuiDisplay::getCodec, codec -> codec.fieldOf("data"));
     GuiDisplay DEFAULT_DISPLAY = new ItemBased(Items.BARRIER);
+    TooltipDisplay TOOLTIP_DISPLAY = createTooltipDisplay();
+
+    private static TooltipDisplay createTooltipDisplay() {
+        LinkedHashSet<DataComponentType<?>> set = new LinkedHashSet<>();
+        for(DataComponentType<?> type : BuiltInRegistries.DATA_COMPONENT_TYPE) {
+            if(type != DataComponents.LORE) {
+                set.add(type);
+            }
+        }
+        return new TooltipDisplay(false, set);
+    }
 
     static GuiDisplay getGuiDisplay(Identifier id, RegistryAccess manager) {
         return manager.lookup(MinionRegistries.GUI_DISPLAY).map(registry -> registry.getValue(id)).orElse(DEFAULT_DISPLAY);
@@ -94,7 +106,7 @@ public interface GuiDisplay {
         @Override
         public ItemStackTemplate createItemStackTemplate() {
             return new ItemStackTemplate(item, DataComponentPatch.builder()
-                    .set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, ReferenceSortedSets.emptySet()))
+                    .set(DataComponents.TOOLTIP_DISPLAY, TOOLTIP_DISPLAY)
                     .set(DataComponents.RARITY, Rarity.COMMON)
                     .build());
         }

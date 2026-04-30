@@ -52,7 +52,7 @@ public abstract class InstructionBoundBlock extends Block implements EntityBlock
 
         world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
             String name = MinionPersistentState.get(world.getServer()).getMinionData(be.getMinionUuid()).name();
-            player.sendSystemMessage(Component.translatable("minions.reference.instruction.tooltip", name, be.getInstructionName()));
+            player.sendSystemMessage(Component.translatable("minions.reference.instruction.tooltip", be.getInstructionName(), name));
         });
         return InteractionResult.SUCCESS;
     }

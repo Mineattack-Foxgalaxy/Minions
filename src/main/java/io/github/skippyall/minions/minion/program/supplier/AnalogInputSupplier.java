@@ -87,11 +87,13 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
                 };
                 gui.setTitle(Component.translatable("value_supplier.minions.analog_input"));
 
+                gui.setSlot(2, me.backButton());
                 gui.setSlot(4, new GuiElementBuilder(MinionItems.REFERENCE_ITEM)
                         .setCallback(() -> {
                             ItemStack cursor = parent.getViewer().containerMenu.getCarried();
                             if (cursor.is(MinionItems.REFERENCE_ITEM) && cursor.get(MinionComponentTypes.REFERENCE) instanceof BlockPosClipboard pos) {
                                 future.complete(new AnalogInputSupplier(pos.world(), pos.pos()));
+                                me.goBack();
                             }
                         })
                         .setItemName(Component.translatable("value_supplier.minions.analog_input.config.click_with_reference"))

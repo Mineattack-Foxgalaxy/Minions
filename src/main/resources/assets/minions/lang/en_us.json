@@ -74,6 +74,8 @@
 
   "instruction.minions.walk": "Walk",
   "instruction.minions.walk.description": "Walk forward a specified amount of blocks",
+  "instruction.minions.walk_continuous": "Walk Continuously",
+  "instruction.minions.walk_continuous.description": "Walk forward until the instruction is stopped",
   "instruction.minions.turn": "Turn",
   "instruction.minions.turn.description": "Turn the head by specific angle",
   "instruction.minions.attack": "Attack",
@@ -81,6 +83,9 @@
   "instruction.minions.use": "Use",
   "instruction.minions.use.description": "Use and place blocks",
   "instruction.minions.swap_item": "Swap Items",
+  "instruction.minions.swap_item.description": "Swap the items of two slots",
+  "instruction.minions.turn_vector": "Turn (Vector)",
+  "instruction.minions.turn_vector.description": "Turn the head so that it faces a block with specific cardinal offsets",
 
   "value_type.minions.long": "Integer",
   "value_type.minions.double": "Decimal",

@@ -28,7 +28,9 @@ public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionLis
     public void removeListener() {
         if(level instanceof ServerLevel serverWorld) {
             L listener = getListener();
-            listener.remove(serverWorld.getServer());
+            if(listener != null) {
+                listener.remove(serverWorld.getServer());
+            }
         }
     }
 

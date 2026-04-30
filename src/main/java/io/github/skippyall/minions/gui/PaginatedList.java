@@ -27,13 +27,15 @@ public class PaginatedList extends MinionsGui {
 
     @Override
     protected void open() {
-        gui = new SimpleGui(MenuType.GENERIC_9x4, viewer, false) {
+        gui = new SimpleGui(MenuType.GENERIC_9x6, viewer, false) {
             @Override
             public void onPlayerClose(boolean success) {
                 onBackingClosed();
             }
         };
         gui.setTitle(title);
+
+        gui.setSlot(8, backButton());
         addItems();
         gui.open();
     }
@@ -52,12 +54,14 @@ public class PaginatedList extends MinionsGui {
     }
 
     private void addItems() {
-        for(int i = 27 * page; i < Math.min(27 * (page + 1), size); i++) {
-            gui.addSlot(display.apply(i, this));
+        int slot = 9;
+        for(int i = 36 * page; i < Math.min(36 * (page + 1), size); i++) {
+            gui.setSlot(slot, display.apply(i, this));
+            slot++;
         }
 
         if(page > 0) {
-            gui.setSlot(30, new GuiElementBuilder(Items.SPECTRAL_ARROW)
+            gui.setSlot(48, new GuiElementBuilder(Items.SPECTRAL_ARROW)
                     .setItemName(Component.translatable("book.page_button.previous"))
                     .setCallback(() -> {
                         page--;
@@ -65,11 +69,11 @@ public class PaginatedList extends MinionsGui {
                     })
             );
         } else {
-            gui.clearSlot(30);
+            gui.clearSlot(48);
         }
 
         if(27 * (page + 1) < size) {
-            gui.setSlot(32, new GuiElementBuilder(Items.ARROW)
+            gui.setSlot(50, new GuiElementBuilder(Items.ARROW)
                     .setItemName(Component.translatable("book.page_button.next"))
                     .setCallback(() -> {
                         page++;
@@ -77,7 +81,7 @@ public class PaginatedList extends MinionsGui {
                     })
             );
         } else {
-            gui.clearSlot(32);
+            gui.clearSlot(50);
         }
     }
 }

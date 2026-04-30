@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class ArgumentGui extends MinionsGui {
     private final GuiContext.ValueSupplier context;
-    private final MinionFakePlayer minion;
     private final ConfiguredInstruction<MinionRuntime> instruction;
     private final Parameter<?> parameter;
 
@@ -34,7 +33,6 @@ public class ArgumentGui extends MinionsGui {
 
     public ArgumentGui(MinionsGui parent, GuiContext.ValueSupplier context) {
         super(parent);
-        minion = context.getMinion();
         instruction = context.getInstruction();
         this.parameter = context.getParameter();
         this.context = context;
@@ -71,6 +69,8 @@ public class ArgumentGui extends MinionsGui {
                 Component.translatable(TranslationUtil.getTranslationKey(parameter.type(), MinionRegistries.VALUE_TYPES))
         ));
 
+        gui.setSlot(2, backButton());
+
         updateTypeConfiguration();
         updateArgumentConfiguration();
         updateConverterConfiguration();
@@ -102,12 +102,7 @@ public class ArgumentGui extends MinionsGui {
                     .setName(Component.translatable("minions.gui.instruction.argument.configure.data"))
                     .addLoreLine(getArgument() != null ? getArgument().getDisplayText() : Component.translatable("minions.gui.not_set"))
                     .setCallback(() -> argumentType.openConfiguration(this, parameter.type(), getArgument())
-                            .thenAccept(newArgument -> {
-                                setArgument(newArgument);
-                                if(child != null) {
-                                    child.close();
-                                }
-                            })
+                            .thenAccept(this::setArgument)
                     )
             );
         }
@@ -149,7 +144,7 @@ public class ArgumentGui extends MinionsGui {
                 new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_SUPPLIER_TYPES, type, viewer.registryAccess()))
                         .setCallback(() -> {
                             setArgumentType(type);
-                            me.close();
+                            me.goBack();
                         })
         );
     }

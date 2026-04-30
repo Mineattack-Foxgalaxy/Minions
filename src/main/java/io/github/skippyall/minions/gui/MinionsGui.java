@@ -1,6 +1,9 @@
 package io.github.skippyall.minions.gui;
 
+import eu.pb4.sgui.api.elements.GuiElementBuilder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class MinionsGui {
@@ -44,26 +47,29 @@ public abstract class MinionsGui {
 
     public void close(boolean alreadyClosed) {
         if(open) {
-            if(parent != null) {
-                parent.child = null;
-                //parent.reopen();
+            open = false;
+            if(child != null) {
+                child.close(alreadyClosed);
+            } else if(!alreadyClosed) {
+                closeBacking();
             }
-            closeNoOpen(alreadyClosed);
         }
     }
 
-    private void closeNoOpen(boolean closeBacking) {
-        open = false;
-        boolean hasChild = child != null;
-        if(hasChild) {
-            child.closeNoOpen(closeBacking);
-        }
+    public void goBack() {
         if(parent != null) {
+            open = false;
             parent.child = null;
+            parent.reopen();
+        } else {
+            close(false);
         }
-        if(closeBacking && !hasChild) {
-            closeBacking();
-        }
+    }
+
+    public GuiElementBuilder backButton() {
+        return new GuiElementBuilder(Items.MANGROVE_DOOR)
+                .setName(Component.translatable("gui.back"))
+                .setCallback(this::goBack);
     }
 
     protected abstract void closeBacking();

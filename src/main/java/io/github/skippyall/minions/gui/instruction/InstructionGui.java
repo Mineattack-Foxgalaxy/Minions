@@ -30,8 +30,8 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
 public class InstructionGui {
-    public static MinionsGui openInstructionMainMenu(MinionsGui parent, GuiContext.Minion context) {
-        return new SimpleMinionsGui(parent, (onClose, me) -> {
+    public static void openInstructionMainMenu(MinionsGui parent, GuiContext.Minion context) {
+        new SimpleMinionsGui(parent, (onClose, me) -> {
             ServerPlayer player = parent.getViewer();
 
             SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, player, false) {
@@ -42,6 +42,7 @@ public class InstructionGui {
             };
             gui.setTitle(Component.translatable("minions.gui.instruction.title"));
 
+            gui.setSlot(2, me.backButton());
             gui.setSlot(3, new GuiElementBuilder()
                     .setItem(Items.BOOK)
                     .setName(Component.translatable("minions.gui.instruction.list"))
@@ -101,7 +102,7 @@ public class InstructionGui {
         CompletableFuture<InstructionType<MinionRuntime>> future = new CompletableFuture<>();
 
         new SimpleMinionsGui(parent, (closeHandler, me) -> {
-            SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x3, viewer, false) {
+            SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x4, viewer, false) {
                 @Override
                 public void onPlayerClose(boolean success) {
                     if (!future.isDone()) {
@@ -112,11 +113,13 @@ public class InstructionGui {
             };
             gui.setTitle(Component.translatable("minions.gui.instruction.select_instruction"));
 
+            gui.setSlot(8, me.backButton());
+
             for (int i = 0; i < minion.getModuleInventory().getContainerSize(); i++) {
                 ItemStack moduleItem = minion.getModuleInventory().getItem(i);
                 MinionModule module = moduleItem.get(MinionComponentTypes.MODULE);
                 if (module != null && !module.instructions().isEmpty()) {
-                    gui.addSlot(new GuiElementBuilder(moduleItem)
+                    gui.setSlot(i + 9, new GuiElementBuilder(moduleItem)
                             .setCallback(() -> selectInstructionMenu(parent, context, module)
                                     .thenApply(future::complete)
                             )
@@ -134,7 +137,7 @@ public class InstructionGui {
         CompletableFuture<InstructionType<MinionRuntime>> future = new CompletableFuture<>();
 
         new SimpleMinionsGui(parent, (closeHandler, me) -> {
-            SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x3, parent.getViewer(), false) {
+            SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x4, parent.getViewer(), false) {
                 @Override
                 public void onPlayerClose(boolean success) {
                     if (!future.isDone()) {
@@ -145,10 +148,13 @@ public class InstructionGui {
             };
             gui.setTitle(Component.translatable("minions.gui.instruction.select_instruction"));
 
+            gui.setSlot(8, me.backButton());
+            int slot = 9;
             for (InstructionType<MinionRuntime> instructionType : module.instructions()) {
-                gui.addSlot(createInstructionElement(instructionType, parent.getViewer().registryAccess())
+                gui.setSlot(slot, createInstructionElement(instructionType, parent.getViewer().registryAccess())
                         .setCallback(() -> future.complete(instructionType))
                 );
+                slot++;
             }
 
             gui.open();

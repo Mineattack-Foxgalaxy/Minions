@@ -53,6 +53,7 @@ public class ConverterGui extends MinionsGui {
 
         updateTypeDisplay();
         updateConverterDisplay();
+        gui.setSlot(8, backButton());
 
         gui.open();
     }
@@ -101,7 +102,7 @@ public class ConverterGui extends MinionsGui {
                         GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_CONVERTER_TYPES, type, viewer.registryAccess())
                 ).setCallback(() -> {
                     setType(type);
-                    me.close();
+                    me.goBack();
                 })
         );
     }
@@ -109,12 +110,7 @@ public class ConverterGui extends MinionsGui {
     private void configureData() {
         if(valueConverterType != null) {
             valueConverterType.configure(this, from, to, converter)
-                    .thenAccept(newConverter -> {
-                        setConverter(newConverter);
-                        if(child != null) {
-                            child.close();
-                        }
-                    });
+                    .thenAccept(this::setConverter);
         }
     }
 

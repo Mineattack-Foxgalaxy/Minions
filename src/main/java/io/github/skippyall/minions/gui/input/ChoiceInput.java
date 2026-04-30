@@ -74,14 +74,14 @@ public class ChoiceInput {
         return future;
     }
 
-    public static CompletableFuture<Void> confirm(MinionsGui parent, Component title) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
+    public static CompletableFuture<Boolean> confirm(MinionsGui parent, Component title) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         new SimpleMinionsGui(parent, (onClose, me) -> {
             SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, parent.getViewer(), false) {
                 @Override
                 public void onPlayerClose(boolean success) {
-                    future.cancel(false);
+                    future.complete(false);
                     onClose.run();
                 }
             };
@@ -90,12 +90,18 @@ public class ChoiceInput {
 
             gui.setSlot(3, new GuiElementBuilder(Items.REDSTONE_BLOCK)
                     .setName(Component.translatable("minions.gui.abort"))
-                    .setCallback(() -> future.cancel(false))
+                    .setCallback(() -> {
+                        future.complete(false);
+                        me.goBack();
+                    })
             );
 
             gui.setSlot(5, new GuiElementBuilder(Items.EMERALD_BLOCK)
                     .setName(Component.translatable("minions.gui.confirm"))
-                    .setCallback(() -> future.complete(null))
+                    .setCallback(() -> {
+                        future.complete(true);
+                        me.goBack();
+                    })
             );
 
             gui.open();

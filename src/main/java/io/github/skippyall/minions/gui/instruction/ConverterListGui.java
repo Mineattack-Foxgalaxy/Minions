@@ -61,6 +61,8 @@ public class ConverterListGui extends MinionsGui {
                 })
         );
 
+        gui.setSlot(8, backButton());
+
         gui.open();
     }
 

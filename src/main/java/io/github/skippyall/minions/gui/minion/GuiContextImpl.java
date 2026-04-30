@@ -23,7 +23,7 @@ public class GuiContextImpl implements GuiContext {
         private final MinionFakePlayer minion;
 
         public MinionImpl(GuiContext context, MinionFakePlayer minion) {
-            super(context);
+            super(context instanceof DelegatingGuiContextImpl<?> impl ? impl.context : context);
             this.minion = minion;
         }
 
@@ -38,7 +38,7 @@ public class GuiContextImpl implements GuiContext {
         private String name;
 
         public InstructionImpl(GuiContext.Minion context, ConfiguredInstruction<MinionRuntime> instruction, String name) {
-            super(context);
+            super(context instanceof DelegatingMinionImpl<?> impl ? impl.context : context);
             this.instruction = instruction;
             this.name = name;
         }
@@ -63,7 +63,7 @@ public class GuiContextImpl implements GuiContext {
         private final Parameter<?> parameter;
 
         public ValueSupplierImpl(GuiContext.Instruction context, Parameter<?> parameter) {
-            super(context);
+            super(context instanceof DelegatingInstructionImpl<?> impl ? impl.context : context);
             this.parameter = parameter;
         }
 

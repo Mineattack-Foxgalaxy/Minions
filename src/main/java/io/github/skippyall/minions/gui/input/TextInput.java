@@ -53,9 +53,12 @@ public class TextInput<T> extends AnvilInputGui {
         CompletableFuture<T> future = new CompletableFuture<>();
         new SimpleMinionsGui(gui, (onClose, me) -> {
             TextInput<T> input = new TextInput<>(gui.getViewer(), title, defaultValue, parser, future);
-            future.handle((v, e) -> {
-                onClose.run();
-                return null;
+            future.whenComplete((v, e) -> {
+                if(e != null) {
+                    onClose.run();
+                } else {
+                    me.goBack();
+                }
             });
             input.open();
             return input;
@@ -115,7 +118,6 @@ public class TextInput<T> extends AnvilInputGui {
         if(result != null) {
             result.ifSuccess(success -> {
                 isConfirm = true;
-                close();
                 future.complete(success);
             });
         }
