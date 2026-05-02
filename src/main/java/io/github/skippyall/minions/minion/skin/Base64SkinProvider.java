@@ -5,6 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.gui.MinionsGui;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -22,7 +23,6 @@ import net.minecraft.server.dialog.Input;
 import net.minecraft.server.dialog.NoticeDialog;
 import net.minecraft.server.dialog.action.CustomAll;
 import net.minecraft.server.dialog.input.TextInput;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.component.ResolvableProfile;
 
 import java.util.HashMap;
@@ -39,9 +39,9 @@ public class Base64SkinProvider implements SkinProvider {
     private static Map<Long, CompletableFuture<ResolvableProfile>> futures = new HashMap<>();
 
     @Override
-    public CompletableFuture<ResolvableProfile> openSkinMenu(ServerPlayer player) {
+    public CompletableFuture<ResolvableProfile> openSkinMenu(MinionsGui parent) {
         dialogIdCounter++;
-        player.openDialog(getDialog());
+        parent.viewer.openDialog(getDialog());
         CompletableFuture<ResolvableProfile> future = new CompletableFuture<>();
         futures.put(dialogIdCounter, future);
         return future;

@@ -1,98 +1,136 @@
-package io.github.skippyall.minions.gui;
+package io.github.skippyall.minions.gui
 
-import com.mojang.authlib.GameProfile;
-import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import eu.pb4.sgui.api.gui.SimpleGui;
-import io.github.skippyall.minions.gui.input.TextInput;
-import io.github.skippyall.minions.minion.MinionData;
-import io.github.skippyall.minions.minion.MinionItem;
-import io.github.skippyall.minions.minion.MinionProfileUtils;
-import io.github.skippyall.minions.minion.skin.SkinProvider;
-import io.github.skippyall.minions.registration.MinionRegistries;
-import io.github.skippyall.minions.registration.SkinProviders;
-import net.fabricmc.fabric.api.entity.FakePlayer;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ResolvableProfile;
+import com.mojang.authlib.GameProfile
+import eu.pb4.sgui.api.elements.GuiElementBuilder
+import eu.pb4.sgui.api.gui.SimpleGui
+import io.github.skippyall.minions.gui.input.TextInput
+import io.github.skippyall.minions.minion.MinionData
+import io.github.skippyall.minions.minion.MinionItem
+import io.github.skippyall.minions.minion.MinionProfileUtils
+import io.github.skippyall.minions.minion.skin.SkinProvider
+import io.github.skippyall.minions.registration.MinionRegistries
+import io.github.skippyall.minions.registration.SkinProviders
+import kotlinx.coroutines.launch
+import net.fabricmc.fabric.api.entity.FakePlayer
+import net.minecraft.core.component.DataComponents
+import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.inventory.MenuType
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
+import net.minecraft.world.item.component.ResolvableProfile
+import java.util.Optional
+import java.util.function.Consumer
+import java.util.function.Function
 
-import java.util.Optional;
+class MinionLookGui(
+    viewer: ServerPlayer,
+    private val minionItem: ItemStack
+) : MinionsGui(viewer) {
+    private lateinit var gui: SimpleGui
 
-public class MinionLookGui extends SimpleGui {
-    private ItemStack minionItem;
-    private SkinProvider currentSkinProvider;
+    private var currentSkinProvider: SkinProvider = SkinProviders.NAME
 
-    public MinionLookGui(ServerPlayer player, ItemStack minionItem) {
-        super(MenuType.GENERIC_9x3, player, false);
-        this.minionItem = minionItem;
-        this.currentSkinProvider = SkinProviders.NAME;
+    private val data: MinionData
+        get() = MinionItem.getDataOrDefault(viewer.level().server, minionItem)
+
+    init {
+        open()
     }
 
-    public void update() {
-        updateName();
-        updateSkin();
-        updateSkinProvider();
+    override fun open() {
+        gui = object : SimpleGui(MenuType.GENERIC_9x3, viewer, false) {
+            override fun onPlayerClose(success: Boolean) {
+                onBackingClosed()
+            }
+        }
+        update()
+        gui.open()
     }
 
-    private void updateName() {
-        setSlot(10, new GuiElementBuilder()
+    override fun closeBacking() {
+        gui.close()
+    }
+
+    fun update() {
+        updateName()
+        updateSkin()
+        updateSkinProvider()
+    }
+
+    private fun updateName() {
+        gui.setSlot(
+            10, GuiElementBuilder()
                 .setItem(Items.OAK_SIGN)
-                .setName(Component.literal(getData().name()))
-                .setCallback(() -> {
-                    openRenameGui(player, minionItem);
-                })
-        );
+                .setName(Component.literal(this.data.name))
+                .setCallback(this::openRenameGui)
+        )
     }
 
-    private void updateSkin() {
-        GuiElementBuilder builder = new GuiElementBuilder()
-                .setItem(Items.PLAYER_HEAD)
-                .setCallback(() -> currentSkinProvider.openSkinMenu(player)
-                        .thenCompose(profile -> profile.resolveProfile(player.level().getServer().services().profileResolver()))
-                        .thenAccept(skin -> MinionItem.setData(player.level().getServer(), getData().withSkin(Optional.of(skin.properties())), minionItem)));
-        if(MinionItem.getData(player.level().getServer(), minionItem) != null && MinionItem.getData(player.level().getServer(), minionItem).skin().isPresent()) {
-            builder.setComponent(DataComponents.PROFILE, ResolvableProfile.createResolved(new GameProfile(FakePlayer.DEFAULT_UUID, "", getData().skin().get())));
-        }
-        setSlot(16, builder);
-    }
+    private fun updateSkin() {
+        val builder = GuiElementBuilder()
+            .setItem(Items.PLAYER_HEAD)
+            .setCallback(this::openSkinGui)
 
-    private void cycleSkinProvider() {
-        int currentId = MinionRegistries.SKIN_PROVIDERS.getId(currentSkinProvider);
-        currentId++;
-        if(MinionRegistries.SKIN_PROVIDERS.size() == currentId) {
-            currentId = 0;
+        if (MinionItem.getData(viewer.level().server, minionItem)?.skin?.isPresent ?: false) {
+            builder.setComponent(
+                DataComponents.PROFILE,
+                ResolvableProfile.createResolved(GameProfile(FakePlayer.DEFAULT_UUID, "", this.data.skin.get()))
+            )
         }
 
-        currentSkinProvider = MinionRegistries.SKIN_PROVIDERS.byId(currentId);
-        updateSkinProvider();
+        gui.setSlot(16, builder)
     }
 
-    private void updateSkinProvider() {
-        setSlot(25, new GuiElementBuilder()
+    fun openSkinGui() {
+        currentSkinProvider.openSkinMenu(this)
+            .thenCompose(Function { profile: ResolvableProfile? ->
+                profile!!.resolveProfile(
+                    viewer.level().server.services().profileResolver()
+                )
+            })
+            .thenAccept(Consumer { skin: GameProfile? ->
+                MinionItem.setData(
+                    viewer.level().server, this.data.withSkin(
+                        Optional.of(skin!!.properties())
+                    ), minionItem
+                )
+            })
+    }
+
+    private fun cycleSkinProvider() {
+        var currentId = MinionRegistries.SKIN_PROVIDERS.getId(currentSkinProvider)
+        currentId++
+        if (MinionRegistries.SKIN_PROVIDERS.size() == currentId) {
+            currentId = 0
+        }
+
+        currentSkinProvider = MinionRegistries.SKIN_PROVIDERS.byId(currentId)!!
+        updateSkinProvider()
+    }
+
+    private fun updateSkinProvider() {
+        gui.setSlot(
+            25, GuiElementBuilder()
                 .setItem(Items.GREEN_STAINED_GLASS_PANE)
                 .setComponent(DataComponents.CUSTOM_NAME, currentSkinProvider.getDisplayName())
-                .setCallback(this::cycleSkinProvider)
-        );
+                .setCallback(Runnable { this.cycleSkinProvider() })
+        )
     }
 
-    private MinionData getData() {
-        return MinionItem.getDataOrDefault(player.level().getServer(), minionItem);
-    }
+    fun openRenameGui() {
+        scope.launch {
+            val newName = TextInput.input(
+                this@MinionLookGui,
+                Component.translatable("minions.gui.look.rename.title"),
+                "Minion",
+            ) { name ->
+                MinionProfileUtils.checkMinionNameWithoutPrefix(viewer.level().server, name)
+            }
 
-    public static void open(ServerPlayer player, ItemStack minionItem) {
-        MinionLookGui gui = new MinionLookGui(player, minionItem);
-        gui.update();
-        gui.open();
-    }
-
-    public void openRenameGui(ServerPlayer player, ItemStack minionItem) {
-        TextInput.inputSync(player, Component.translatable("minions.gui.look.rename.title"), "Minion", name -> MinionProfileUtils.checkMinionNameWithoutPrefix(player.level().getServer(), name))
-                .thenAccept(name -> {
-                    MinionItem.setData(player.level().getServer(), getData().withName(MinionProfileUtils.getPrefix() + name), minionItem);
-                    open();
-                });
+            if(newName != null) {
+                this@MinionLookGui.data.withName(newName)
+            }
+        }
     }
 }

@@ -19,10 +19,10 @@ public class ValueTypes {
                     Codec.LONG,
                     0L,
                     o -> o instanceof Long l ? l : null,
-                    (parent, oldValue) -> TextInput.inputLong(
+                    (parent, oldValue) -> TextInput.inputLongFuture(
                             parent,
                             Component.literal("Integer"),
-                            String.valueOf(oldValue)
+                            oldValue
                     ),
                     value -> Component.literal(value.toString())
             )
@@ -34,10 +34,10 @@ public class ValueTypes {
                     Codec.DOUBLE,
                     0D,
                     o -> o instanceof Double d ? d : null,
-                    (parent, oldValue) -> TextInput.inputDouble(
+                    (parent, oldValue) -> TextInput.inputDoubleFuture(
                             parent,
                             Component.literal("Number"),
-                            String.valueOf(oldValue)
+                            oldValue
                     ),
                     value -> Component.literal(value.toString())
             )
@@ -61,11 +61,11 @@ public class ValueTypes {
                     Codec.STRING,
                     "",
                     o -> o instanceof String s ? s : null,
-                    ((parent, oldValue) -> TextInput.inputString(
+                    ((parent, oldValue) -> TextInput.inputStringFuture(
                             parent,
                             Component.literal("Text"),
-                            oldValue)
-                    ),
+                            oldValue
+                    )),
                     value -> Component.literal("\"" + value + "\"")
             )
     );

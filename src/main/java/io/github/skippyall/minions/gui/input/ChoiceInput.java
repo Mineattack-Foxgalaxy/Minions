@@ -78,7 +78,7 @@ public class ChoiceInput {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         new SimpleMinionsGui(parent, (onClose, me) -> {
-            SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, parent.getViewer(), false) {
+            SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, parent.viewer, false) {
                 @Override
                 public void onPlayerClose(boolean success) {
                     future.complete(false);

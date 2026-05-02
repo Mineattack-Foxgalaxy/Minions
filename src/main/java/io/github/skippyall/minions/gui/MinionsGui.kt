@@ -1,76 +1,84 @@
-package io.github.skippyall.minions.gui;
+package io.github.skippyall.minions.gui
 
-import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.Nullable;
+import eu.pb4.sgui.api.elements.GuiElementBuilder
+import kotlinx.coroutines.CompletableJob
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.item.Items
 
-public abstract class MinionsGui {
-    protected final @Nullable MinionsGui parent;
-    protected final ServerPlayer viewer;
-    protected @Nullable MinionsGui child = null;
-    private boolean open = true;
+abstract class MinionsGui {
+    protected val parent: MinionsGui?
+    @JvmField
+    val viewer: ServerPlayer
+    protected var child: MinionsGui? = null
+    private var open = true
 
-    public MinionsGui(MinionsGui parent) {
-        this.viewer = parent.viewer;
-        this.parent = parent;
-        parent.child = this;
+    private val job: CompletableJob
+    val scope: CoroutineScope
+
+    constructor(parent: MinionsGui) {
+        this.viewer = parent.viewer
+        this.parent = parent
+        parent.child = this
+        job = Job(parent.job)
+        scope = CoroutineScope(Dispatchers.Unconfined.plus(CoroutineName("MinionsGui")).plus(job))
     }
 
-    public MinionsGui(ServerPlayer viewer) {
-        this.viewer = viewer;
-        this.parent = null;
+    constructor(viewer: ServerPlayer) {
+        this.viewer = viewer
+        this.parent = null
+        job = Job(null)
+        scope = CoroutineScope(Dispatchers.Unconfined.plus(CoroutineName("MinionsGui")).plus(job))
     }
 
-    public ServerPlayer getViewer() {
-        return viewer;
+    protected abstract fun open()
+
+    protected fun reopen() {
+        open()
     }
 
-    protected abstract void open();
-
-    protected void reopen() {
-        open();
-    }
-
-    public void onBackingClosed() {
-        if(child != null && child.open) {
-            return;
+    fun onBackingClosed() {
+        if (child != null && child!!.open) {
+            return
         }
 
-        close(true);
+        close(true)
     }
 
-    public void close() {
-        close(false);
-    }
-
-    public void close(boolean alreadyClosed) {
-        if(open) {
-            open = false;
-            if(child != null) {
-                child.close(alreadyClosed);
-            } else if(!alreadyClosed) {
-                closeBacking();
+    @JvmOverloads
+    fun close(alreadyClosed: Boolean = false) {
+        if (open) {
+            scope.cancel(null)
+            open = false
+            if (child != null) {
+                child!!.close(alreadyClosed)
+            } else if (!alreadyClosed) {
+                closeBacking()
             }
         }
     }
 
-    public void goBack() {
-        if(parent != null) {
-            open = false;
-            parent.child = null;
-            parent.reopen();
+    fun goBack() {
+        if (parent != null) {
+            open = false
+            parent.child = null
+            parent.reopen()
+            close(true)
         } else {
-            close(false);
+            close(false)
         }
     }
 
-    public GuiElementBuilder backButton() {
-        return new GuiElementBuilder(Items.MANGROVE_DOOR)
-                .setName(Component.translatable("gui.back"))
-                .setCallback(this::goBack);
+    fun backButton(): GuiElementBuilder? {
+        return GuiElementBuilder(Items.MANGROVE_DOOR)
+            .setName(Component.translatable("gui.back"))
+            .setCallback(Runnable { this.goBack() })
     }
 
-    protected abstract void closeBacking();
+    protected abstract fun closeBacking()
 }

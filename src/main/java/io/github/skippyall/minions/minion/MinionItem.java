@@ -51,17 +51,17 @@ public class MinionItem extends Item implements PolymerItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay component, Consumer<Component> tooltip, TooltipFlag type) {
-        MinionData data = null /*getData(stack)*/;
-        if(data != null) {
-            tooltip.accept(Component.translatable("minions.minion_item.tooltip", data.name()));
-        }
+        //MinionData data = getData(stack);
+        //if(data != null) {
+        //    tooltip.accept(Component.translatable("minions.minion_item.tooltip", data.name()));
+        //}
     }
 
     @Override
     public InteractionResult use(Level world, Player user, InteractionHand hand) {
         if(user instanceof ServerPlayer serverPlayer) {
             ItemStack stack = user.getItemInHand(hand);
-            MinionLookGui.open(serverPlayer, stack);
+            new MinionLookGui(serverPlayer, stack);
             return InteractionResult.SUCCESS;
         }
 
