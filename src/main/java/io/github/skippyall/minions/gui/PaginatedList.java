@@ -8,7 +8,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class PaginatedList extends MinionsGui {
     private int page = 0;
@@ -16,6 +18,7 @@ public class PaginatedList extends MinionsGui {
     private final Component title;
     private final int size;
     private final BiFunction<Integer, PaginatedList, GuiElementBuilder> display;
+    private Runnable onClose = null;
 
     public PaginatedList(MinionsGui parent, Component title, int size, BiFunction<Integer, PaginatedList, GuiElementBuilder> display) {
         super(parent);
@@ -25,12 +28,20 @@ public class PaginatedList extends MinionsGui {
         open();
     }
 
+    public PaginatedList(MinionsGui parent, Component title, int size, BiFunction<Integer, PaginatedList, GuiElementBuilder> display, Runnable onClose) {
+        this(parent, title, size, display);
+        this.onClose = onClose;
+    }
+
     @Override
     protected void open() {
         gui = new SimpleGui(MenuType.GENERIC_9x6, viewer, false) {
             @Override
             public void onPlayerClose(boolean success) {
                 onBackingClosed();
+                if(onClose != null) {
+                    onClose.run();
+                }
             }
         };
         gui.setTitle(title);
@@ -51,6 +62,17 @@ public class PaginatedList extends MinionsGui {
 
     public static <T> void createList(MinionsGui parent, Component title, IdMap<T> list, BiFunction<T, PaginatedList, GuiElementBuilder> display) {
         new PaginatedList(parent, title, list.size(), (i, gui) -> display.apply(list.byId(i), gui));
+    }
+
+    public static <T> CompletableFuture<T> createListFuture(MinionsGui parent, Component title, List<T> list, Function<T, GuiElementBuilder> display) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        new PaginatedList(parent, title, list.size(), (i, me) -> display.apply(list.get(i))
+                .setCallback(() -> {
+                    future.complete(list.get(i));
+                    me.goBack();
+                })
+        );
+        return future;
     }
 
     private void addItems() {

@@ -90,6 +90,8 @@
   "value_type.minions.long": "Integer",
   "value_type.minions.double": "Decimal",
   "value_type.minions.boolean": "Boolean",
+  "value_type.minions.boolean.true": "True",
+  "value_type.minions.boolean.false": "False",
   "value_type.minions.string": "Text",
   "value_type.minions.turn_direction": "Turn Direction",
 

@@ -3,8 +3,8 @@ package io.github.skippyall.minions.gui.input
 import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.AnvilInputGui
 import io.github.skippyall.minions.gui.MinionsGui
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
 import net.minecraft.network.chat.Component
@@ -29,9 +29,7 @@ class TextInput<T>(
     private lateinit var gui: AnvilInputGui
 
     private var result: Result<T, Component>? = null
-    private var isConfirm = false
-
-    val job = Job()
+    val deferred = CompletableDeferred<T?>()
 
     init {
         updateConfirmButton(defaultValue)
@@ -46,8 +44,8 @@ class TextInput<T>(
 
             override fun onPlayerClose(success: Boolean) {
                 onBackingClosed()
-                if (job.isActive && !isConfirm) {
-                    job.cancel()
+                if (deferred.isActive) {
+                    deferred.complete(null)
                 }
             }
         }
@@ -75,20 +73,19 @@ class TextInput<T>(
     }
 
     fun onConfirm() {
-        result?.ifSuccess { _: T? ->
-            isConfirm = true
+        result?.ifSuccess { success: T ->
+            deferred.complete(success)
         }
-        job.complete()
     }
 
     companion object {
         @JvmStatic
-        suspend fun <T>input(
+        fun <T>input(
             gui: MinionsGui,
             title: Component,
             defaultValue: String,
             parser: suspend (String) -> Result<T, Component>,
-        ): T? {
+        ): Deferred<T?> {
             val input = TextInput(
                 parent = gui,
                 title = title,
@@ -96,9 +93,7 @@ class TextInput<T>(
                 parser = parser,
             )
 
-            input.job.join()
-
-            return input.result?.getOrDefault(null)
+            return input.deferred
         }
 
         @JvmStatic
@@ -108,26 +103,20 @@ class TextInput<T>(
             defaultValue: String,
             parser: (String) -> Result<T, Component>,
         ): CompletableFuture<T?> {
-            return gui.scope.async {
-                val input = TextInput(
-                    parent = gui,
-                    title = title,
-                    defaultValue = defaultValue,
-                    parser = parser,
-                )
-
-                input.job.join()
-
-                return@async input.result?.getOrDefault(null)
-            }.asCompletableFuture()
+            return input(
+                gui = gui,
+                title = title,
+                defaultValue = defaultValue,
+                parser = parser
+            ).asCompletableFuture()
         }
 
         @JvmStatic
-        suspend fun inputString(
+        fun inputString(
             gui: MinionsGui,
             title: Component,
             defaultValue: String,
-        ): String? {
+        ): Deferred<String?> {
             return input<String>(
                 gui = gui,
                 title = title,
@@ -142,21 +131,19 @@ class TextInput<T>(
             title: Component,
             defaultValue: String,
         ): CompletableFuture<String?> {
-            return gui.scope.async {
-                inputString(
-                    gui,
-                    title,
-                    defaultValue
-                )
-            }.asCompletableFuture()
+            return inputString(
+                gui = gui,
+                title = title,
+                defaultValue = defaultValue,
+            ).asCompletableFuture()
         }
 
         @JvmStatic
-        suspend fun inputLong(
+        fun inputLong(
             gui: MinionsGui,
             title: Component,
             defaultValue: Long,
-        ): Long? {
+        ): Deferred<Long?> {
             return input<Long>(
                 gui = gui,
                 title = title,
@@ -176,21 +163,19 @@ class TextInput<T>(
             title: Component,
             defaultValue: Long,
         ): CompletableFuture<Long?> {
-            return gui.scope.async {
-                inputLong(
-                    gui,
-                    title,
-                    defaultValue
-                )
-            }.asCompletableFuture()
+            return inputLong(
+                gui = gui,
+                title = title,
+                defaultValue = defaultValue,
+            ).asCompletableFuture()
         }
 
         @JvmStatic
-        suspend fun inputDouble(
+        fun inputDouble(
             gui: MinionsGui,
             title: Component,
             defaultValue: Double,
-        ): Double? {
+        ): Deferred<Double?> {
             return input<Double>(
                 gui = gui,
                 title = title,
@@ -210,13 +195,11 @@ class TextInput<T>(
             title: Component,
             defaultValue: Double,
         ): CompletableFuture<Double?> {
-            return gui.scope.async {
-                inputDouble(
-                    gui,
-                    title,
-                    defaultValue
-                )
-            }.asCompletableFuture()
+            return inputDouble(
+                gui = gui,
+                title = title,
+                defaultValue = defaultValue,
+            ).asCompletableFuture()
         }
     }
 }

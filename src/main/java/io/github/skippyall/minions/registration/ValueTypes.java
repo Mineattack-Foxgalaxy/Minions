@@ -1,7 +1,10 @@
 package io.github.skippyall.minions.registration;
 
 import com.mojang.serialization.Codec;
+import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.gui.PaginatedList;
+import io.github.skippyall.minions.gui.input.BooleanInput;
 import io.github.skippyall.minions.gui.input.TextInput;
 import io.github.skippyall.minions.minion.program.instruction.move.TurnDirection;
 import io.github.skippyall.minions.program.value.SimpleValueType;
@@ -10,7 +13,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
 public class ValueTypes {
     public static ValueType<Long> LONG = register(
@@ -49,8 +52,7 @@ public class ValueTypes {
                     Codec.BOOL,
                     false,
                     o -> o instanceof Boolean b ? b : null,
-                    //TODO Properly implement ChoiceInput
-                    (gui, value) -> CompletableFuture.completedFuture(value),//ChoiceInput.inputBoolean(Text.literal("")),
+                    (parent, value) -> BooleanInput.confirmFuture(parent, Component.literal(""), Component.translatable("value_type.minions.boolean.false"), Component.translatable("value_type.minions.boolean.true")),
                     value -> Component.literal(value.toString())
             )
     );
@@ -76,8 +78,12 @@ public class ValueTypes {
                     TurnDirection.CODEC,
                     TurnDirection.RIGHT,
                     o -> o instanceof TurnDirection d ? d : null,
-                    //TODO Properly implement ChoiceInput
-                    (parent, oldValue) -> CompletableFuture.completedFuture(oldValue), // ChoiceInput.createDialogOpener(TurnDirection.values()),
+                    (parent, oldValue) -> PaginatedList.createListFuture(
+                            parent,
+                            Component.translatable("value_type.minions.turn_direction"),
+                            List.of(TurnDirection.values()),
+                            value -> new GuiElementBuilder(value.getDisplay().createItemStack())
+                    ),
                     value -> Component.literal(value.name)
             )
     );

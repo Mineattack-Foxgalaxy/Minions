@@ -4,7 +4,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.clipboard.ClipboardItem;
 import io.github.skippyall.minions.gui.MinionsGui;
-import io.github.skippyall.minions.gui.input.ChoiceInput;
+import io.github.skippyall.minions.gui.input.BooleanInput;
 import io.github.skippyall.minions.gui.minion.GuiContext;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.MinionRuntime;
@@ -60,7 +60,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
 
         gui.setSlot(7, new GuiElementBuilder(Items.LAVA_BUCKET)
                 .setName(Component.translatable("minions.gui.instruction.configure.delete"))
-                .setCallback(() -> ChoiceInput.confirm(this, Component.translatable("minions.gui.instruction.configure.delete.confirm", name))
+                .setCallback(() -> BooleanInput.confirmFuture(this, Component.translatable("minions.gui.instruction.configure.delete.confirm", name))
                         .thenAccept((confirmed) -> {
                             if(confirmed) {
                                 minion.getInstructionManager().removeInstruction(name);
