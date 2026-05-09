@@ -47,7 +47,7 @@ public abstract class BlockEntityMinionListener<E extends BlockEntity> implement
 
     public static <T extends BlockEntityMinionListener<?>> T getListener(Level world, BlockPos pos, UUID minionUuid, Class<T> clazz) {
         if(minionUuid != null) {
-            for (MinionListener listener : MinionPersistentState.get(world.getServer()).getMinionData(minionUuid).listeners()) {
+            for (MinionListener listener : MinionPersistentState.get(world.getServer()).getMinionData(minionUuid).getListeners()) {
                 if (listener instanceof BlockEntityMinionListener<?> tl && tl.pos.equals(pos) && tl.worldKey.equals(world.dimension()) && clazz.isInstance(tl)) {
                     return clazz.cast(tl);
                 }
@@ -95,13 +95,13 @@ public abstract class BlockEntityMinionListener<E extends BlockEntity> implement
     }
 
     public void add(MinecraftServer server) {
-        MinionPersistentState.get(server).getMinionData(minionUuid).listeners().addListener(this);
+        MinionPersistentState.get(server).getMinionData(minionUuid).getListeners().addListener(this);
         MinionPersistentState.get(server).setDirty();
         this.minion = (MinionFakePlayer) server.getPlayerList().getPlayer(minionUuid);
     }
 
     public void remove(MinecraftServer server) {
-        MinionPersistentState.get(server).getMinionData(minionUuid).listeners().removeListener(this);
+        MinionPersistentState.get(server).getMinionData(minionUuid).getListeners().removeListener(this);
         MinionPersistentState.get(server).setDirty();
     }
 

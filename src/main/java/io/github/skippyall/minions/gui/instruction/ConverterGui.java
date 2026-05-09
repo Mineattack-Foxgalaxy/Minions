@@ -28,7 +28,6 @@ public class ConverterGui extends MinionsGui {
 
     public ConverterGui(MinionsGui parent, @Nullable ValueConverter<?,?> converter, ValueType<?> from, ValueType<?> to, ConverterList list, boolean isNew, int index) {
         super(parent);
-        open();
         this.converter = converter;
         if(converter != null) {
             this.valueConverterType = converter.getType();
@@ -38,6 +37,8 @@ public class ConverterGui extends MinionsGui {
         this.list = list;
         this.isNew = isNew;
         this.index = index;
+
+        open();
     }
 
     @Override

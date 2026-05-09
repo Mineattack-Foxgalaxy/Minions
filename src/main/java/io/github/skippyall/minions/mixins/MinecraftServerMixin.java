@@ -24,7 +24,7 @@ public class MinecraftServerMixin {
     public List<ServerPlayer> ignoreFakePlayers(List<ServerPlayer> original) {
         return original.stream()
                 .filter(player -> !(player instanceof MinionFakePlayer minion
-                        && !minion.getData().config().getOption(MinionConfigOptions.showInServerList)))
+                        && !minion.getData().getConfig().getOption(MinionConfigOptions.showInServerList)))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 

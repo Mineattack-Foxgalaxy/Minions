@@ -19,7 +19,7 @@ public class ServerGamePacketListenerImplMixin {
 
     @WrapOperation(method = "removePlayerFromWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"))
     public void noLogoutMessage(PlayerList instance, Component message, boolean overlay, Operation<Void> original) {
-        if(!(player instanceof MinionFakePlayer minion && !minion.getData().config().getOption(MinionConfigOptions.sendLogoutMessage))) {
+        if(!(player instanceof MinionFakePlayer minion && !minion.getData().getConfig().getOption(MinionConfigOptions.sendLogoutMessage))) {
             original.call(instance, message, overlay);
         }
     }

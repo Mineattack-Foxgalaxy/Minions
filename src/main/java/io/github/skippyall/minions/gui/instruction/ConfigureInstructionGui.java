@@ -60,7 +60,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
 
         gui.setSlot(7, new GuiElementBuilder(Items.LAVA_BUCKET)
                 .setName(Component.translatable("minions.gui.instruction.configure.delete"))
-                .setCallback(() -> BooleanInput.confirmFuture(this, Component.translatable("minions.gui.instruction.configure.delete.confirm", name))
+                .setCallback(() -> BooleanInput.confirm(this, Component.translatable("minions.gui.instruction.configure.delete.confirm", name))
                         .thenAccept((confirmed) -> {
                             if(confirmed) {
                                 minion.getInstructionManager().removeInstruction(name);

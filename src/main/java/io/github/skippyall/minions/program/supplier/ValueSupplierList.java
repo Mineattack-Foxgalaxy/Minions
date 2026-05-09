@@ -37,11 +37,6 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
         return List.copyOf(arguments.values());
     }
 
-    public <T> T getValue(Parameter<T> parameter, R runtime) {
-        ValueSupplierEntry<?,R> entry = getEntry(parameter);
-        return parameter.type().checkedCast(entry.getValue(runtime));
-    }
-
     public ValueSupplier<?,R> getArgument(Parameter<?> parameter) {
         if(arguments.containsKey(parameter)) {
             return arguments.get(parameter).supplier;
@@ -153,20 +148,24 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
             this.supplier = supplier;
         }
 
-        private void addToList(ParameterValueList list, R runtime) {
-            list.setValue(parameter, getValue(runtime));
+        private @Nullable Component addToList(ParameterValueList list, R runtime) {
+            Result<P, Component> result = getValue(supplier, runtime);
+            switch (result) {
+                case Result.Success<P, Component> success -> {
+                    list.setValue(parameter, success.result());
+                    return null;
+                }
+                case Result.Error<P, Component> error -> {
+                    return error.message();
+                }
+            }
         }
 
-        public @Nullable P getValue(R runtime) {
-            return getValue(supplier, runtime);
-        }
-
-        //Ich liebe generische Typen (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
-        private <S> @Nullable P getValue(ValueSupplier<S, R> supplier, R runtime) {
+        private <S> Result<P, Component> getValue(ValueSupplier<S, R> supplier, R runtime) {
             S value = supplier.resolve(runtime);
             Result<TypedValue<?>, Component> convertedResult = converters.convert(new TypedValue<>(value, supplier.getValueType()));
 
-            return convertedResult.flatMap(convertedValue -> Casts.castOrError(convertedValue, parameter.type())).getOrDefault(null);
+            return convertedResult.flatMap(convertedValue -> Casts.castOrError(convertedValue, parameter.type()));
         }
 
         public @Nullable Component check() {

@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 public class NameSkinProvider implements SkinProvider {
     @Override
     public CompletableFuture<ResolvableProfile> openSkinMenu(MinionsGui parent) {
-        return TextInput.inputStringFuture(parent, Component.translatable("minions.gui.look.skin.name.title"), "")
+        return TextInput.inputString(parent, Component.translatable("minions.gui.look.skin.name.title"), "")
                 .thenApply(name -> name != null ? ResolvableProfile.createUnresolved(name) : null);
     }
 

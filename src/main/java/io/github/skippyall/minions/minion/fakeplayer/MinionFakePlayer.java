@@ -73,16 +73,16 @@ public class MinionFakePlayer extends ServerPlayer {
         if(!data.isSpawned() || force) {
             MinecraftServer server = level.getServer();
 
-            PropertyMap skin = data.skin().orElse(null);
+            PropertyMap skin = data.getSkin().orElse(null);
 
-            GameProfile profile = MinionProfileUtils.makeNewMinionProfile(data.uuid(), data.name(), skin);
+            GameProfile profile = MinionProfileUtils.makeNewMinionProfile(data.getUuid(), data.getName(), skin);
             server.schedule(server.wrapRunnable(() -> doSpawn(data, profile, server, level, pos, rot)));
         }
     }
 
     private static void doSpawn(MinionData data, GameProfile profile, MinecraftServer server, ServerLevel level, @Nullable Vec3 pos, @Nullable Vec2 rot) {
         MinionFakePlayer instance = new MinionFakePlayer(server, level, profile, ClientInformation.createDefault());
-        MinionPersistentState.get(server).updateMinionData(data.withSpawned(true));
+        data.setSpawned(true);
 
         if(pos != null && rot != null) {
             instance.fixStartingPosition = () -> instance.snapTo(pos.x, pos.y, pos.z, rot.x, rot.y);
@@ -158,7 +158,7 @@ public class MinionFakePlayer extends ServerPlayer {
     }
 
     public SerializableListenerManager<MinionListener> listeners() {
-        return getData().listeners();
+        return getData().getListeners();
     }
 
     public void addMinionListener(MinionListener listener) {
@@ -174,7 +174,7 @@ public class MinionFakePlayer extends ServerPlayer {
     }
 
     public boolean canSpawnMobs() {
-        return moduleInventory.hasAbility(SpecialAbilities.MOB_SPAWNING) || getData().config().getOption(MinionConfigOptions.spawnAndDespawnMobs);
+        return moduleInventory.hasAbility(SpecialAbilities.MOB_SPAWNING) || getData().getConfig().getOption(MinionConfigOptions.spawnAndDespawnMobs);
     }
 
     public boolean canDespawnMobs() {
@@ -213,7 +213,7 @@ public class MinionFakePlayer extends ServerPlayer {
             }));
         }
 
-        MinionPersistentState.get(getServer()).updateMinionData(getData().withSpawned(false));
+        getData().setSpawned(false);
     }
 
     @Override

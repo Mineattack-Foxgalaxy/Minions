@@ -10,6 +10,7 @@ import io.github.skippyall.minions.minion.MinionProfileUtils
 import io.github.skippyall.minions.minion.skin.SkinProvider
 import io.github.skippyall.minions.registration.MinionRegistries
 import io.github.skippyall.minions.registration.SkinProviders
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import net.fabricmc.fabric.api.entity.FakePlayer
 import net.minecraft.core.component.DataComponents
@@ -20,8 +21,6 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.component.ResolvableProfile
 import java.util.Optional
-import java.util.function.Consumer
-import java.util.function.Function
 
 class MinionLookGui(
     viewer: ServerPlayer,
@@ -82,20 +81,24 @@ class MinionLookGui(
         gui.setSlot(16, builder)
     }
 
+    private fun updateSkinProvider() {
+        gui.setSlot(
+            25, GuiElementBuilder()
+                .setItem(Items.GREEN_STAINED_GLASS_PANE)
+                .setComponent(DataComponents.CUSTOM_NAME, currentSkinProvider.getDisplayName())
+                .setCallback(Runnable { this.cycleSkinProvider() })
+        )
+    }
+
     fun openSkinGui() {
-        currentSkinProvider.openSkinMenu(this)
-            .thenCompose(Function { profile: ResolvableProfile? ->
-                profile!!.resolveProfile(
-                    viewer.level().server.services().profileResolver()
-                )
-            })
-            .thenAccept(Consumer { skin: GameProfile? ->
-                MinionItem.setData(
-                    viewer.level().server, this.data.withSkin(
-                        Optional.of(skin!!.properties())
-                    ), minionItem
-                )
-            })
+        scope.launch {
+            val profile = currentSkinProvider.openSkinMenu(this@MinionLookGui).await()
+            val skin = profile.resolveProfile(viewer.level().server.services().profileResolver()).await()
+
+            data.skin = Optional.ofNullable(skin?.properties())
+
+            updateSkin()
+        }
     }
 
     private fun cycleSkinProvider() {
@@ -109,15 +112,6 @@ class MinionLookGui(
         updateSkinProvider()
     }
 
-    private fun updateSkinProvider() {
-        gui.setSlot(
-            25, GuiElementBuilder()
-                .setItem(Items.GREEN_STAINED_GLASS_PANE)
-                .setComponent(DataComponents.CUSTOM_NAME, currentSkinProvider.getDisplayName())
-                .setCallback(Runnable { this.cycleSkinProvider() })
-        )
-    }
-
     fun openRenameGui() {
         scope.launch {
             val newName = TextInput.input(
@@ -126,10 +120,11 @@ class MinionLookGui(
                 "Minion",
             ) { name ->
                 MinionProfileUtils.checkMinionNameWithoutPrefix(viewer.level().server, name)
-            }
+            }.await()
 
             if(newName != null) {
-                this@MinionLookGui.data.withName(newName)
+                data.name = newName
+                updateName()
             }
         }
     }

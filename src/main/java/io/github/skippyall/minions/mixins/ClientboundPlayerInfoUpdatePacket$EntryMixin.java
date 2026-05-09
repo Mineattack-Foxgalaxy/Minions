@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public class ClientboundPlayerInfoUpdatePacket$EntryMixin {
     @ModifyArg(method = "<init>(Lnet/minecraft/server/level/ServerPlayer;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket$Entry;<init>(Ljava/util/UUID;Lcom/mojang/authlib/GameProfile;ZILnet/minecraft/world/level/GameType;Lnet/minecraft/network/chat/Component;ZILnet/minecraft/network/chat/RemoteChatSession$Data;)V"), index = 2)
     private static boolean removeMinionFromTabList(boolean original, @Local(argsOnly = true) ServerPlayer player) {
-        if(player instanceof MinionFakePlayer minion && !minion.getData().config().getOption(MinionConfigOptions.showInTabList)) {
+        if(player instanceof MinionFakePlayer minion && !minion.getData().getConfig().getOption(MinionConfigOptions.showInTabList)) {
             return false;
         }
 

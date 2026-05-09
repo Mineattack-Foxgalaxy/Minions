@@ -59,7 +59,7 @@ public class PlayerListMixin {
 
     @WrapOperation(method = "placeNewPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"))
     public void noLoginMessage(PlayerList instance, Component message, boolean overlay, Operation<Void> original, @Local(argsOnly = true) ServerPlayer player) {
-        if(!(player instanceof MinionFakePlayer minion && !minion.getData().config().getOption(MinionConfigOptions.sendLoginMessage))) {
+        if(!(player instanceof MinionFakePlayer minion && !minion.getData().getConfig().getOption(MinionConfigOptions.sendLoginMessage))) {
             original.call(instance, message, overlay);
         }
     }
@@ -67,7 +67,7 @@ public class PlayerListMixin {
     @ModifyReceiver(method = "canPlayerLogin", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"))
     public List<ServerPlayer> noMinionCounting(List<ServerPlayer> instance) {
         return instance.stream()
-                .filter(player -> !(player instanceof MinionFakePlayer minion && !minion.getData().config().getOption(MinionConfigOptions.countForPlayerLimit)))
+                .filter(player -> !(player instanceof MinionFakePlayer minion && !minion.getData().getConfig().getOption(MinionConfigOptions.countForPlayerLimit)))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 }

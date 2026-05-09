@@ -54,7 +54,7 @@ public class ConverterListGui extends MinionsGui {
 
         gui.setSlot(23, new GuiElementBuilder(Items.ARROW)
                 .setCallback(() -> {
-                    if(page * 4 + 4 < converters.getConverters().size()) {
+                    if(page * 4 + 4 < converters.getConverters().size() + 1) {
                         page++;
                         updateConverters();
                     }
@@ -67,6 +67,10 @@ public class ConverterListGui extends MinionsGui {
     }
 
     public void updateConverters() {
+        for(int slot = 9; slot < 18; slot++) {
+            gui.clearSlot(slot);
+        }
+
         int lastConverter = Math.min(5, converters.getConverters().size() + 2 - page * 4);
         for(int i = 0; i < lastConverter; i++) {
             //Each page has 5 converters, but the last is displayed on the next page as well

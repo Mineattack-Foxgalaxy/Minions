@@ -78,8 +78,8 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
 
     public void run(R minion) {
         if(canRun() && !isRunning()) {
-            ParameterValueList resolvedArguments = arguments.resolve(minion);
             try {
+                ParameterValueList resolvedArguments = arguments.resolve(minion);
                 execution = instruction.createExecution(resolvedArguments, minion);
                 execution.start(minion);
             } catch (Exception e) {

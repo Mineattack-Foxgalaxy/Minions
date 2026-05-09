@@ -1,37 +1,29 @@
-package io.github.skippyall.minions.listener;
+package io.github.skippyall.minions.listener
 
-import org.jetbrains.annotations.NotNull;
+import java.util.concurrent.CopyOnWriteArraySet
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+open class ListenerManager<T>(
+    protected val listeners: MutableSet<T> = CopyOnWriteArraySet(),
+    val onChange: () -> Unit = {},
+) : MutableIterable<T> by listeners {
 
-public class ListenerManager<T> implements Iterable<T> {
-    protected final Set<T> listeners;
-
-    public ListenerManager() {
-        this(new CopyOnWriteArraySet<>());
+    fun addListener(listener: T) {
+        listeners.add(listener)
+        onChange()
     }
 
-    protected ListenerManager(Set<T> listeners) {
-        this.listeners = listeners;
+    fun removeListener(listener: T) {
+        listeners.remove(listener)
+        onChange()
     }
 
-    public void addListener(T listener) {
-        listeners.add(listener);
-    }
-
-    public void removeListener(T listener) {
-        listeners.remove(listener);
-    }
-
-    @Override
-    public @NotNull Iterator<T> iterator() {
-        return listeners.iterator();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+    override fun iterator(): MutableIterator<T> {
+        val iterator = listeners.iterator()
+        return object : MutableIterator<T> by iterator {
+            override fun remove() {
+                iterator.remove()
+                onChange()
+            }
+        }
     }
 }

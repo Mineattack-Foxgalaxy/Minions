@@ -27,9 +27,10 @@ import java.util.UUID;
 public interface GuiDisplay {
     Codec<GuiDisplay> CODEC = MinionRegistries.GUI_DISPLAY_TYPE.byNameCodec().dispatch(GuiDisplay::getCodec, codec -> codec.fieldOf("data"));
     GuiDisplay DEFAULT_DISPLAY = new ItemBased(Items.BARRIER);
-    TooltipDisplay TOOLTIP_DISPLAY = createTooltipDisplay();
 
-    private static TooltipDisplay createTooltipDisplay() {
+    TooltipDisplay TOOLTIP_HIDE_ALL_COMPONENTS = createHideAllTooltip();
+
+    private static TooltipDisplay createHideAllTooltip() {
         LinkedHashSet<DataComponentType<?>> set = new LinkedHashSet<>();
         for(DataComponentType<?> type : BuiltInRegistries.DATA_COMPONENT_TYPE) {
             if(type != DataComponents.LORE) {
@@ -106,7 +107,7 @@ public interface GuiDisplay {
         @Override
         public ItemStackTemplate createItemStackTemplate() {
             return new ItemStackTemplate(item, DataComponentPatch.builder()
-                    .set(DataComponents.TOOLTIP_DISPLAY, TOOLTIP_DISPLAY)
+                    .set(DataComponents.TOOLTIP_DISPLAY, TOOLTIP_HIDE_ALL_COMPONENTS)
                     .set(DataComponents.RARITY, Rarity.COMMON)
                     .build());
         }
@@ -130,6 +131,7 @@ public interface GuiDisplay {
         public ItemStackTemplate createItemStackTemplate() {
             return new ItemStackTemplate(Items.PLAYER_HEAD, DataComponentPatch.builder()
                     .set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(uuid))
+                    .set(DataComponents.TOOLTIP_DISPLAY, TOOLTIP_HIDE_ALL_COMPONENTS)
                     .build()
             );
         }

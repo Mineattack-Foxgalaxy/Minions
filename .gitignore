@@ -1,6 +1,7 @@
 # User-specific stuff
 .idea/
 urlaub/
+.kotlin/
 
 *.iml
 *.ipr

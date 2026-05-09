@@ -4,26 +4,26 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.SimpleGui
 import io.github.skippyall.minions.gui.MinionsGui
 import io.github.skippyall.minions.gui.minion.SimpleMinionsGui
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.future.asCompletableFuture
 import net.minecraft.network.chat.Component
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.Items
 import java.util.concurrent.CompletableFuture
 
 object BooleanInput {
+    @JvmStatic
+    @JvmOverloads
     fun confirm(
         parent: MinionsGui,
         title: Component,
         falseText: Component = Component.translatable("minions.gui.abort"),
         trueText: Component = Component.translatable("minions.gui.confirm")
-    ): CompletableDeferred<Boolean> {
-        val deferred = CompletableDeferred<Boolean>()
+    ): CompletableFuture<Boolean> {
+        val future = CompletableFuture<Boolean>()
 
         SimpleMinionsGui(parent) { onClose: Runnable, me: SimpleMinionsGui ->
             val gui: SimpleGui = object : SimpleGui(MenuType.GENERIC_3x3, parent.viewer, false) {
                 override fun onPlayerClose(success: Boolean) {
-                    deferred.complete(false)
+                    future.complete(false)
                     onClose.run()
                 }
             }
@@ -33,7 +33,7 @@ object BooleanInput {
                 3, GuiElementBuilder(Items.REDSTONE_BLOCK)
                     .setName(falseText)
                     .setCallback(Runnable {
-                        deferred.complete(false)
+                        future.complete(false)
                         me.goBack()
                     })
             )
@@ -42,7 +42,7 @@ object BooleanInput {
                 5, GuiElementBuilder(Items.EMERALD_BLOCK)
                     .setName(trueText)
                     .setCallback(Runnable {
-                        deferred.complete(true)
+                        future.complete(true)
                         me.goBack()
                     })
             )
@@ -50,22 +50,6 @@ object BooleanInput {
             gui.open()
             gui
         }
-        return deferred
-    }
-
-    @JvmStatic
-    @JvmOverloads
-    fun confirmFuture(
-        parent: MinionsGui,
-        title: Component,
-        falseText: Component = Component.translatable("minions.gui.abort"),
-        trueText: Component = Component.translatable("minions.gui.confirm")
-    ): CompletableFuture<Boolean> {
-        return confirm(
-            parent,
-            title,
-            falseText,
-            trueText
-        ).asCompletableFuture()
+        return future
     }
 }

@@ -31,7 +31,8 @@ public class MinionPersistentState extends SavedData {
 
     public MinionPersistentState(List<MinionData> dataList) {
         for (MinionData data : dataList) {
-            minionData.put(data.uuid(), data);
+            data.setOnDirty(this::setDirty);
+            minionData.put(data.getUuid(), data);
         }
     }
 
@@ -48,7 +49,8 @@ public class MinionPersistentState extends SavedData {
     }
 
     public void updateMinionData(MinionData data) {
-        minionData.put(data.uuid(), data);
+        minionData.put(data.getUuid(), data);
+        data.setOnDirty(this::setDirty);
         setDirty();
     }
 
@@ -62,7 +64,7 @@ public class MinionPersistentState extends SavedData {
 
     public Optional<MinionData> getMinionWithName(String name) {
         return minionData.values().stream()
-                .filter(data -> data.name().equals(name))
+                .filter(data -> data.getName().equals(name))
                 .findFirst();
     }
 

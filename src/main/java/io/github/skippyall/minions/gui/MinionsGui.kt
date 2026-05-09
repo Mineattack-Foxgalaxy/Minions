@@ -38,7 +38,7 @@ abstract class MinionsGui {
 
     protected abstract fun open()
 
-    protected fun reopen() {
+    protected open fun reopen() {
         open()
     }
 

@@ -1,43 +1,64 @@
-package io.github.skippyall.minions.gui.minion;
+package io.github.skippyall.minions.gui.minion
 
-import io.github.skippyall.minions.minion.MinionRuntime;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
-import io.github.skippyall.minions.program.supplier.Parameter;
-import net.minecraft.server.level.ServerPlayer;
+import io.github.skippyall.minions.gui.minion.GuiContextImpl.*
+import io.github.skippyall.minions.minion.MinionRuntime
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer
+import io.github.skippyall.minions.program.instruction.ConfiguredInstruction
+import io.github.skippyall.minions.program.supplier.Parameter
+import net.minecraft.server.level.ServerPlayer
 
-public interface GuiContext {
-    ServerPlayer getViewer();
+interface GuiContext {
+    val viewer: ServerPlayer
 
-    static GuiContext create(ServerPlayer viewer) {
-        return new GuiContextImpl(viewer);
-    }
-
-    interface Minion extends GuiContext {
-        MinionFakePlayer getMinion();
-
-        static GuiContext.Minion create(GuiContext context, MinionFakePlayer minion) {
-            return new GuiContextImpl.MinionImpl(context, minion);
+    companion object {
+        @JvmStatic
+        fun create(viewer: ServerPlayer): GuiContext {
+            return GuiContextImpl(viewer)
         }
     }
 
-    interface Instruction extends Minion {
-        ConfiguredInstruction<MinionRuntime> getInstruction();
+    interface Minion : GuiContext {
+        val minion: MinionFakePlayer
 
-        String getName();
-
-        void setName(String name);
-
-        static GuiContext.Instruction create(GuiContext.Minion context, ConfiguredInstruction<MinionRuntime> instruction, String name) {
-            return new GuiContextImpl.InstructionImpl(context, instruction, name);
+        companion object {
+            @JvmStatic
+            fun create(context: GuiContext, minion: MinionFakePlayer): Minion {
+                return MinionImpl(
+                    if(context is MinionImpl) context.context else context,
+                    minion
+                )
+            }
         }
     }
 
-    interface ValueSupplier extends Instruction {
-        Parameter<?> getParameter();
+    interface Instruction : Minion {
+        val instruction: ConfiguredInstruction<MinionRuntime>
 
-        static GuiContext.ValueSupplier create(GuiContext.Instruction context, Parameter<?> parameter) {
-            return new GuiContextImpl.ValueSupplierImpl(context, parameter);
+        var name: String
+
+        companion object {
+            @JvmStatic
+            fun create(context: Minion, instruction: ConfiguredInstruction<MinionRuntime>, name: String): Instruction {
+                return InstructionImpl(
+                    if(context is InstructionImpl) context.context else context,
+                    instruction,
+                    name
+                )
+            }
+        }
+    }
+
+    interface ValueSupplier : Instruction {
+        val parameter: Parameter<*>
+
+        companion object {
+            @JvmStatic
+            fun create(context: Instruction, parameter: Parameter<*>): ValueSupplier {
+                return ValueSupplierImpl(
+                    if(context is ValueSupplierImpl) context.context else context,
+                    parameter
+                )
+            }
         }
     }
 }

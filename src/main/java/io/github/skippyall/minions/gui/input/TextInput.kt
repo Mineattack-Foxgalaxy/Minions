@@ -3,9 +3,6 @@ package io.github.skippyall.minions.gui.input
 import eu.pb4.sgui.api.elements.GuiElementBuilder
 import eu.pb4.sgui.api.gui.AnvilInputGui
 import io.github.skippyall.minions.gui.MinionsGui
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.coroutines.launch
 import net.minecraft.network.chat.Component
 import net.minecraft.world.inventory.AnvilMenu
@@ -29,10 +26,9 @@ class TextInput<T>(
     private lateinit var gui: AnvilInputGui
 
     private var result: Result<T, Component>? = null
-    val deferred = CompletableDeferred<T?>()
+    val future = CompletableFuture<T?>()
 
     init {
-        updateConfirmButton(defaultValue)
         open()
     }
 
@@ -44,14 +40,15 @@ class TextInput<T>(
 
             override fun onPlayerClose(success: Boolean) {
                 onBackingClosed()
-                if (deferred.isActive) {
-                    deferred.complete(null)
+                if (!future.isDone) {
+                    future.complete(null)
                 }
             }
         }
 
         gui.setTitle(title)
         gui.setDefaultInputValue(defaultValue)
+        updateConfirmButton(defaultValue)
         gui.open()
     }
 
@@ -74,7 +71,8 @@ class TextInput<T>(
 
     fun onConfirm() {
         result?.ifSuccess { success: T ->
-            deferred.complete(success)
+            future.complete(success)
+            goBack()
         }
     }
 
@@ -85,7 +83,7 @@ class TextInput<T>(
             title: Component,
             defaultValue: String,
             parser: suspend (String) -> Result<T, Component>,
-        ): Deferred<T?> {
+        ): CompletableFuture<T?> {
             val input = TextInput(
                 parent = gui,
                 title = title,
@@ -93,22 +91,7 @@ class TextInput<T>(
                 parser = parser,
             )
 
-            return input.deferred
-        }
-
-        @JvmStatic
-        fun <T>inputFuture(
-            gui: MinionsGui,
-            title: Component,
-            defaultValue: String,
-            parser: (String) -> Result<T, Component>,
-        ): CompletableFuture<T?> {
-            return input(
-                gui = gui,
-                title = title,
-                defaultValue = defaultValue,
-                parser = parser
-            ).asCompletableFuture()
+            return input.future
         }
 
         @JvmStatic
@@ -116,7 +99,7 @@ class TextInput<T>(
             gui: MinionsGui,
             title: Component,
             defaultValue: String,
-        ): Deferred<String?> {
+        ): CompletableFuture<String?> {
             return input<String>(
                 gui = gui,
                 title = title,
@@ -126,24 +109,11 @@ class TextInput<T>(
         }
 
         @JvmStatic
-        fun inputStringFuture(
-            gui: MinionsGui,
-            title: Component,
-            defaultValue: String,
-        ): CompletableFuture<String?> {
-            return inputString(
-                gui = gui,
-                title = title,
-                defaultValue = defaultValue,
-            ).asCompletableFuture()
-        }
-
-        @JvmStatic
         fun inputLong(
             gui: MinionsGui,
             title: Component,
             defaultValue: Long,
-        ): Deferred<Long?> {
+        ): CompletableFuture<Long?> {
             return input<Long>(
                 gui = gui,
                 title = title,
@@ -158,24 +128,11 @@ class TextInput<T>(
         }
 
         @JvmStatic
-        fun inputLongFuture(
-            gui: MinionsGui,
-            title: Component,
-            defaultValue: Long,
-        ): CompletableFuture<Long?> {
-            return inputLong(
-                gui = gui,
-                title = title,
-                defaultValue = defaultValue,
-            ).asCompletableFuture()
-        }
-
-        @JvmStatic
         fun inputDouble(
             gui: MinionsGui,
             title: Component,
             defaultValue: Double,
-        ): Deferred<Double?> {
+        ): CompletableFuture<Double?> {
             return input<Double>(
                 gui = gui,
                 title = title,
@@ -187,19 +144,6 @@ class TextInput<T>(
                     )
                 },
             )
-        }
-
-        @JvmStatic
-        fun inputDoubleFuture(
-            gui: MinionsGui,
-            title: Component,
-            defaultValue: Double,
-        ): CompletableFuture<Double?> {
-            return inputDouble(
-                gui = gui,
-                title = title,
-                defaultValue = defaultValue,
-            ).asCompletableFuture()
         }
     }
 }

@@ -73,7 +73,7 @@ public class InstructionGui {
     }
 
     public static CompletableFuture<String> inputInstructionName(MinionsGui parent, GuiContext.Minion context, String defaultValue) {
-        return TextInput.inputFuture(parent, Component.translatable("minions.gui.instruction.enter_name"), defaultValue, name -> {
+        return TextInput.input(parent, Component.translatable("minions.gui.instruction.enter_name"), defaultValue, (name, _) -> {
             if (context.getMinion().getInstructionManager().hasInstruction(name)) {
                 return new Result.Error<>(Component.translatable("minions.gui.instruction.name_already_used"));
             }

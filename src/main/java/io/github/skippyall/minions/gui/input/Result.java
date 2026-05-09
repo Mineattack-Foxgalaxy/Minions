@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public interface Result<T, E> {
+public sealed interface Result<T, E> permits Result.Success, Result.Error {
     static <T> Result<T, String> wrap(UnsafeOperation<T> toWrap) {
         return wrapCustomError(toWrap, Exception::getMessage);
     }

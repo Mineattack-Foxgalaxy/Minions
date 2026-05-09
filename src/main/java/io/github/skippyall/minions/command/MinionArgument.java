@@ -41,7 +41,7 @@ public class MinionArgument {
         @Override
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
             for (MinionData data : MinionPersistentState.get(context.getSource().getServer()).getMinionDataList()) {
-                builder.suggest(data.name());
+                builder.suggest(data.getName());
             }
 
             return builder.buildFuture();

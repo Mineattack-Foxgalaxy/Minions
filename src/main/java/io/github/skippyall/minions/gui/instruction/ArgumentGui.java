@@ -7,7 +7,6 @@ import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.PaginatedList;
 import io.github.skippyall.minions.gui.minion.GuiContext;
 import io.github.skippyall.minions.minion.MinionRuntime;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ValueSupplier;

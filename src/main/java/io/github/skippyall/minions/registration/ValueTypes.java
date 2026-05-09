@@ -22,7 +22,7 @@ public class ValueTypes {
                     Codec.LONG,
                     0L,
                     o -> o instanceof Long l ? l : null,
-                    (parent, oldValue) -> TextInput.inputLongFuture(
+                    (parent, oldValue) -> TextInput.inputLong(
                             parent,
                             Component.literal("Integer"),
                             oldValue
@@ -37,10 +37,10 @@ public class ValueTypes {
                     Codec.DOUBLE,
                     0D,
                     o -> o instanceof Double d ? d : null,
-                    (parent, oldValue) -> TextInput.inputDoubleFuture(
+                    (parent, oldValue) -> TextInput.inputDouble(
                             parent,
                             Component.literal("Number"),
-                            oldValue
+                            oldValue != null ? oldValue : 0D
                     ),
                     value -> Component.literal(value.toString())
             )
@@ -52,7 +52,7 @@ public class ValueTypes {
                     Codec.BOOL,
                     false,
                     o -> o instanceof Boolean b ? b : null,
-                    (parent, value) -> BooleanInput.confirmFuture(parent, Component.literal(""), Component.translatable("value_type.minions.boolean.false"), Component.translatable("value_type.minions.boolean.true")),
+                    (parent, value) -> BooleanInput.confirm(parent, Component.literal(""), Component.translatable("value_type.minions.boolean.false"), Component.translatable("value_type.minions.boolean.true")),
                     value -> Component.literal(value.toString())
             )
     );
@@ -63,7 +63,7 @@ public class ValueTypes {
                     Codec.STRING,
                     "",
                     o -> o instanceof String s ? s : null,
-                    ((parent, oldValue) -> TextInput.inputStringFuture(
+                    ((parent, oldValue) -> TextInput.inputString(
                             parent,
                             Component.literal("Text"),
                             oldValue

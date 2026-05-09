@@ -79,7 +79,7 @@ public class MinionItem extends Item implements PolymerItem {
     }
 
     public static void setData(MinecraftServer server, MinionData data, ItemStack item) {
-        item.set(MinionComponentTypes.MINION_DATA, data.uuid());
+        item.set(MinionComponentTypes.MINION_DATA, data.getUuid());
         MinionPersistentState.get(server).updateMinionData(data);
     }
 
