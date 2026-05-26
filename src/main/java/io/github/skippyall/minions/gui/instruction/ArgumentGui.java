@@ -18,7 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ArgumentGui extends MinionsGui {
     private final GuiContext.ValueSupplier context;
@@ -28,7 +28,7 @@ public class ArgumentGui extends MinionsGui {
     private SimpleGui gui;
 
     private @Nullable ValueSupplierType<MinionRuntime> argumentType;
-    private @Nullable ValueSupplierList.ValueSupplierEntry<?, MinionRuntime> entry;
+    private ValueSupplierList. @Nullable ValueSupplierEntry<?, MinionRuntime> entry;
 
     public ArgumentGui(MinionsGui parent, GuiContext.ValueSupplier context) {
         super(parent);
@@ -37,9 +37,7 @@ public class ArgumentGui extends MinionsGui {
         this.context = context;
 
         this.entry = instruction.getArguments().getEntry(parameter);
-        if(entry != null) {
-            this.argumentType = entry.getSupplier().getType();
-        }
+        this.argumentType = entry.getSupplier().getType();
         open();
     }
 

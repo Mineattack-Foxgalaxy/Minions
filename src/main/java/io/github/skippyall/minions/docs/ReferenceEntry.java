@@ -15,6 +15,7 @@ import net.minecraft.server.dialog.body.DialogBody;
 import net.minecraft.server.dialog.body.ItemBody;
 import net.minecraft.server.dialog.body.PlainMessage;
 import net.minecraft.world.item.Item;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,7 @@ public record ReferenceEntry(Metadata metadata, ResourceKey<?> object, Component
         return bodyElements;
     }
 
-    public GuiDisplay getObjectDisplay(RegistryAccess manager) {
+    public @Nullable GuiDisplay getObjectDisplay(RegistryAccess manager) {
         GuiDisplay display = GuiDisplay.DEFAULT_DISPLAY;
         if(object.isFor(Registries.ITEM) || object.isFor(Registries.BLOCK)) {
             Item item;

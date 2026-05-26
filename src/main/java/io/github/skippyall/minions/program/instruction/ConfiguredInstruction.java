@@ -8,9 +8,13 @@ import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.registration.MinionRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Holds an instruction, its configuration and is responsible for executing the instruction
@@ -24,6 +28,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     private boolean paused = false;
 
     private SerializableListenerManager<ConfiguredInstructionListener> listeners = new SerializableListenerManager<>();
+    private List<Component> lastErrors = List.of();
 
     private ConfiguredInstruction(
             InstructionType<R> instruction,
@@ -64,8 +69,18 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         return arguments;
     }
 
+    public List<Component> preCheck() {
+        List<Component> errors = new ArrayList<>();
+        arguments.checkRun(instruction, errors::add);
+        return errors;
+    }
+
     public boolean canRun() {
-        return instruction != null && arguments != null && arguments.checkRun(instruction) == null;
+        return preCheck().isEmpty();
+    }
+
+    public List<Component> getLastErrors() {
+        return lastErrors;
     }
 
     public boolean isRunning() {
@@ -78,15 +93,21 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
 
     public void run(R minion) {
         if(canRun() && !isRunning()) {
+            lastErrors = new ArrayList<>();
             try {
-                ParameterValueList resolvedArguments = arguments.resolve(minion);
-                execution = instruction.createExecution(resolvedArguments, minion);
-                execution.start(minion);
+                ParameterValueList resolvedArguments = arguments.resolve(minion, lastErrors::add);
+                if(lastErrors.isEmpty()) {
+                    execution = instruction.createExecution(resolvedArguments, minion);
+                    execution.start(minion);
+                }
             } catch (Exception e) {
                 Minions.LOGGER.error("An error occurred while executing configured Instruction", e);
+                lastErrors.add(Component.translatable("minions.gui.instruction.check.internal_error"));
             }
 
-            listeners.forEach(listener -> listener.onRun(this));
+            for(ConfiguredInstructionListener listener : listeners) {
+                listener.onRun(this);
+            }
         }
     }
 

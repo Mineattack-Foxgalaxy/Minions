@@ -36,7 +36,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 public class MinionTriggerBlock extends InstructionBoundBlock implements PolymerBlock, PolymerClientDecoded, BlockWithElementHolder {
     public static final MapCodec<MinionTriggerBlock> CODEC = simpleCodec(MinionTriggerBlock::new);
@@ -70,6 +71,7 @@ public class MinionTriggerBlock extends InstructionBoundBlock implements Polymer
     }
 
     @Override
+    @NullMarked
     protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block sourceBlock, @Nullable Orientation wireOrientation, boolean notify) {
         if(!canSurvive(state, world, pos)) {
             dropResources(state, world, pos);
@@ -105,7 +107,7 @@ public class MinionTriggerBlock extends InstructionBoundBlock implements Polymer
     }
 
     @Override
-    public BlockState getPolymerBlockState(BlockState state, PacketContext context) {
+    public BlockState getPolymerBlockState(BlockState state, @Nullable PacketContext context) {
         return VersionSync.isOnClient(context) ? state : net.minecraft.world.level.block.Blocks.COMPARATOR.defaultBlockState().setValue(DiodeBlock.POWERED, state.getValue(POWERED));
     }
 

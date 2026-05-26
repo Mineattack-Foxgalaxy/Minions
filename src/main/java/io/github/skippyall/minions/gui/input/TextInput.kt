@@ -9,7 +9,7 @@ import net.minecraft.world.inventory.AnvilMenu
 import net.minecraft.world.item.Items
 import java.util.concurrent.CompletableFuture
 
-class TextInput<T>(
+class TextInput<T : Any>(
     parent: MinionsGui,
     val title: Component,
     val defaultValue: String,
@@ -78,7 +78,7 @@ class TextInput<T>(
 
     companion object {
         @JvmStatic
-        fun <T>input(
+        fun <T : Any>input(
             gui: MinionsGui,
             title: Component,
             defaultValue: String,
@@ -104,7 +104,7 @@ class TextInput<T>(
                 gui = gui,
                 title = title,
                 defaultValue = defaultValue,
-                parser = { result: String? -> Result.Success<String, Component>(result) },
+                parser = { result -> Result.Success(result) },
             )
         }
 
@@ -121,7 +121,7 @@ class TextInput<T>(
                 parser = { string ->
                     Result.wrapCustomError<Long, Component>(
                         { string.toLong() },
-                        Component.translatable("minions.command.input.int.fail")
+                        Component.translatable("value_type.minions.long.not_long")
                     )
                 },
             )
@@ -140,7 +140,7 @@ class TextInput<T>(
                 parser = { string ->
                     Result.wrapCustomError<Double, Component>(
                         { string.toDouble() },
-                        Component.translatable("minions.command.input.int.fail")
+                        Component.translatable("value_type.minions.long.not_long")
                     )
                 },
             )

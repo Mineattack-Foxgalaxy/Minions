@@ -8,8 +8,7 @@ import io.github.skippyall.minions.registration.MinionRegistries
 import net.minecraft.core.UUIDUtil
 import net.minecraft.server.MinecraftServer
 import net.minecraft.util.ExtraCodecs
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 

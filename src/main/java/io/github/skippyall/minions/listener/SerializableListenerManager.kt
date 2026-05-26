@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec
 import io.github.skippyall.minions.listener.SerializableListenerManager.SerializableListener
 import net.minecraft.core.Registry
 import net.minecraft.resources.Identifier
-import java.util.Optional
+import java.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
 class SerializableListenerManager<T : SerializableListener>(

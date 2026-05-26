@@ -24,7 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
@@ -64,7 +64,7 @@ public class InstructionGui {
         ServerPlayer viewer = parent.viewer;
         selectInstructionModuleMenu(parent, context).thenAccept(instructionType ->
                 inputInstructionName(parent, context, "Instruction").thenAccept(name -> {
-                    if (!minion.isRemoved() && !minion.hasDisconnected()) {
+                    if (!minion.isRemoved() && !minion.hasDisconnected() && name != null) {
                         ConfiguredInstruction<MinionRuntime> configuredInstruction = minion.getInstructionManager().createInstruction(name, instructionType);
                         new ConfigureInstructionGui(parent, GuiContext.Instruction.create(context, configuredInstruction, name));
                     }
@@ -72,7 +72,7 @@ public class InstructionGui {
         );
     }
 
-    public static CompletableFuture<String> inputInstructionName(MinionsGui parent, GuiContext.Minion context, String defaultValue) {
+    public static CompletableFuture<@Nullable String> inputInstructionName(MinionsGui parent, GuiContext.Minion context, String defaultValue) {
         return TextInput.input(parent, Component.translatable("minions.gui.instruction.enter_name"), defaultValue, (name, _) -> {
             if (context.getMinion().getInstructionManager().hasInstruction(name)) {
                 return new Result.Error<>(Component.translatable("minions.gui.instruction.name_already_used"));
@@ -163,7 +163,7 @@ public class InstructionGui {
         return future;
     }
 
-    public static GuiElementBuilder createInstructionElement(InstructionType<MinionRuntime> instructionType, RegistryAccess manager) {
+    public static GuiElementBuilder createInstructionElement(@Nullable InstructionType<MinionRuntime> instructionType, RegistryAccess manager) {
         GuiElementBuilder instructionBuilder;
         if (instructionType != null) {
             instructionBuilder = new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.INSTRUCTION_TYPES, instructionType, manager));

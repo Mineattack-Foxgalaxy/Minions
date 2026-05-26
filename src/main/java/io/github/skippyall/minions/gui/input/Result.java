@@ -1,7 +1,6 @@
 package io.github.skippyall.minions.gui.input;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -27,7 +26,7 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
 
     static <T, E> Result<T, E> ofNullable(@Nullable T value, E error) {
         if(value != null) {
-            return new Success<>(value);
+            return new Success<T, E>(value);
         } else {
             return new Error<>(error);
         }
@@ -35,7 +34,7 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
 
     static <T, E> Result<T, E> ofNullable(@Nullable T value, Supplier<E> error) {
         if(value != null) {
-            return new Success<>(value);
+            return new Success<T, E>(value);
         } else {
             return new Error<>(error.get());
         }
@@ -49,13 +48,13 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
 
     E getErrorOrThrow();
 
-    @NotNull Optional<T> getOptional();
+    Optional<T> getOptional();
 
-    @NotNull Optional<E> getOptionalError();
+    Optional<E> getOptionalError();
 
-    void ifSuccess(@NotNull Consumer<T> handler);
+    void ifSuccess(Consumer<T> handler);
 
-    void ifError(@NotNull Consumer<Error<T, E>> handler);
+    void ifError(Consumer<Error<T, E>> handler);
 
     <U> Result<U,E> map(Function<T, U> mapper);
 
@@ -75,7 +74,7 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
         }
 
         @Override
-        public @NotNull Optional<E> getOptionalError() {
+        public Optional<E> getOptionalError() {
             return Optional.empty();
         }
 
@@ -90,17 +89,17 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
         }
 
         @Override
-        public @NotNull Optional<T> getOptional() {
+        public Optional<T> getOptional() {
             return Optional.ofNullable(result);
         }
 
         @Override
-        public void ifSuccess(@NotNull Consumer<T> handler) {
+        public void ifSuccess(Consumer<T> handler) {
             handler.accept(result);
         }
 
         @Override
-        public void ifError(@NotNull Consumer<Error<T, E>> handler) {
+        public void ifError(Consumer<Error<T, E>> handler) {
 
         }
 
@@ -143,22 +142,22 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
         }
 
         @Override
-        public @NotNull Optional<T> getOptional() {
+        public Optional<T> getOptional() {
             return Optional.empty();
         }
 
         @Override
-        public @NotNull Optional<E> getOptionalError() {
+        public Optional<E> getOptionalError() {
             return Optional.ofNullable(message);
         }
 
         @Override
-        public void ifSuccess(@NotNull Consumer<T> handler) {
+        public void ifSuccess(Consumer<T> handler) {
 
         }
 
         @Override
-        public void ifError(@NotNull Consumer<Error<T, E>> handler) {
+        public void ifError(Consumer<Error<T, E>> handler) {
             handler.accept(this);
         }
 

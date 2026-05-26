@@ -10,7 +10,8 @@ import io.github.skippyall.minions.registration.MinionRegistration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,6 @@ public class Minions implements ModInitializer {
 
         PolymerResourcePackUtils.addModAssets(Minions.MOD_ID);
 
-        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new DocsManager());
+        ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(Identifier.fromNamespaceAndPath(Minions.MOD_ID, "docs"), new DocsManager());
     }
 }

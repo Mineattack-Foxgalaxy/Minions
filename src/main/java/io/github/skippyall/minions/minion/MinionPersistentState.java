@@ -7,6 +7,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
+import org.jspecify.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +38,7 @@ public class MinionPersistentState extends SavedData {
         }
     }
 
-    public MinionData getMinionData(UUID uuid) {
+    public @Nullable MinionData getMinionData(UUID uuid) {
         return minionData.get(uuid);
     }
 

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An <code>ValueSupplier</code> can be supplied to an instruction with a matching parameter.

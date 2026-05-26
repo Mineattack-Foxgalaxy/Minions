@@ -34,6 +34,7 @@
   "minions.gui.instruction.configure.delete.confirm": "Delete %s?",
   "minions.gui.instruction.configure.copy": "Copy Reference",
   "minions.gui.instruction.configure.copy.description": "Click here and then use a Minion Trigger Block to bind it",
+  "minions.gui.instruction.last_errors": "Last Errors",
   "minions.gui.instruction.run": "Run",
   "minions.gui.instruction.stop": "Stop",
   "minions.gui.instruction.argument.title": "Argument for %s (%s)",
@@ -44,30 +45,19 @@
   "minions.gui.instruction.parameter": "%s: %s",
   "minions.gui.instruction.argument": "Argument: %s",
 
-  "minions.gui.instruction.check.argument_not_set": "Argument %s is not set",
-
   "minions.gui.instruction.converters": "Converters",
   "minions.gui.instruction.converters.cast": "Cast from %s to %s",
   "minions.gui.instruction.converter.title": "Configure Converter",
   "minions.gui.instruction.converter.type.title": "Select a Converter Type",
   "minions.gui.instruction.converter.data": "Converter Data",
 
-  "minions.converter.list.passing_error": "Error while passing previous value to converter #%s: %s",
-
-  "minions.command.input.int.fail": "Not an integer",
-  "minions.command.input.float.fail": "Not a number",
-  "minions.command.action.details": "Set how to %s",
-  "minions.command.action.once": "%s once",
-  "minions.command.action.continuous": "%s continuously",
-  "minions.command.action.interval": "%s every x seconds",
-  "minions.command.action.stop": "Stop %s",
-  "minions.command.action.interval.enter": "Enter an interval in seconds",
-  "minions.command.interact.name": "Interact",
-  "minions.command.interact.description": "Use and place blocks",
-  "minions.command.attack.name": "Attack",
-  "minions.command.attack.description": "Attack and mine blocks",
-
-  "minions.command.minion.not_present": "This minion does not exist",
+  "minions.gui.instruction.check.instruction_type_not_set": "Instruction Type is not set",
+  "minions.gui.instruction.check.arguments_not_set": "Arguments are not set",
+  "minions.gui.instruction.check.argument_not_set": "Argument %s is not set",
+  "minions.gui.instruction.check.internal_error": "Internal Error, check server console",
+  "minions.instruction.argument.error": "Error while getting argument for %s:",
+  "minions.converter.list.passing_error": "Error while passing previous value to converter #%s:",
+  "minions.converter.cast.not_found": "No cast from %s to %s",
 
   "minions.reference.instruction.tooltip": "Linked to instruction %s in %s",
   "minions.reference.block.tooltip": "Linked to block at %s",
@@ -88,6 +78,7 @@
   "instruction.minions.turn_vector.description": "Turn the head so that it faces a block with specific cardinal offsets",
 
   "value_type.minions.long": "Integer",
+  "value_type.minions.long.not_long": "Not an Integer",
   "value_type.minions.double": "Decimal",
   "value_type.minions.boolean": "Boolean",
   "value_type.minions.boolean.true": "True",
@@ -125,5 +116,6 @@
   "minions.generic.name.invalid": "Name is invalid",
   "minions.generic.name.taken": "This name is already used",
   "minions.generic.mod_name": "Minions",
-  "minions.generic.unknown": "Unknown"
+  "minions.generic.unknown": "Unknown",
+  "minions.generic.error": "Error"
 }

@@ -13,7 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -45,7 +45,7 @@ public abstract class BlockEntityMinionListener<E extends BlockEntity> implement
         this.minion = null;
     }
 
-    public static <T extends BlockEntityMinionListener<?>> T getListener(Level world, BlockPos pos, UUID minionUuid, Class<T> clazz) {
+    public static <T extends BlockEntityMinionListener<?>> @Nullable T getListener(Level world, BlockPos pos, @Nullable UUID minionUuid, Class<T> clazz) {
         if(minionUuid != null) {
             for (MinionListener listener : MinionPersistentState.get(world.getServer()).getMinionData(minionUuid).getListeners()) {
                 if (listener instanceof BlockEntityMinionListener<?> tl && tl.pos.equals(pos) && tl.worldKey.equals(world.dimension()) && clazz.isInstance(tl)) {

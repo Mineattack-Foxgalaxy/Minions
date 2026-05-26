@@ -10,6 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.server.permissions.Permissions;
+import org.jspecify.annotations.Nullable;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
@@ -48,7 +49,7 @@ public class SpawnSubcommand {
                             ))
             );
 
-    public static int spawnCommand(CommandSourceStack source, String minion, Coordinates pos, boolean force) throws CommandSyntaxException {
+    public static int spawnCommand(CommandSourceStack source, String minion, @Nullable Coordinates pos, boolean force) throws CommandSyntaxException {
         MinionData data = MinionArgument.parse(source.getServer(), minion);
         MinionFakePlayer.spawnMinion(data, source.getLevel(), pos != null ? pos.getPosition(source) : null, pos != null ? pos.getRotation(source) : null, force);
         return 0;

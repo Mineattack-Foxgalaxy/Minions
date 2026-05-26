@@ -8,6 +8,8 @@ import io.github.skippyall.minions.gui.input.Result;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtil;
+import org.jspecify.annotations.Nullable;
+
 import java.util.UUID;
 
 import static io.github.skippyall.minions.Minions.LOGGER;
@@ -17,7 +19,7 @@ public class MinionProfileUtils {
         return MinionsConfig.get().minion.minionPrefix;
     }
 
-    public static GameProfile makeNewMinionProfile(UUID uuidMinion, String username, PropertyMap skin) {
+    public static GameProfile makeNewMinionProfile(@Nullable UUID uuidMinion, String username, @Nullable PropertyMap skin) {
         if(uuidMinion == null) {
             uuidMinion = UUID.randomUUID();
         }

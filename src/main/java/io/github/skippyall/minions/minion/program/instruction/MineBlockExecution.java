@@ -16,9 +16,10 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jspecify.annotations.Nullable;
 
 public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
-    private BlockPos currentBlock;
+    private @Nullable BlockPos currentBlock;
     private float currentBlockDamage = 0;
     private boolean first = true;
     private boolean done = false;
@@ -38,7 +39,6 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
             }
             if (player.blockActionRestricted(player.level(), hit.getBlockPos(), player.gameMode.getGameModeForPlayer())) {
                 done = true;
-                return;
             }
         } else {
             done = true;

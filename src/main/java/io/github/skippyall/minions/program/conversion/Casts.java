@@ -7,7 +7,7 @@ import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueTypes;
 import io.github.skippyall.minions.util.TranslationUtil;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class Casts {
     public static <F,T> @Nullable Cast<F,T> getCast(ValueType<F> from, ValueType<T> to) {
@@ -28,11 +28,16 @@ public class Casts {
             return (Cast<F, T>) new Cast.CastCrafter<>(from, ValueTypes.STRING, String::valueOf).craftCast();
         }
 
+        if(from == ValueTypes.STRING && to == ValueTypes.DOUBLE) {
+            //noinspection unchecked
+            return (Cast<F, T>) new Cast.CastCrafter<>(ValueTypes.STRING, ValueTypes.DOUBLE, Double::parseDouble).canFail().lossy().craftCast();
+        }
+
         return null;
     }
 
     public static <F,T> @Nullable T cast(TypedValue<F> from, ValueType<T> to) {
-        @Nullable Cast<F,T> cast = getCast(from.type(), to);
+        Cast<F,T> cast = getCast(from.type(), to);
         if(cast != null) {
             return cast.cast(from.value());
         } else {

@@ -9,12 +9,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionListener<?>> extends BlockEntity {
-    protected UUID minionUuid;
+    protected @Nullable UUID minionUuid;
     protected String instructionName = "";
 
     public InstructionBoundBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -56,7 +57,7 @@ public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionLis
         return Optional.empty();
     }
 
-    public UUID getMinionUuid() {
+    public @Nullable UUID getMinionUuid() {
         return minionUuid;
     }
 
@@ -72,7 +73,7 @@ public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionLis
         return getMinion().flatMap(this::getInstruction);
     }
 
-    public L getListener() {
+    public @Nullable L getListener() {
         return BlockEntityMinionListener.getListener(level, worldPosition, minionUuid, getListenerClass());
     }
 }

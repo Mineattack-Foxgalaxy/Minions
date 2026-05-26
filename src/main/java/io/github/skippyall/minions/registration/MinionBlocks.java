@@ -36,6 +36,7 @@ public class MinionBlocks {
                     FabricBlockEntityTypeBuilder.create(MinionTriggerBlockEntity::new, MINION_TRIGGER_BLOCK).build()
             );
 
+
     public static final Identifier ANALOG_INPUT_BLOCK_ID = Identifier.fromNamespaceAndPath(Minions.MOD_ID, "analog_input");
     public static final AnalogInputBlock ANALOG_INPUT_BLOCK = Registry.register(
             BuiltInRegistries.BLOCK,

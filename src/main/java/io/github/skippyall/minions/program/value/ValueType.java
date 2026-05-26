@@ -3,7 +3,7 @@ package io.github.skippyall.minions.program.value;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.MinionsGui;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 

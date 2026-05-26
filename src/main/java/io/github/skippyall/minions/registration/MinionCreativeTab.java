@@ -7,11 +7,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MinionCreativeTab {
+    @Nullable
     public static CreativeModeTab group;
 
     private static final List<Item> items = new ArrayList<>();

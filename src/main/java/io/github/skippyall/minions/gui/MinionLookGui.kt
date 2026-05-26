@@ -20,7 +20,7 @@ import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.component.ResolvableProfile
-import java.util.Optional
+import java.util.*
 
 class MinionLookGui(
     viewer: ServerPlayer,
@@ -93,7 +93,7 @@ class MinionLookGui(
     fun openSkinGui() {
         scope.launch {
             val profile = currentSkinProvider.openSkinMenu(this@MinionLookGui).await()
-            val skin = profile.resolveProfile(viewer.level().server.services().profileResolver()).await()
+            val skin = profile?.resolveProfile(viewer.level().server.services().profileResolver())?.await()
 
             data.skin = Optional.ofNullable(skin?.properties())
 

@@ -1,6 +1,7 @@
 package io.github.skippyall.minions;
 
 import net.fabricmc.loader.api.FabricLoader;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -15,6 +16,7 @@ public class MinionMixinConfigPlugin implements IMixinConfigPlugin {
     }
 
     @Override
+    @Nullable
     public String getRefMapperConfig() {
         return null;
     }
@@ -34,6 +36,7 @@ public class MinionMixinConfigPlugin implements IMixinConfigPlugin {
     public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {}
 
     @Override
+    @Nullable
     public List<String> getMixins() {
         return null;
     }

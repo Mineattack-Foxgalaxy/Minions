@@ -7,7 +7,6 @@ import io.github.skippyall.minions.registration.MinionComponentTypes;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -19,13 +18,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
+import org.jspecify.annotations.Nullable;
 
 public class MinionItem extends Item implements PolymerItem {
     public MinionItem(Properties settings) {
@@ -49,13 +45,13 @@ public class MinionItem extends Item implements PolymerItem {
         return out;
     }
 
-    @Override
+    /*@Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay component, Consumer<Component> tooltip, TooltipFlag type) {
         //MinionData data = getData(stack);
         //if(data != null) {
         //    tooltip.accept(Component.translatable("minions.minion_item.tooltip", data.name()));
         //}
-    }
+    }*/
 
     @Override
     public InteractionResult use(Level world, Player user, InteractionHand hand) {

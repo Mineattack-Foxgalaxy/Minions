@@ -10,7 +10,7 @@ import io.github.skippyall.minions.program.conversion.ConverterList;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.value.TypedValue;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +37,7 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
         return List.copyOf(arguments.values());
     }
 
-    public ValueSupplier<?,R> getArgument(Parameter<?> parameter) {
+    public @Nullable ValueSupplier<?,R> getArgument(Parameter<?> parameter) {
         if(arguments.containsKey(parameter)) {
             return arguments.get(parameter).supplier;
         } else {
@@ -60,10 +60,10 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
         arguments.remove(parameter);
     }
 
-    public ParameterValueList resolve(R runtime) {
+    public ParameterValueList resolve(R runtime, Consumer<Component> errorConsumer) {
         ParameterValueList list = new ParameterValueList();
         for(ValueSupplierEntry<?,R> argument : arguments.values()) {
-            argument.addToList(list, runtime);
+            argument.addToList(list, runtime, errorConsumer);
         }
         return list;
     }
@@ -72,28 +72,20 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
         return arguments.containsKey(parameter);
     }
 
-    public @Nullable Component checkHasArguments(Collection<Parameter<?>> checkParameters) {
+    public void checkHasArguments(Collection<Parameter<?>> checkParameters, Consumer<Component> errorConsumer) {
         for(Parameter<?> parameter : checkParameters) {
             if(!hasArgumentFor(parameter)) {
-                return Component.translatable("minions.gui.instruction.check.argument_not_set", parameter.name());
+                errorConsumer.accept(Component.translatable("minions.gui.instruction.check.argument_not_set", parameter.name()));
             }
         }
-        return null;
     }
 
-    public @Nullable Component checkRun(InstructionType<R> instructionType) {
-        @Nullable Component checkResult = checkHasArguments(instructionType.getParameters());
-        if(checkResult != null) {
-            return checkResult;
-        }
+    public void checkRun(InstructionType<R> instructionType, Consumer<Component> errorConsumer) {
+        checkHasArguments(instructionType.getParameters(), errorConsumer);
 
         for(ValueSupplierEntry<?,R> entry : arguments.values()) {
-            checkResult = entry.check();
-            if(checkResult != null) {
-                return checkResult;
-            }
+            entry.check(errorConsumer);
         }
-        return null;
     }
 
     private void onChange(Parameter<?> parameter) {
@@ -148,15 +140,13 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
             this.supplier = supplier;
         }
 
-        private @Nullable Component addToList(ParameterValueList list, R runtime) {
+        private void addToList(ParameterValueList list, R runtime, Consumer<Component> errorConsumer) {
             Result<P, Component> result = getValue(supplier, runtime);
             switch (result) {
-                case Result.Success<P, Component> success -> {
-                    list.setValue(parameter, success.result());
-                    return null;
-                }
+                case Result.Success<P, Component> success -> list.setValue(parameter, success.result());
                 case Result.Error<P, Component> error -> {
-                    return error.message();
+                    errorConsumer.accept(Component.translatable("minions.instruction.argument.error", parameter.name()));
+                    errorConsumer.accept(error.message());
                 }
             }
         }
@@ -168,7 +158,7 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
             return convertedResult.flatMap(convertedValue -> Casts.castOrError(convertedValue, parameter.type()));
         }
 
-        public @Nullable Component check() {
+        public @Nullable Component check(Consumer<Component> errorConsumer) {
             //TODO check it
             return null;
         }

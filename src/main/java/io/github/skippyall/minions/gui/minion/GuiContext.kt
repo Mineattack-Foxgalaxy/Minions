@@ -1,6 +1,8 @@
 package io.github.skippyall.minions.gui.minion
 
-import io.github.skippyall.minions.gui.minion.GuiContextImpl.*
+import io.github.skippyall.minions.gui.minion.GuiContextImpl.InstructionImpl
+import io.github.skippyall.minions.gui.minion.GuiContextImpl.MinionImpl
+import io.github.skippyall.minions.gui.minion.GuiContextImpl.ValueSupplierImpl
 import io.github.skippyall.minions.minion.MinionRuntime
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction

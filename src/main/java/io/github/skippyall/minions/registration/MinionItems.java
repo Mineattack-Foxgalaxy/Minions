@@ -1,8 +1,7 @@
 package io.github.skippyall.minions.registration;
 
-import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
-import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlockItem;
+import io.github.skippyall.minions.block.MinionsBlockItem;
 import io.github.skippyall.minions.clipboard.ClipboardItem;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionRuntime;
@@ -69,12 +68,17 @@ public class MinionItems {
             List.of(SpecialAbilities.MOB_SPAWNING)
     );
 
-    public static final PolymerBlockItem MINION_TRIGGER_ITEM =
-            registerItem(
-                    MinionBlocks.MINION_TRIGGER_ID,
-                    settings -> new MinionTriggerBlockItem(MinionBlocks.MINION_TRIGGER_BLOCK, settings, Items.COMPARATOR),
-                    new Item.Properties().useBlockDescriptionPrefix()
-            );
+    public static final MinionsBlockItem MINION_TRIGGER_ITEM = registerItem(
+            MinionBlocks.MINION_TRIGGER_ID,
+            settings -> new MinionsBlockItem(MinionBlocks.MINION_TRIGGER_BLOCK, settings, Items.COMPARATOR),
+            new Item.Properties().useBlockDescriptionPrefix()
+    );
+
+    public static final MinionsBlockItem ANALOG_INPUT_ITEM = registerItem(
+            MinionBlocks.ANALOG_INPUT_BLOCK_ID,
+            settings -> new MinionsBlockItem(MinionBlocks.ANALOG_INPUT_BLOCK, settings, Items.REPEATER),
+            new Item.Properties().useBlockDescriptionPrefix()
+    );
 
     public static final ClipboardItem REFERENCE_ITEM = registerItem(Identifier.fromNamespaceAndPath(MOD_ID, "clipboard"), ClipboardItem::new);
 

@@ -19,6 +19,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
 
+import java.util.List;
+
 public class ConfigureInstructionGui extends MinionsGui implements ConfiguredInstructionListener, MinionListener {
     private String name;
     private final ConfiguredInstruction<MinionRuntime> instruction;
@@ -53,7 +55,9 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
         gui.setSlot(6, new GuiElementBuilder(Items.ANVIL)
                 .setName(Component.translatable("minions.gui.instruction.configure.rename"))
                 .setCallback(() -> InstructionGui.inputInstructionName(this, context, name).thenAccept(newName -> {
-                    minion.getInstructionManager().setInstructionName(name, newName);
+                    if(newName != null) {
+                        minion.getInstructionManager().setInstructionName(name, newName);
+                    }
                     reopen();
                 }))
         );
@@ -84,6 +88,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
                 })
         );
 
+        updateLastError();
         updateRunSlot();
         gui.open();
     }
@@ -105,6 +110,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
     @Override
     public void onRun(ConfiguredInstruction<?> instruction) {
         updateRunSlot();
+        updateLastError();
     }
 
     @Override
@@ -128,6 +134,18 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
                     .setName(Component.translatable("minions.gui.instruction.stop"))
                     .setCallback(() -> instruction.stop(minion.getInstructionManager()))
             );
+        }
+    }
+
+    private void updateLastError() {
+        List<Component> errors = instruction.getLastErrors();
+        if(!errors.isEmpty()) {
+            GuiElementBuilder builder = new GuiElementBuilder(Items.RED_WOOL)
+                    .setName(Component.translatable("minions.gui.instruction.last_errors"));
+            for(Component error : errors) {
+                builder.addLoreLine(error);
+            }
+            gui.setSlot(17, builder);
         }
     }
 

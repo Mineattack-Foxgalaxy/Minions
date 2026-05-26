@@ -11,13 +11,14 @@ import com.electronwill.nightconfig.core.serde.annotations.SerdeComment;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import com.electronwill.nightconfig.toml.TomlParser;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class MinionsConfig {
-    private static MinionsConfig INSTANCE;
+    private static @Nullable MinionsConfig INSTANCE;
 
     public Minion minion = new Minion();
 

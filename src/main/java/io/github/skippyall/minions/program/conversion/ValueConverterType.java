@@ -3,7 +3,7 @@ package io.github.skippyall.minions.program.conversion;
 import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.program.value.ValueType;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 

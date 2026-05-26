@@ -3,6 +3,7 @@ package io.github.skippyall.minions.docs;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +36,9 @@ public class DocsTree {
     }
 
     public static abstract sealed class Element {
-        private BranchElement parent;
+        private @Nullable BranchElement parent;
 
-        public BranchElement getParent() {
+        public @Nullable BranchElement getParent() {
             return parent;
         }
 
@@ -45,12 +46,20 @@ public class DocsTree {
             this.parent = parent;
         }
 
-        public DocElement next() {
-            return parent.next(this);
+        public @Nullable DocElement next() {
+            if (parent != null) {
+                return parent.next(this);
+            } else {
+                return null;
+            }
         }
 
-        public DocElement previous() {
-            return parent.previous(this);
+        public @Nullable DocElement previous() {
+            if (parent != null) {
+                return parent.previous(this);
+            } else {
+                return null;
+            }
         }
     }
 
@@ -101,7 +110,7 @@ public class DocsTree {
             };
         }
 
-        public DocElement next(Element current) {
+        public @Nullable DocElement next(Element current) {
             int nextIndex = e.indexOf(current) + 1;
             if(nextIndex < e.size()) {
                 return switch (e.get(nextIndex)) {
@@ -117,7 +126,7 @@ public class DocsTree {
             }
         }
 
-        public DocElement previous(Element current) {
+        public @Nullable DocElement previous(Element current) {
             int previousIndex = e.indexOf(current) - 1;
             if(previousIndex >= 0) {
                 return switch (e.get(previousIndex)) {

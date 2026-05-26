@@ -8,11 +8,12 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import org.jspecify.annotations.Nullable;
 
 public class VersionSync {
     public static final int NETWORK_VERSION = 1;
 
-    public static boolean isOnClient(PacketContext context) {
+    public static boolean isOnClient(@Nullable PacketContext context) {
         if(context != null && context.get(PacketContext.CONNECTION).getPacketListener() instanceof ServerGamePacketListenerImpl gamePacketListener) {
             return isOnClient(gamePacketListener);
         }

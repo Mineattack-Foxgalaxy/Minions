@@ -3,6 +3,7 @@ package io.github.skippyall.minions.program.consumer;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class ValueConsumerList<R extends InstructionRuntime<R>> {
         this.valueConsumers = new HashMap<>(valueConsumers);
     }
 
-    public <T, A extends ValueConsumer<T,R>> A getValueConsumer(Parameter<T> parameter) {
+    public <T, A extends ValueConsumer<T,R>> @Nullable A getValueConsumer(Parameter<T> parameter) {
         ValueConsumer<?,R> argument = valueConsumers.get(parameter.name());
         return argument == null ? null : argument.cast(parameter.type());
     }

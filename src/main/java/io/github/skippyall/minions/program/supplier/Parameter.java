@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record Parameter<T>(String name, ValueType<T> type) {
     public static final MapCodec<Parameter<?>> MAP_CODEC = RecordCodecBuilder.mapCodec(instance ->

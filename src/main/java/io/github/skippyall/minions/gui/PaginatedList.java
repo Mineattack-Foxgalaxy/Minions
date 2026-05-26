@@ -6,6 +6,7 @@ import net.minecraft.core.IdMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -18,7 +19,7 @@ public class PaginatedList extends MinionsGui {
     private final Component title;
     private final int size;
     private final BiFunction<Integer, PaginatedList, GuiElementBuilder> display;
-    private Runnable onClose = null;
+    private @Nullable Runnable onClose = null;
 
     public PaginatedList(MinionsGui parent, Component title, int size, BiFunction<Integer, PaginatedList, GuiElementBuilder> display) {
         super(parent);

@@ -6,7 +6,7 @@ import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An <code>ValueSupplier</code> can be supplied to an instruction with a matching parameter.
@@ -53,8 +53,9 @@ public interface ValueSupplier<T, R extends InstructionRuntime<R>> {
                                 "type",
                                 s -> DataResult.success(s.getValueType()),
                                 valueType -> {
-                                    if(type.getCodec(valueType) != null) {
-                                        return DataResult.success(type.getCodec(valueType).fieldOf("valueType"));
+                                    Codec<? extends ValueSupplier<?, R>> valueTypeCodec = type.getCodec(valueType);
+                                    if(valueTypeCodec != null) {
+                                        return DataResult.success(valueTypeCodec.fieldOf("valueType"));
                                     } else {
                                         return DataResult.error(() -> "Supplier type " + type + "not available for value type " + valueType);
                                     }
