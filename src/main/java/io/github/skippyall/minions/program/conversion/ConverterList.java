@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ConverterList {
     public static final Codec<ConverterList> CODEC = ValueConverter.CODEC.listOf().xmap(ConverterList::new, l -> l.converters);
@@ -55,7 +56,11 @@ public class ConverterList {
     private <F,I,T> Result<TypedValue<?>, Component> convert(TypedValue<F> from, ValueConverter<I,T> converter, ListIterator<ValueConverter<?,?>> iterator) {
         Result<I, Component> inter = Casts.castOrError(from, converter.getFrom());
         if(inter instanceof Result.Error<I, Component> error) {
-            return new Result.Error<>(Component.translatable("minions.converter.list.passing_error", iterator.previousIndex(), error.message()));
+            return new Result.Error<>(
+                    Component.translatable("minions.converter.list.passing_error", iterator.previousIndex())
+                            .append("\n")
+                            .append(error.message())
+            );
         }
         Result<T, Component> to = converter.convert(inter.getOrThrow());
 
@@ -79,6 +84,24 @@ public class ConverterList {
         }
 
         return warning;
+    }
+
+    public void check(Consumer<Component> errorConsumer, ValueType<?> input, ValueType<?> output) {
+        Component firstCastWarning = createCastWarning(input, converters.isEmpty() ? output : converters.get(0).getFrom());
+        if(firstCastWarning != null) {
+            errorConsumer.accept(firstCastWarning);
+        }
+        for(int i = 0; i < converters.size(); i++) {
+            ValueConverter<?,?> converter = converters.get(i);
+            Component converterWarning = createConverterWarning(converter);
+            if(converterWarning != null) {
+                errorConsumer.accept(converterWarning);
+            }
+            Component castWarning = createCastWarning(converter.getTo(), i + 1 < converters.size() ? converters.get(i + 1).getFrom() : output);
+            if(castWarning != null) {
+                errorConsumer.accept(castWarning);
+            }
+        }
     }
 
     @Override

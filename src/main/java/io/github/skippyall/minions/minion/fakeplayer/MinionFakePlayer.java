@@ -51,12 +51,14 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
+@NullMarked
 public class MinionFakePlayer extends ServerPlayer {
     public Runnable fixStartingPosition = () -> {};
 
@@ -310,6 +312,7 @@ public class MinionFakePlayer extends ServerPlayer {
     public void dropAllDeathLoot(ServerLevel world, DamageSource damageSource) {
         super.dropAllDeathLoot(world, damageSource);
         ItemEntity entity = drop(toItemStack(world.getServer()), true, false);
+        //noinspection ConstantValue (Wrong nullability of drop)
         if (entity != null) {
             entity.setUnlimitedLifetime();
         }

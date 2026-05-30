@@ -158,9 +158,8 @@ public class ValueSupplierList<R extends InstructionRuntime<R>> {
             return convertedResult.flatMap(convertedValue -> Casts.castOrError(convertedValue, parameter.type()));
         }
 
-        public @Nullable Component check(Consumer<Component> errorConsumer) {
-            //TODO check it
-            return null;
+        public void check(Consumer<Component> errorConsumer) {
+            converters.check(errorConsumer, parameter.type(), supplier.getValueType());
         }
 
         public static <R extends InstructionRuntime<R>> MapCodec<ValueSupplierEntry<?,R>> getCodec(Codec<ValueSupplier<?,R>> argumentCodec) {

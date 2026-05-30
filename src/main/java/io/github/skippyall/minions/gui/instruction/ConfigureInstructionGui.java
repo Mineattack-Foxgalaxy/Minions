@@ -124,16 +124,26 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
     }
 
     private void updateRunSlot() {
-        if(!instruction.isRunning()) {
-            gui.setSlot(26, new GuiElementBuilder(Items.ARROW)
-                    .setName(Component.translatable("minions.gui.instruction.run"))
-                    .setCallback(() -> instruction.run(minion.getInstructionManager()))
-            );
+        List<Component> errors = instruction.preCheck();
+        if(errors.isEmpty()) {
+            if (!instruction.isRunning()) {
+                gui.setSlot(26, new GuiElementBuilder(Items.ARROW)
+                        .setName(Component.translatable("minions.gui.instruction.run"))
+                        .setCallback(() -> instruction.run(minion.getInstructionManager()))
+                );
+            } else {
+                gui.setSlot(26, new GuiElementBuilder(Items.BARRIER)
+                        .setName(Component.translatable("minions.gui.instruction.stop"))
+                        .setCallback(() -> instruction.stop(minion.getInstructionManager()))
+                );
+            }
         } else {
-            gui.setSlot(26, new GuiElementBuilder(Items.BARRIER)
-                    .setName(Component.translatable("minions.gui.instruction.stop"))
-                    .setCallback(() -> instruction.stop(minion.getInstructionManager()))
-            );
+            GuiElementBuilder builder = new GuiElementBuilder(Items.RED_WOOL)
+                    .setName(Component.translatable("minions.gui.instruction.errors"));
+            for(Component error : errors) {
+                builder.addLoreLine(error);
+            }
+            gui.setSlot(26, builder);
         }
     }
 

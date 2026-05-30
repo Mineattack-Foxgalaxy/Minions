@@ -34,6 +34,7 @@
   "minions.gui.instruction.configure.delete.confirm": "Delete %s?",
   "minions.gui.instruction.configure.copy": "Copy Reference",
   "minions.gui.instruction.configure.copy.description": "Click here and then use a Minion Trigger Block to bind it",
+  "minions.gui.instruction.errors": "Errors",
   "minions.gui.instruction.last_errors": "Last Errors",
   "minions.gui.instruction.run": "Run",
   "minions.gui.instruction.stop": "Stop",
