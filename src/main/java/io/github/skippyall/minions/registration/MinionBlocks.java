@@ -1,6 +1,5 @@
 package io.github.skippyall.minions.registration;
 
-import eu.pb4.polymer.core.api.block.PolymerBlockUtils;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.block.input.AnalogInputBlock;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlock;
@@ -47,6 +46,6 @@ public class MinionBlocks {
     );
 
     public static void register() {
-        PolymerBlockUtils.registerBlockEntity(MINION_TRIGGER_BE_TYPE);
+
     }
 }

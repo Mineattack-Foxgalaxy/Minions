@@ -1,6 +1,5 @@
 package io.github.skippyall.minions.registration;
 
-import eu.pb4.polymer.core.api.other.PolymerComponent;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.clipboard.Clipboard;
 import io.github.skippyall.minions.module.MinionModule;
@@ -19,7 +18,6 @@ public class MinionComponentTypes {
 
     private static <T extends DataComponentType<?>> T register(String name, T type) {
         Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Identifier.fromNamespaceAndPath(Minions.MOD_ID, name), type);
-        PolymerComponent.registerDataComponent(type);
         return type;
     }
 

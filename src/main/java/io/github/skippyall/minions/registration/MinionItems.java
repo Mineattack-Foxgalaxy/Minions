@@ -1,8 +1,5 @@
 package io.github.skippyall.minions.registration;
 
-import eu.pb4.polymer.core.api.item.SimplePolymerItem;
-import io.github.skippyall.minions.block.MinionsBlockItem;
-import io.github.skippyall.minions.clipboard.ClipboardItem;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.module.MinionModule;
@@ -16,8 +13,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.DamageResistant;
 
 import java.util.List;
@@ -32,55 +29,43 @@ public class MinionItems {
             settings -> new MinionItem(settings.delayedComponent(DataComponents.DAMAGE_RESISTANT, context -> new DamageResistant(context.getOrThrow(MINION_ITEM_RESISTS))))
     );
 
-    public static final SimplePolymerItem BASIC_UPGRADE_BASE = registerItem(
-            Identifier.fromNamespaceAndPath(MOD_ID, "basic_upgrade_base"),
-            settings -> new SimplePolymerItem(settings, Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
-    );
+    public static final Item BASIC_UPGRADE_BASE = registerSimpleItem(Identifier.fromNamespaceAndPath(MOD_ID, "basic_upgrade_base"));
+    public static final Item ADVANCED_UPGRADE_BASE = registerSimpleItem(Identifier.fromNamespaceAndPath(MOD_ID, "advanced_upgrade_base"));
 
-    public static final SimplePolymerItem ADVANCED_UPGRADE_BASE = registerItem(
-            Identifier.fromNamespaceAndPath(MOD_ID, "advanced_upgrade_base"),
-            settings -> new SimplePolymerItem(settings, Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
-    );
-
-
-    public static final SimplePolymerItem MOVE_MODULE = registerModule(
+    public static final Item MOVE_MODULE = registerModule(
             Identifier.fromNamespaceAndPath(MOD_ID, "move_module"),
-            Items.IRON_BOOTS,
             List.of(Instructions.WALK, Instructions.WALK_CONTINUOUS, Instructions.TURN, Instructions.TURN_VECTOR)
     );
 
-    public static final SimplePolymerItem ATTACK_MODULE = registerModule(
+    public static final Item ATTACK_MODULE = registerModule(
             Identifier.fromNamespaceAndPath(MOD_ID, "attack_module"),
-            Items.IRON_PICKAXE,
             List.of(Instructions.ATTACK, Instructions.MINE_BLOCK)
     );
 
-    public static final SimplePolymerItem INTERACT_MODULE = registerModule(
+    public static final Item INTERACT_MODULE = registerModule(
             Identifier.fromNamespaceAndPath(MOD_ID, "interact_module"),
-            Items.LEVER,
             List.of(Instructions.USE)
     );
 
-    public static final SimplePolymerItem MOB_SPAWNING_MODULE = registerModule(
+    public static final Item MOB_SPAWNING_MODULE = registerModule(
             Identifier.fromNamespaceAndPath(MOD_ID, "mob_spawning_module"),
-            Items.SPAWNER,
             List.of(),
             List.of(SpecialAbilities.MOB_SPAWNING)
     );
 
-    public static final MinionsBlockItem MINION_TRIGGER_ITEM = registerItem(
+    public static final BlockItem MINION_TRIGGER_ITEM = registerItem(
             MinionBlocks.MINION_TRIGGER_ID,
-            settings -> new MinionsBlockItem(MinionBlocks.MINION_TRIGGER_BLOCK, settings, Items.COMPARATOR),
+            settings -> new BlockItem(MinionBlocks.MINION_TRIGGER_BLOCK, settings),
             new Item.Properties().useBlockDescriptionPrefix()
     );
 
-    public static final MinionsBlockItem ANALOG_INPUT_ITEM = registerItem(
+    public static final BlockItem ANALOG_INPUT_ITEM = registerItem(
             MinionBlocks.ANALOG_INPUT_BLOCK_ID,
-            settings -> new MinionsBlockItem(MinionBlocks.ANALOG_INPUT_BLOCK, settings, Items.REPEATER),
+            settings -> new BlockItem(MinionBlocks.ANALOG_INPUT_BLOCK, settings),
             new Item.Properties().useBlockDescriptionPrefix()
     );
 
-    public static final ClipboardItem REFERENCE_ITEM = registerItem(Identifier.fromNamespaceAndPath(MOD_ID, "clipboard"), ClipboardItem::new);
+    public static final Item REFERENCE_ITEM = registerItem(Identifier.fromNamespaceAndPath(MOD_ID, "clipboard"), Item::new);
 
     public static <T extends Item> T registerItem(Identifier identifier, Function<Item.Properties, T> constructor, Item.Properties settings) {
         T item = constructor.apply(settings.setId(ResourceKey.create(Registries.ITEM, identifier)));
@@ -94,18 +79,21 @@ public class MinionItems {
         return registerItem(identifier, constructor, new Item.Properties());
     }
 
-    public static SimplePolymerItem registerModule(Identifier identifier, Item vanillaItem, List<InstructionType<MinionRuntime>> instructionTypes, List<SpecialAbility> specialAbilities) {
+    public static Item registerSimpleItem(Identifier identifier) {
+        return registerItem(identifier, Item::new);
+    }
+
+    public static Item registerModule(Identifier identifier, List<InstructionType<MinionRuntime>> instructionTypes, List<SpecialAbility> specialAbilities) {
         return registerItem(
                 identifier,
-                settings -> new SimplePolymerItem(settings, vanillaItem),
+                Item::new,
                 new Item.Properties().component(MinionComponentTypes.MODULE, new MinionModule(instructionTypes, specialAbilities))
         );
     }
 
-    public static SimplePolymerItem registerModule(Identifier identifier, Item vanillaItem, List<InstructionType<MinionRuntime>> instructionTypes) {
+    public static Item registerModule(Identifier identifier, List<InstructionType<MinionRuntime>> instructionTypes) {
         return registerModule(
                 identifier,
-                vanillaItem,
                 instructionTypes,
                 List.of()
         );

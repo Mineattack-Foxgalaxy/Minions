@@ -1,10 +1,7 @@
 package io.github.skippyall.minions.registration;
 
-import eu.pb4.polymer.core.api.item.PolymerCreativeModeTabUtils;
-import io.github.skippyall.minions.Minions;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import org.jspecify.annotations.Nullable;
@@ -34,6 +31,6 @@ public class MinionCreativeTab {
                 .icon(MinionItems.MINION_ITEM::getDefaultInstance)
                 .displayItems(MinionCreativeTab::collectEntries)
                 .build();
-        PolymerCreativeModeTabUtils.registerPolymerCreativeModeTab(Identifier.fromNamespaceAndPath(Minions.MOD_ID, "main"), group);
+
     }
 }

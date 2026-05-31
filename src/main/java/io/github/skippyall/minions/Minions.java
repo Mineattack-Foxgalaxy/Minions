@@ -1,11 +1,10 @@
 package io.github.skippyall.minions;
 
-import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import io.github.skippyall.minions.command.MinionsCommand;
 import io.github.skippyall.minions.docs.DocsManager;
 import io.github.skippyall.minions.minion.MinionPersistentState;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.polymer.VersionSync;
+import io.github.skippyall.minions.polymer.PolymerRegistration;
 import io.github.skippyall.minions.registration.MinionRegistration;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -27,8 +26,6 @@ public class Minions implements ModInitializer {
 
         MinionRegistration.register();
 
-        VersionSync.register();
-
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             MinionPersistentState.get(server).getMinionData().forEach((uuid, data) -> {
                 if(data.isSpawned()) {
@@ -39,7 +36,7 @@ public class Minions implements ModInitializer {
 
         CommandRegistrationCallback.EVENT.register(MinionsCommand::register);
 
-        PolymerResourcePackUtils.addModAssets(Minions.MOD_ID);
+        PolymerRegistration.register();
 
         ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(Identifier.fromNamespaceAndPath(Minions.MOD_ID, "docs"), new DocsManager());
     }
