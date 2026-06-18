@@ -14,6 +14,7 @@ import io.github.skippyall.minions.program.instruction.ConfiguredInstructionList
 import io.github.skippyall.minions.program.supplier.Parameter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.inventory.MenuType;
@@ -22,21 +23,20 @@ import net.minecraft.world.item.Items;
 import java.util.List;
 
 public class ConfigureInstructionGui extends MinionsGui implements ConfiguredInstructionListener, MinionListener {
-    private String name;
-    private final ConfiguredInstruction<MinionRuntime> instruction;
-    private final MinionFakePlayer minion;
-
-    private final GuiContext.Instruction context;
+    private final ConfiguredInstruction<?> instruction;
     
     private SimpleGui gui;
     
-    public ConfigureInstructionGui(MinionsGui parent, GuiContext.Instruction context) {
+    public ConfigureInstructionGui(ServerPlayer player, ConfiguredInstruction<?> instruction) {
+        super(player);
+        this.instruction = instruction;
+        instruction.addListener(this);
+        open();
+    }
+
+    public ConfigureInstructionGui(MinionsGui parent, ConfiguredInstruction<?> instruction) {
         super(parent);
-        this.name = context.getName();
-        this.instruction = context.getInstruction();
-        this.minion = context.getMinion();
-        this.context = context;
-        minion.addMinionListener(this);
+        this.instruction = instruction;
         instruction.addListener(this);
         open();
     }
@@ -49,29 +49,27 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
                 onBackingClosed();
             }
         };
-        
-        gui.setTitle(Component.literal(name));
 
-        gui.setSlot(6, new GuiElementBuilder(Items.ANVIL)
+        /*gui.setSlot(6, new GuiElementBuilder(Items.ANVIL)
                 .setName(Component.translatable("minions.gui.instruction.configure.rename"))
                 .setCallback(() -> InstructionGui.inputInstructionName(this, context, name).thenAccept(newName -> {
                     if(newName != null) {
-                        minion.getInstructionManager().setInstructionName(name, newName);
+                        minion.getRuntime().setInstructionName(name, newName);
                     }
                     reopen();
                 }))
-        );
+        );*/
 
-        gui.setSlot(7, new GuiElementBuilder(Items.LAVA_BUCKET)
+        /*gui.setSlot(7, new GuiElementBuilder(Items.LAVA_BUCKET)
                 .setName(Component.translatable("minions.gui.instruction.configure.delete"))
                 .setCallback(() -> BooleanInput.confirm(this, Component.translatable("minions.gui.instruction.configure.delete.confirm", name))
                         .thenAccept((confirmed) -> {
                             if(confirmed) {
-                                minion.getInstructionManager().removeInstruction(name);
+                                minion.getRuntime().removeInstruction(name);
                                 goBack();
                             }
                         }))
-        );
+        );*/
 
         gui.setSlot(8, backButton());
 
@@ -79,43 +77,35 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
 
         gui.setSlot(13, InstructionGui.createInstructionElement(instruction.getInstruction(), viewer.registryAccess()));
 
-        gui.setSlot(25, new GuiElementBuilder(Items.FEATHER)
+        /*gui.setSlot(25, new GuiElementBuilder(Items.FEATHER)
                 .setName(Component.translatable("minions.gui.instruction.configure.copy"))
                 .addLoreLine(Component.translatable("minions.gui.instruction.configure.copy.description"))
                 .setCallback(() -> {
                     viewer.getInventory().placeItemBackInInventory(ClipboardItem.createInstructionReference(minion, name), true);
                     viewer.connection.send(new ClientboundSoundEntityPacket(SoundEvents.NOTE_BLOCK_CHIME, SoundSource.BLOCKS, viewer, 1, 1, 0));
                 })
-        );
+        );*/
 
         updateLastError();
-        updateRunSlot();
+        //updateRunSlot();
         gui.open();
     }
 
     @Override
     protected void closeBacking() {
         gui.close();
-        minion.removeMinionListener(this);
         instruction.removeListener(this);
     }
 
-    @Override
-    public void onInstructionRename(MinionFakePlayer minion, ConfiguredInstruction<?> instruction, String oldName, String newName) {
-        gui.setTitle(Component.literal(newName));
-        name = newName;
-        context.setName(newName);
-    }
-
-    @Override
+    /*@Override
     public void onRun(ConfiguredInstruction<?> instruction) {
         updateRunSlot();
         updateLastError();
-    }
+    }*/
 
     @Override
     public void onStop(ConfiguredInstruction<?> instruction) {
-        updateRunSlot();
+        //updateRunSlot();
     }
 
     @Override
@@ -123,18 +113,18 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
         updateSuppliers();
     }
 
-    private void updateRunSlot() {
+    /*private void updateRunSlot() {
         List<Component> errors = instruction.preCheck();
         if(errors.isEmpty()) {
             if (!instruction.isRunning()) {
                 gui.setSlot(26, new GuiElementBuilder(Items.ARROW)
                         .setName(Component.translatable("minions.gui.instruction.run"))
-                        .setCallback(() -> instruction.run(minion.getInstructionManager()))
+                        .setCallback(() -> instruction.run(minion.getRuntime()))
                 );
             } else {
                 gui.setSlot(26, new GuiElementBuilder(Items.BARRIER)
                         .setName(Component.translatable("minions.gui.instruction.stop"))
-                        .setCallback(() -> instruction.stop(minion.getInstructionManager()))
+                        .setCallback(() -> instruction.stop(minion.getRuntime()))
                 );
             }
         } else {
@@ -145,10 +135,10 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
             }
             gui.setSlot(26, builder);
         }
-    }
+    }*/
 
     private void updateLastError() {
-        List<Component> errors = instruction.getLastErrors();
+        /*List<Component> errors = instruction.getLastErrors();
         if(!errors.isEmpty()) {
             GuiElementBuilder builder = new GuiElementBuilder(Items.RED_WOOL)
                     .setName(Component.translatable("minions.gui.instruction.last_errors"));
@@ -156,14 +146,14 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
                 builder.addLoreLine(error);
             }
             gui.setSlot(17, builder);
-        }
+        }*/
     }
 
     private void updateSuppliers() {
         int slot = 12;
         for(Parameter<?> parameter : instruction.getInstruction().getParameters().reversed()) {
             gui.setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getArgument(parameter), viewer.registryAccess())
-                    .setCallback(() -> new ArgumentGui(this, GuiContext.ValueSupplier.create(context, parameter)))
+                    .setCallback(() -> new ArgumentGui(this, instruction, parameter))
             );
             slot--;
         }

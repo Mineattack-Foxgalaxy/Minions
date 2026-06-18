@@ -1,25 +1,27 @@
 package io.github.skippyall.minions.minion;
 
-import io.github.skippyall.minions.Minions;
+import com.mojang.serialization.Codec;
+import io.github.skippyall.minions.GlobalInstructionManager;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.consumer.ValueConsumerType;
-import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
+import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import io.github.skippyall.minions.registration.MinionRegistries;
+import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.core.Registry;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
     private final MinionFakePlayer minion;
-    private final Map<String, ConfiguredInstruction<MinionRuntime>> configuredInstructions = new HashMap<>();
+    private final IntSet executingInstructions = new IntRBTreeSet();
 
     public MinionRuntime(MinionFakePlayer minion) {
         this.minion = minion;
@@ -29,114 +31,72 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
         return minion;
     }
 
+    @Override
+    public MinecraftServer getServer() {
+        return minion.getServer();
+    }
+
     public void tick() {
-        for (ConfiguredInstruction<MinionRuntime> instruction : configuredInstructions.values()) {
-            instruction.tick(this);
+        for(int id : executingInstructions) {
+            ExecutingInstruction<MinionRuntime> instruction = getInstruction(id);
+            if(instruction != null) {
+                instruction.tick(this);
+            }
         }
+        removeStoppedInstructions();
     }
 
     public void disableInstructionType(InstructionType<MinionRuntime> instructionType) {
-        updatePausedStatus(instructionType);
-    }
-
-    public void enableInstructionType(InstructionType<MinionRuntime> instructionType) {
-        updatePausedStatus(instructionType);
-    }
-
-    public void updatePausedStatus(InstructionType<MinionRuntime> instructionType) {
-        for(ConfiguredInstruction<MinionRuntime> instruction : configuredInstructions.values()) {
-            if(instruction.getInstruction() == instructionType) {
-                instruction.updatePauseStatus(this);
+        for(int id : executingInstructions) {
+            ExecutingInstruction<MinionRuntime> instruction = getInstruction(id);
+            if(instruction != null && instruction.getInstructionType() == instructionType) {
+                instruction.stop(this);
             }
         }
+        removeStoppedInstructions();
     }
+
+    public void enableInstructionType(InstructionType<MinionRuntime> instructionType) {}
 
     @Override
     public boolean isInstructionEnabled(InstructionType<MinionRuntime> type) {
         return minion.getModuleInventory().hasInstruction(type);
     }
 
-    public Set<String> getInstructionNames() {
-        return configuredInstructions.keySet();
+    @Override
+    public int addInstruction(ExecutingInstruction<MinionRuntime> executingInstruction) {
+        int id = GlobalInstructionManager.get(minion.getServer()).addInstruction(executingInstruction);
+        executingInstructions.add(id);
+        return id;
     }
 
-    public ConfiguredInstruction<MinionRuntime> createInstruction(String name, InstructionType<MinionRuntime> instructionType) {
-        if(configuredInstructions.containsKey(name)) {
-            return null;
-        }
-
-        ConfiguredInstruction<MinionRuntime> instruction = new ConfiguredInstruction<>(instructionType);
-        configuredInstructions.put(name, instruction);
-        minion.forEachMinionListener(listener -> listener.onInstructionsUpdate(minion));
-        return instruction;
+    @Nullable
+    public ExecutingInstruction<MinionRuntime> getInstruction(int id) {
+        //noinspection unchecked
+        return (ExecutingInstruction<MinionRuntime>) GlobalInstructionManager.get(minion.getServer()).getInstruction(id);
     }
 
-    public void removeInstruction(String name) {
-        ConfiguredInstruction<MinionRuntime> instruction = getInstruction(name);
-        instruction.stop(this);
-        configuredInstructions.remove(name);
-
-        instruction.onInstructionRemove();
-        minion.forEachMinionListener(listener -> listener.onInstructionsUpdate(minion));
-    }
-
-    public ConfiguredInstruction<MinionRuntime> getInstruction(String name) {
-        return configuredInstructions.get(name);
-    }
-
-    public boolean hasInstruction(String name) {
-        return configuredInstructions.containsKey(name);
-    }
-
-    public void setInstructionName(String oldName, String newName) {
-        if(!configuredInstructions.containsKey(newName) && configuredInstructions.containsKey(oldName)) {
-            ConfiguredInstruction<MinionRuntime> instruction = configuredInstructions.get(oldName);
-            configuredInstructions.remove(oldName);
-            configuredInstructions.put(newName, instruction);
-
-
-            minion.forEachMinionListener(minionListener -> {
-                minionListener.onInstructionRename(minion, instruction, oldName, newName);
-                minionListener.onInstructionsUpdate(minion);
-            });
-        }
+    private void removeStoppedInstructions() {
+        executingInstructions.removeIf(id -> {
+            ExecutingInstruction<MinionRuntime> instruction = getInstruction(id);
+            return instruction == null || instruction.getState() == ExecutingInstruction.State.STOPPED;
+        });
     }
 
     public void save(ValueOutput view) {
-        ValueOutput.ValueOutputList list = view.childrenList("configuredInstructions");
-        for (Map.Entry<String, ConfiguredInstruction<MinionRuntime>> instruction : configuredInstructions.entrySet()) {
-            ValueOutput inner = list.addChild();
-            inner.putString("name", instruction.getKey());
-            instruction.getValue().save(inner, this);
+        ValueOutput.TypedOutputList<Integer> list = view.list("executingInstructions", Codec.INT);
+        for (int id : executingInstructions) {
+            list.add(id);
         }
     }
 
     public void load(ValueInput view) {
-        ValueInput.ValueInputList list = view.childrenListOrEmpty("configuredInstructions");
-        for (ValueInput inner : list) {
-            Optional<String> name = inner.getString("name");
-            if(name.isEmpty()) {
-                Minions.LOGGER.error("Tried deserializing configured instruction without a name of minion \"{}\":", minion.getGameProfile().name());
-                continue;
-            }
-
-            try {
-                ConfiguredInstruction<MinionRuntime> instruction = ConfiguredInstruction.load(inner, this);
-                configuredInstructions.put(name.get(), instruction);
-            } catch (Exception e) {
-                Minions.LOGGER.error("Could not deserialize configured instruction \"{}\" of minion \"{}\":", name.get(), minion.getGameProfile().name(), e);
+        Optional<ValueInput.TypedInputList<Integer>> list = view.list("executingInstructions", Codec.INT);
+        if(list.isPresent()) {
+            for (int id : list.get()) {
+                executingInstructions.add(id);
             }
         }
-    }
-
-    @Override
-    public Registry<ValueSupplierType<MinionRuntime>> getArgumentTypeRegistry() {
-        return MinionRegistries.VALUE_SUPPLIER_TYPES;
-    }
-
-    @Override
-    public Registry<InstructionType<MinionRuntime>> getInstructionTypeRegistry() {
-        return MinionRegistries.INSTRUCTION_TYPES;
     }
 
     @Override

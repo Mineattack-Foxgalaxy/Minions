@@ -1,10 +1,11 @@
 package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.listener.SerializableListenerManager;
+import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
 
 public interface ConfiguredInstructionListener extends SerializableListenerManager.SerializableListener {
-    default void onRun(ConfiguredInstruction<?> instruction) {}
+    default <R extends InstructionRuntime<R>> void onRun(ConfiguredInstruction<R> instruction, R runtime, int id) {}
 
     default void onStop(ConfiguredInstruction<?> instruction) {}
 

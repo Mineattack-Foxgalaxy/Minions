@@ -8,8 +8,8 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public abstract class ValueSupplierType<R extends InstructionRuntime<R>> {
-    public abstract <T> @Nullable Codec<? extends ValueSupplier<T,R>> getCodec(ValueType<T> type);
+public abstract class ValueSupplierType {
+    public abstract <T> @Nullable Codec<? extends ValueSupplier<T>> getCodec(ValueType<T> type);
 
-    public abstract <T> CompletableFuture<? extends ValueSupplier<?,R>> openConfiguration(MinionsGui gui, ValueType<T> valueType, @Nullable ValueSupplier<?,R> previous);
+    public abstract <T> CompletableFuture<? extends ValueSupplier<?>> openConfiguration(MinionsGui gui, ValueType<T> valueType, @Nullable ValueSupplier<?> previous);
 }

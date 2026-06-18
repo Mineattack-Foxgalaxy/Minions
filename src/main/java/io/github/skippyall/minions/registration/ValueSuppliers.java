@@ -9,10 +9,10 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 
 public class ValueSuppliers {
-    public static final FixedValueSupplierType<MinionRuntime> FIXED_VALUE_SUPPLIER_TYPE = register("fixed", new FixedValueSupplierType<>());
+    public static final FixedValueSupplierType FIXED_VALUE_SUPPLIER_TYPE = register("fixed", new FixedValueSupplierType());
     public static final AnalogInputSupplier.AnalogInputSupplierType ANALOG_INPUT = register("analog_input", new AnalogInputSupplier.AnalogInputSupplierType());
 
-    public static <T extends ValueSupplierType<MinionRuntime>> T register(String id, T type) {
+    public static <T extends ValueSupplierType> T register(String id, T type) {
         return Registry.register(MinionRegistries.VALUE_SUPPLIER_TYPES, Identifier.fromNamespaceAndPath(Minions.MOD_ID, id), type);
     }
 

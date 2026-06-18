@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.minion.program.instruction.move;
 
+import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
@@ -9,9 +10,17 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 public class TurnVectorExecution extends AbstractTurnExecution {
+    public static final Codec<TurnVectorExecution> CODEC = getCodec(TurnVectorExecution::new);
+
     public static final Parameter<Double> X = new Parameter<>("x", ValueTypes.DOUBLE);
     public static final Parameter<Double> Y = new Parameter<>("y", ValueTypes.DOUBLE);
     public static final Parameter<Double> Z = new Parameter<>("z", ValueTypes.DOUBLE);
+
+    public TurnVectorExecution() {}
+
+    public TurnVectorExecution(float targetYaw, float targetPitch) {
+        super(targetYaw, targetPitch);
+    }
 
     @Override
     public void readArguments(ParameterValueList arguments, MinionRuntime runtime) {

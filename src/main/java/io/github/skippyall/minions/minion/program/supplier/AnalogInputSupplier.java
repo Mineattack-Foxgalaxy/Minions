@@ -19,6 +19,8 @@ import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -26,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
+public class AnalogInputSupplier implements ValueSupplier<Long> {
     public static final Codec<AnalogInputSupplier> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Level.RESOURCE_KEY_CODEC.fieldOf("analogInputWorld").forGetter(s -> s.analogInputWorld),
@@ -42,8 +44,8 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
     }
 
     @Override
-    public Long resolve(MinionRuntime minion) {
-        Level world = minion.getMinion().getServer().getLevel(analogInputWorld);
+    public Long resolve(MinecraftServer server) {
+        Level world = server.getLevel(analogInputWorld);
         if(world != null && world.isLoaded(analogInputPos) && world.getBlockState(analogInputPos).is(MinionBlocks.ANALOG_INPUT_BLOCK)) {
             return (long) world.getBestNeighborSignal(analogInputPos);
         } else {
@@ -57,7 +59,7 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
     }
 
     @Override
-    public ValueSupplierType<MinionRuntime> getType() {
+    public ValueSupplierType getType() {
         return ValueSuppliers.ANALOG_INPUT;
     }
 
@@ -66,9 +68,9 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
         return Component.translatable("value_supplier.minions.analog_input.display", analogInputPos.toShortString(), analogInputWorld.identifier().toString());
     }
 
-    public static class AnalogInputSupplierType extends ValueSupplierType<MinionRuntime> {
+    public static class AnalogInputSupplierType extends ValueSupplierType {
         @Override
-        public <T> Codec<? extends ValueSupplier<T, MinionRuntime>> getCodec(ValueType<T> type) {
+        public <T> Codec<? extends ValueSupplier<T>> getCodec(ValueType<T> type) {
             if(type == ValueTypes.LONG) {
                 return ValueSupplier.castCodec(CODEC, ValueTypes.LONG, type);
             }
@@ -76,8 +78,8 @@ public class AnalogInputSupplier implements ValueSupplier<Long, MinionRuntime> {
         }
 
         @Override
-        public <T> CompletableFuture<ValueSupplier<?, MinionRuntime>> openConfiguration(MinionsGui parent, ValueType<T> valueType, @Nullable ValueSupplier<?, MinionRuntime> previous) {
-            CompletableFuture<ValueSupplier<?, MinionRuntime>> future = new CompletableFuture<>();
+        public <T> CompletableFuture<ValueSupplier<?>> openConfiguration(MinionsGui parent, ValueType<T> valueType, @Nullable ValueSupplier<?> previous) {
+            CompletableFuture<ValueSupplier<?>> future = new CompletableFuture<>();
             new SimpleMinionsGui(parent, (onClose, me) -> {
                 SimpleGui gui = new SimpleGui(MenuType.GENERIC_3x3, parent.viewer, false) {
                     @Override

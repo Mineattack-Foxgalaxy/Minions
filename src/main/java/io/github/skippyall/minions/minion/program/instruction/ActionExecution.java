@@ -2,11 +2,8 @@ package io.github.skippyall.minions.minion.program.instruction;
 
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
-import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.instruction.execution.ContinuousInstructionExecution;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 
 public class ActionExecution implements ContinuousInstructionExecution<MinionRuntime> {
     private final EntityPlayerActionPack.ActionType action;
@@ -24,7 +21,7 @@ public class ActionExecution implements ContinuousInstructionExecution<MinionRun
     }
 
     @Override
-    public void stop(MinionRuntime minion, ValueConsumerList<MinionRuntime> valueConsumers) {
+    public void stop(ParameterValueList list, MinionRuntime minion) {
         minion.getMinion().getMinionActionPack().stop(action);
     }
 
@@ -40,12 +37,4 @@ public class ActionExecution implements ContinuousInstructionExecution<MinionRun
 
     @Override
     public void readArguments(ParameterValueList parameters, MinionRuntime minion) {}
-
-    @Override
-    public void save(ValueOutput view, MinionRuntime minion) {}
-
-    @Override
-    public void load(ValueInput view, MinionRuntime runtime) {
-        runtime.getMinion().getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
-    }
 }

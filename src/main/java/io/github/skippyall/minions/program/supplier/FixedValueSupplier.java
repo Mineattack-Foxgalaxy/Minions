@@ -1,18 +1,18 @@
 package io.github.skippyall.minions.program.supplier;
 
-import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 
 /**
  * A supplier that always resolves to a fixed value
  */
-public class FixedValueSupplier<T, R extends InstructionRuntime<R>> implements ValueSupplier<T, R> {
-    private final FixedValueSupplierType<R> type;
+public class FixedValueSupplier<T> implements ValueSupplier<T> {
+    private final FixedValueSupplierType type;
     private final ValueType<T> valueType;
     private final T value;
 
-    public FixedValueSupplier(FixedValueSupplierType<R> type, ValueType<T> valueType, T value) {
+    public FixedValueSupplier(FixedValueSupplierType type, ValueType<T> valueType, T value) {
         this.type = type;
         this.valueType = valueType;
         this.value = value;
@@ -23,7 +23,7 @@ public class FixedValueSupplier<T, R extends InstructionRuntime<R>> implements V
     }
 
     @Override
-    public T resolve(R runtime) {
+    public T resolve(MinecraftServer server) {
         return value;
     }
 
@@ -33,7 +33,7 @@ public class FixedValueSupplier<T, R extends InstructionRuntime<R>> implements V
     }
 
     @Override
-    public FixedValueSupplierType<R> getType() {
+    public FixedValueSupplierType getType() {
         return type;
     }
 

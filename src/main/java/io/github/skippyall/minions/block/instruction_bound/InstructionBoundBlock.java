@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-public abstract class InstructionBoundBlock extends Block implements EntityBlock {
+/*public abstract class InstructionBoundBlock extends Block implements EntityBlock {
     public InstructionBoundBlock(Properties settings) {
         super(settings);
     }
@@ -52,7 +52,7 @@ public abstract class InstructionBoundBlock extends Block implements EntityBlock
 
         world.getBlockEntity(pos, getBlockEntityType()).ifPresent(be -> {
             String name = MinionPersistentState.get(world.getServer()).getMinionData(be.getMinionUuid()).getName();
-            player.sendSystemMessage(Component.translatable("minions.reference.instruction.tooltip", be.getInstructionName(), name));
+            player.sendSystemMessage(Component.translatable("minions.reference.instruction.tooltip", be.getInstructionId(), name));
         });
         return InteractionResult.SUCCESS;
     }
@@ -62,4 +62,4 @@ public abstract class InstructionBoundBlock extends Block implements EntityBlock
         super.affectNeighborsAfterRemoval(state, world, pos, moved);
         world.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(MinionTriggerBlockEntity::removeListener);
     }
-}
+}*/

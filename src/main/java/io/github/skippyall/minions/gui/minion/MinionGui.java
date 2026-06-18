@@ -3,7 +3,6 @@ package io.github.skippyall.minions.gui.minion;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.MinionsGui;
-import io.github.skippyall.minions.gui.instruction.InstructionGui;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.ModuleInventory;
@@ -38,13 +37,13 @@ public class MinionGui extends MinionsGui implements MinionListener {
 
         gui.setTitle(minion.getName());
 
-        gui.setSlot(1, new GuiElementBuilder()
+        /*gui.setSlot(1, new GuiElementBuilder()
                 .setItem(Items.COMMAND_BLOCK)
                 .setName(Component.translatable("minions.gui.main.instructions"))
                 .setCallback(() -> {
                     InstructionGui.openInstructionMainMenu(this, GuiContext.Minion.create(GuiContext.create(viewer), minion));
                 })
-        );
+        );*/
         gui.setSlot(3, new GuiElementBuilder()
                 .setItem(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
                 .setName(Component.translatable("minions.gui.main.modules"))

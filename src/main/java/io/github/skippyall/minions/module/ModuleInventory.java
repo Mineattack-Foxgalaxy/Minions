@@ -66,7 +66,7 @@ public class ModuleInventory extends SimpleContainer {
 
                 for(InstructionType<MinionRuntime> instructionType : module.instructions()) {
                     if(!oldInstructions.contains(instructionType)) {
-                        minion.getInstructionManager().enableInstructionType(instructionType);
+                        minion.getRuntime().enableInstructionType(instructionType);
                     }
                 }
 
@@ -80,7 +80,7 @@ public class ModuleInventory extends SimpleContainer {
 
         for(InstructionType<MinionRuntime> instructionType : oldInstructions) {
             if(!instructions.contains(instructionType)) {
-                minion.getInstructionManager().disableInstructionType(instructionType);
+                minion.getRuntime().disableInstructionType(instructionType);
             }
         }
 

@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
 public class InstructionGui {
-    public static void openInstructionMainMenu(MinionsGui parent, GuiContext.Minion context) {
+    /*public static void openInstructionMainMenu(MinionsGui parent, GuiContext.Minion context) {
         new SimpleMinionsGui(parent, (onClose, me) -> {
             ServerPlayer player = parent.viewer;
 
@@ -65,7 +65,7 @@ public class InstructionGui {
         selectInstructionModuleMenu(parent, context).thenAccept(instructionType ->
                 inputInstructionName(parent, context, "Instruction").thenAccept(name -> {
                     if (!minion.isRemoved() && !minion.hasDisconnected() && name != null) {
-                        ConfiguredInstruction<MinionRuntime> configuredInstruction = minion.getInstructionManager().createInstruction(name, instructionType);
+                        ConfiguredInstruction<MinionRuntime> configuredInstruction = minion.getRuntime().createInstruction(name, instructionType);
                         new ConfigureInstructionGui(parent, GuiContext.Instruction.create(context, configuredInstruction, name));
                     }
                 })
@@ -74,7 +74,7 @@ public class InstructionGui {
 
     public static CompletableFuture<@Nullable String> inputInstructionName(MinionsGui parent, GuiContext.Minion context, String defaultValue) {
         return TextInput.input(parent, Component.translatable("minions.gui.instruction.enter_name"), defaultValue, (name, _) -> {
-            if (context.getMinion().getInstructionManager().hasInstruction(name)) {
+            if (context.getMinion().getRuntime().hasInstruction(name)) {
                 return new Result.Error<>(Component.translatable("minions.gui.instruction.name_already_used"));
             }
             return new Result.Success<>(name);
@@ -82,18 +82,15 @@ public class InstructionGui {
     }
 
     public static boolean checkInstructionExists(String name, ConfiguredInstruction<?> instruction, MinionFakePlayer minion, ServerPlayer player) {
-        boolean stillExists = !minion.isRemoved() && !minion.hasDisconnected() && minion.getInstructionManager().getInstruction(name) == instruction;
+        boolean stillExists = !minion.isRemoved() && !minion.hasDisconnected() && minion.getRuntime().getInstruction(name) == instruction;
         if (!stillExists) {
             player.closeContainer();
             player.sendSystemMessage(Component.translatable("minions.gui.instruction.removed"));
         }
         return stillExists;
-    }
+    }*/
 
-    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionModuleMenu(MinionsGui parent, GuiContext.Minion context) {
-        MinionFakePlayer minion = context.getMinion();
-        ServerPlayer viewer = parent.viewer;
-
+    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionModuleMenu(ServerPlayer viewer, @Nullable MinionsGui parent, MinionFakePlayer minion) {
         if (minion.getModuleInventory().getModules().isEmpty()) {
             viewer.sendSystemMessage(Component.translatable("minions.gui.instruction.no_modules"));
             return CompletableFuture.failedFuture(new NoSuchElementException("No modules"));
@@ -101,7 +98,7 @@ public class InstructionGui {
 
         CompletableFuture<InstructionType<MinionRuntime>> future = new CompletableFuture<>();
 
-        new SimpleMinionsGui(parent, (closeHandler, me) -> {
+        new SimpleMinionsGui(viewer, parent, (closeHandler, me) -> {
             SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x4, viewer, false) {
                 @Override
                 public void onPlayerClose(boolean success) {
@@ -120,7 +117,7 @@ public class InstructionGui {
                 MinionModule module = moduleItem.get(MinionComponentTypes.MODULE);
                 if (module != null && !module.instructions().isEmpty()) {
                     gui.setSlot(i + 9, new GuiElementBuilder(moduleItem)
-                            .setCallback(() -> selectInstructionMenu(parent, context, module)
+                            .setCallback(() -> selectInstructionMenu(viewer, parent, module)
                                     .thenApply(future::complete)
                             )
                     );
@@ -133,11 +130,11 @@ public class InstructionGui {
         return future;
     }
 
-    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionMenu(MinionsGui parent, GuiContext.Minion context, MinionModule module) {
+    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionMenu(ServerPlayer viewer, @Nullable MinionsGui parent, MinionModule module) {
         CompletableFuture<InstructionType<MinionRuntime>> future = new CompletableFuture<>();
 
-        new SimpleMinionsGui(parent, (closeHandler, me) -> {
-            SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x4, parent.viewer, false) {
+        new SimpleMinionsGui(viewer, parent, (closeHandler, me) -> {
+            SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x4, viewer, false) {
                 @Override
                 public void onPlayerClose(boolean success) {
                     if (!future.isDone()) {
@@ -151,8 +148,11 @@ public class InstructionGui {
             gui.setSlot(8, me.backButton());
             int slot = 9;
             for (InstructionType<MinionRuntime> instructionType : module.instructions()) {
-                gui.setSlot(slot, createInstructionElement(instructionType, parent.viewer.registryAccess())
-                        .setCallback(() -> future.complete(instructionType))
+                gui.setSlot(slot, createInstructionElement(instructionType, viewer.registryAccess())
+                        .setCallback(() -> {
+                            future.complete(instructionType);
+                            me.goBack();
+                        })
                 );
                 slot++;
             }
@@ -163,7 +163,7 @@ public class InstructionGui {
         return future;
     }
 
-    public static GuiElementBuilder createInstructionElement(@Nullable InstructionType<MinionRuntime> instructionType, RegistryAccess manager) {
+    public static GuiElementBuilder createInstructionElement(@Nullable InstructionType<?> instructionType, RegistryAccess manager) {
         GuiElementBuilder instructionBuilder;
         if (instructionType != null) {
             instructionBuilder = new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.INSTRUCTION_TYPES, instructionType, manager));
@@ -174,7 +174,7 @@ public class InstructionGui {
         return instructionBuilder;
     }
 
-    public static GuiElementBuilder createParameterElement(Parameter<?> parameter, @Nullable ValueSupplier<?,?> valueSupplier, RegistryAccess manager) {
+    public static GuiElementBuilder createParameterElement(Parameter<?> parameter, @Nullable ValueSupplier<?> valueSupplier, RegistryAccess manager) {
         GuiElementBuilder builder = new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_TYPES, parameter.type(), manager))
                 .setName(Component.translatable("minions.gui.instruction.parameter", parameter.name(), Component.translatable(TranslationUtil.getTranslationKey(parameter.type(), MinionRegistries.VALUE_TYPES))));
         if(valueSupplier != null) {

@@ -1,30 +1,23 @@
 package io.github.skippyall.minions.block.instruction_bound;
 
-import io.github.skippyall.minions.listener.BlockEntityMinionListener;
-import io.github.skippyall.minions.minion.MinionRuntime;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
+import io.github.skippyall.minions.GlobalInstructionManager;
+import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Optional;
-import java.util.UUID;
-
-public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionListener<?>> extends BlockEntity {
-    protected @Nullable UUID minionUuid;
-    protected String instructionName = "";
+/*public abstract class InstructionBoundBlockEntity extends BlockEntity {
+    protected int instructionId;
 
     public InstructionBoundBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
-    protected abstract L createListener();
-
-    protected abstract Class<L> getListenerClass();
+    protected abstract ExecutingInstruction.Listener createListener();
 
     public void removeListener() {
         if(level instanceof ServerLevel serverWorld) {
@@ -42,38 +35,24 @@ public abstract class InstructionBoundBlockEntity<L extends BlockEntityMinionLis
         }
     }
 
-    public void setInstruction(UUID minionUuid, String instructionName) {
+    public void setInstruction(int instructionId) {
         removeListener();
-        this.minionUuid = minionUuid;
-        this.instructionName = instructionName;
+        this.instructionId = instructionId;
         addListener();
         setChanged();
     }
 
-    public Optional<MinionFakePlayer> getMinion() {
-        if(minionUuid != null && level != null && level.getPlayerByUUID(minionUuid) instanceof MinionFakePlayer minion) {
-            return Optional.of(minion);
+    public int getInstructionId() {
+        return instructionId;
+    }
+
+    public @Nullable ExecutingInstruction<?> getInstruction() {
+        if(level != null) {
+            MinecraftServer server = level.getServer();
+            if(server != null) {
+                return GlobalInstructionManager.get(server).getInstruction(instructionId);
+            }
         }
-        return Optional.empty();
+        return null;
     }
-
-    public @Nullable UUID getMinionUuid() {
-        return minionUuid;
-    }
-
-    public String getInstructionName() {
-        return instructionName;
-    }
-
-    public Optional<ConfiguredInstruction<MinionRuntime>> getInstruction(MinionFakePlayer minion) {
-        return Optional.ofNullable(minion.getInstructionManager().getInstruction(instructionName));
-    }
-
-    public Optional<ConfiguredInstruction<MinionRuntime>> getInstruction() {
-        return getMinion().flatMap(this::getInstruction);
-    }
-
-    public @Nullable L getListener() {
-        return BlockEntityMinionListener.getListener(level, worldPosition, minionUuid, getListenerClass());
-    }
-}
+}*/

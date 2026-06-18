@@ -13,7 +13,7 @@ import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
 
-public class InstructionListGui extends MinionsGui implements MinionListener {
+/*public class InstructionListGui extends MinionsGui implements MinionListener {
     private final GuiContext.Minion context;
     private final MinionFakePlayer minion;
     private SimpleGui gui;
@@ -54,8 +54,8 @@ public class InstructionListGui extends MinionsGui implements MinionListener {
 
     private void resetInstructionList() {
         int i = 9;
-        for (String instructionName : minion.getInstructionManager().getInstructionNames()) {
-            ConfiguredInstruction<MinionRuntime> instruction = minion.getInstructionManager().getInstruction(instructionName);
+        for (String instructionName : minion.getRuntime().getInstructionNames()) {
+            ConfiguredInstruction<MinionRuntime> instruction = minion.getRuntime().getInstruction(instructionName);
             gui.setSlot(i, new GuiElementBuilder(GuiDisplay.getGuiDisplayFor(MinionRegistries.INSTRUCTION_TYPES, instruction.getInstruction(), viewer.registryAccess()).createItemStack())
                     .setName(Component.literal(instructionName))
                     .setCallback(() -> new ConfigureInstructionGui(this, GuiContext.Instruction.create(context, instruction, instructionName)))
@@ -63,4 +63,4 @@ public class InstructionListGui extends MinionsGui implements MinionListener {
             i++;
         }
     }
-}
+}*/

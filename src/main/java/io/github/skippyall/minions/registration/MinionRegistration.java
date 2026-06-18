@@ -8,11 +8,11 @@ public class MinionRegistration {
         DocsEntryTypes.register();
         GuiDisplayTypes.register();
         Instructions.register();
+        Listeners.register();
         MinionBlocks.register();
         MinionComponentTypes.register();
         MinionConfigOptions.register();
         MinionItems.register();
-        MinionListeners.register();
         SkinProviders.register();
         SpecialAbilities.register();
         ValueConverters.register();

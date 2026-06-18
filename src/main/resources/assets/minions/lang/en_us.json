@@ -62,6 +62,7 @@
 
   "minions.reference.instruction.tooltip": "Linked to instruction %s in %s",
   "minions.reference.block.tooltip": "Linked to block at %s",
+  "minions.reference.minion.tooltip": "Linked to Minion %s",
 
   "instruction.minions.walk": "Walk",
   "instruction.minions.walk.description": "Walk forward a specified amount of blocks",

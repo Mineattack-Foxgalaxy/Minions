@@ -21,20 +21,17 @@ abstract class MinionsGui {
     private val job: CompletableJob
     val scope: CoroutineScope
 
-    constructor(parent: MinionsGui) {
-        this.viewer = parent.viewer
+    constructor(viewer: ServerPlayer, parent: MinionsGui?) {
+        this.viewer = viewer
         this.parent = parent
-        parent.child = this
-        job = Job(parent.job)
+        parent?.child = this
+        job = Job(parent?.job)
         scope = CoroutineScope(Dispatchers.Unconfined.plus(CoroutineName("MinionsGui")).plus(job))
     }
 
-    constructor(viewer: ServerPlayer) {
-        this.viewer = viewer
-        this.parent = null
-        job = Job(null)
-        scope = CoroutineScope(Dispatchers.Unconfined.plus(CoroutineName("MinionsGui")).plus(job))
-    }
+    constructor(parent: MinionsGui) : this(parent.viewer, parent)
+
+    constructor(viewer: ServerPlayer) : this(viewer, null)
 
     protected abstract fun open()
 

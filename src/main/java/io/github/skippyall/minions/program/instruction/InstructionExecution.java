@@ -1,10 +1,7 @@
 package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * Responsible for executing instructions.
@@ -41,7 +38,7 @@ public interface InstructionExecution<R extends InstructionRuntime<R>> {
      *
      * @param runtime The runtime that was executing this instruction.
      */
-    default void stop(R runtime, ValueConsumerList<R> valueConsumers) {}
+    default void stop(ParameterValueList list, R runtime) {}
 
     /**
      * Initializes the execution with its parameters. The parameters must be defined by the InstructionType
@@ -50,24 +47,8 @@ public interface InstructionExecution<R extends InstructionRuntime<R>> {
      */
     void readArguments(ParameterValueList arguments, R runtime);
 
-    /**
-     * Saves the execution, e.g. when the server is closed.
-     */
-    void save(ValueOutput view, R runtime);
-
-    /**
-     * Loads the execution, e.g. when the server is started.
-     */
-    void load(ValueInput view, R runtime);
-
-    interface Stateless<R extends InstructionRuntime<R>> extends InstructionExecution<R> {
+    interface Argumentless<R extends InstructionRuntime<R>> extends InstructionExecution<R> {
         @Override
         default void readArguments(ParameterValueList arguments, R runtime) {}
-
-        @Override
-        default void save(ValueOutput view, R runtime) {}
-
-        @Override
-        default void load(ValueInput view, R runtime) {}
     }
 }

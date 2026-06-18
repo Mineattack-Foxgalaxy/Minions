@@ -1,8 +1,9 @@
 package io.github.skippyall.minions.minion.program.instruction.inventory;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
@@ -11,10 +12,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 
 public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
+    public static final Codec<SwapItemExecution> CODEC = MapCodec.unitCodec(SwapItemExecution::new);
+
     public static final Parameter<Long> FROM_SLOT = new Parameter<>("from_slot", ValueTypes.LONG);
     public static final Parameter<Boolean> FROM_SCREEN = new Parameter<>("from_screen", ValueTypes.BOOLEAN);
     public static final Parameter<Long> TO_SLOT = new Parameter<>("to_slot", ValueTypes.LONG);
@@ -109,25 +110,10 @@ public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
     }
 
     @Override
-    public void stop(MinionRuntime runtime, ValueConsumerList<MinionRuntime> valueConsumers) {
-        InstructionExecution.super.stop(runtime, valueConsumers);
-    }
-
-    @Override
     public void readArguments(ParameterValueList arguments, MinionRuntime runtime) {
         fromSlot = Math.clamp(arguments.getValue(FROM_SLOT), 0, Integer.MAX_VALUE);
         fromScreen = arguments.getValue(FROM_SCREEN);
         toSlot = Math.clamp(arguments.getValue(TO_SLOT), 0, Integer.MAX_VALUE);
         toScreen = arguments.getValue(TO_SCREEN);
-    }
-
-    @Override
-    public void save(ValueOutput view, MinionRuntime runtime) {
-
-    }
-
-    @Override
-    public void load(ValueInput view, MinionRuntime runtime) {
-
     }
 }

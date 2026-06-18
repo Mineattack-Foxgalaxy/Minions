@@ -40,4 +40,8 @@ public class Minions implements ModInitializer {
 
         ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(Identifier.fromNamespaceAndPath(Minions.MOD_ID, "docs"), new DocsManager());
     }
+
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    }
 }

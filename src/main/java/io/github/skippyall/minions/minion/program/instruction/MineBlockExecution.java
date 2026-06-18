@@ -1,10 +1,11 @@
 //partially code from https://github.com/gnembon/fabric-carpet (EntityPlayerActionPack)
 package io.github.skippyall.minions.minion.program.instruction;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.consumer.ValueConsumerList;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import net.minecraft.core.BlockPos;
@@ -12,18 +13,33 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jspecify.annotations.Nullable;
 
-public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
+import java.util.Objects;
+
+public class MineBlockExecution implements InstructionExecution.Argumentless<MinionRuntime> {
+    public static final Codec<MineBlockExecution> CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    BlockPos.CODEC.fieldOf("currentBlock").forGetter(e -> Objects.requireNonNull(e.currentBlock)),
+                    Codec.FLOAT.fieldOf("currentBlockDamage").forGetter(e -> e.currentBlockDamage)
+            ).apply(instance, MineBlockExecution::new)
+    );
+
+    //only null when stopping immediately
     private @Nullable BlockPos currentBlock;
     private float currentBlockDamage = 0;
     private boolean first = true;
     private boolean done = false;
     private boolean success = false;
+
+    public MineBlockExecution() {}
+
+    public MineBlockExecution(BlockPos currentBlock, float currentBlockDamage) {
+        this.currentBlock = currentBlock;
+        this.currentBlockDamage = currentBlockDamage;
+    }
 
     @Override
     public void start(MinionRuntime runtime) {
@@ -47,7 +63,7 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
 
     @Override
     public void tick(MinionRuntime runtime) {
-        if(done) {
+        if(done || currentBlock == null) {
             return;
         }
 
@@ -61,7 +77,7 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
         }
 
         BlockPos newPos = newBlockHit.getBlockPos();
-        if(!newPos.equals(currentBlock)) {
+        if(newPos.equals(currentBlock)) {
             done = true;
             return;
         }
@@ -110,33 +126,13 @@ public class MineBlockExecution implements InstructionExecution<MinionRuntime> {
     }
 
     @Override
-    public void stop(MinionRuntime runtime, ValueConsumerList<MinionRuntime> valueConsumers) {
+    public void stop(ParameterValueList list, MinionRuntime runtime) {
         MinionFakePlayer player = runtime.getMinion();
         EntityPlayerActionPack ap = player.getMinionActionPack();
 
         if(currentBlock != null) {
             player.level().destroyBlockProgress(-1, currentBlock, -1);
             player.gameMode.handleBlockBreakAction(currentBlock, ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, Direction.DOWN, player.level().getMaxY(), -1);
-        }
-    }
-
-    @Override
-    public void readArguments(ParameterValueList arguments, MinionRuntime runtime) {
-
-    }
-
-    @Override
-    public void save(ValueOutput view, MinionRuntime runtime) {
-        view.store("currentBlock", BlockPos.CODEC, currentBlock);
-        view.putFloat("currentBlockDamage", currentBlockDamage);
-    }
-
-    @Override
-    public void load(ValueInput view, MinionRuntime runtime) {
-        currentBlock = view.read("currentBlock", BlockPos.CODEC).orElse(null);
-        currentBlockDamage = view.getFloatOr("currentBlockDamage", 0);
-        if(currentBlock == null) {
-            done = true;
         }
     }
 }

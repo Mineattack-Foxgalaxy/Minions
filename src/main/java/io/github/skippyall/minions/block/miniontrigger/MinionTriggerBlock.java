@@ -1,27 +1,32 @@
 package io.github.skippyall.minions.block.miniontrigger;
 
 import com.mojang.serialization.MapCodec;
-import io.github.skippyall.minions.block.instruction_bound.InstructionBoundBlock;
 import io.github.skippyall.minions.registration.MinionBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SupportType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-public class MinionTriggerBlock extends InstructionBoundBlock {
+public class MinionTriggerBlock extends Block implements EntityBlock {
     public static final MapCodec<MinionTriggerBlock> CODEC = simpleCodec(MinionTriggerBlock::new);
 
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
@@ -30,6 +35,21 @@ public class MinionTriggerBlock extends InstructionBoundBlock {
     public MinionTriggerBlock(Properties settings) {
         super(settings);
         registerDefaultState(defaultBlockState().setValue(POWERED, false));
+    }
+
+    @Override
+    protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        return super.useItemOn(itemStack, state, level, pos, player, hand, hitResult);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if(player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof MinionTriggerBlockEntity be) {
+            if(be.openGui(serverPlayer)) {
+                return InteractionResult.SUCCESS;
+            }
+        }
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -81,10 +101,5 @@ public class MinionTriggerBlock extends InstructionBoundBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new MinionTriggerBlockEntity(pos, state);
-    }
-
-    @Override
-    protected BlockEntityType<MinionTriggerBlockEntity> getBlockEntityType() {
-        return MinionBlocks.MINION_TRIGGER_BE_TYPE;
     }
 }

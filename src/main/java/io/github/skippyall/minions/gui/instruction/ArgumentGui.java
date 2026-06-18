@@ -5,8 +5,6 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.PaginatedList;
-import io.github.skippyall.minions.gui.minion.GuiContext;
-import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ValueSupplier;
@@ -21,31 +19,25 @@ import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
 
 public class ArgumentGui extends MinionsGui {
-    private final GuiContext.ValueSupplier context;
-    private final ConfiguredInstruction<MinionRuntime> instruction;
+    private final ConfiguredInstruction<?> instruction;
     private final Parameter<?> parameter;
 
     private SimpleGui gui;
 
-    private @Nullable ValueSupplierType<MinionRuntime> argumentType;
-    private ValueSupplierList. @Nullable ValueSupplierEntry<?, MinionRuntime> entry;
+    private @Nullable ValueSupplierType argumentType;
+    private ValueSupplierList. @Nullable ValueSupplierEntry<?> entry;
 
-    public ArgumentGui(MinionsGui parent, GuiContext.ValueSupplier context) {
+    public ArgumentGui(MinionsGui parent, ConfiguredInstruction<?> instruction, Parameter<?> parameter) {
         super(parent);
-        instruction = context.getInstruction();
-        this.parameter = context.getParameter();
-        this.context = context;
+        this.instruction = instruction;
+        this.parameter = parameter;
 
         this.entry = instruction.getArguments().getEntry(parameter);
         this.argumentType = entry.getSupplier().getType();
         open();
     }
 
-    public String getInstructionName() {
-        return context.getName();
-    }
-
-    public @Nullable ValueSupplier<?, MinionRuntime> getArgument() {
+    public @Nullable ValueSupplier<?> getArgument() {
         if(entry != null) {
             return entry.getSupplier();
         }
@@ -119,7 +111,7 @@ public class ArgumentGui extends MinionsGui {
         gui.close();
     }
 
-    public void setArgumentType(ValueSupplierType<MinionRuntime> type) {
+    public void setArgumentType(ValueSupplierType type) {
         this.argumentType = type;
         if(entry != null && getArgument().getType() != argumentType) {
             instruction.getArguments().removeEntry(parameter);
@@ -128,7 +120,7 @@ public class ArgumentGui extends MinionsGui {
         updateTypeConfiguration();
     }
 
-    public void setArgument(ValueSupplier<?, MinionRuntime> argument) {
+    public void setArgument(ValueSupplier<?> argument) {
         if(entry != null) {
             entry.setSupplier(argument);
         } else {

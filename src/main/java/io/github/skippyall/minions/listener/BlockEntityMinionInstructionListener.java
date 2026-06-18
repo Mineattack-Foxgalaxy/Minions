@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.listener;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
+import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -16,7 +16,7 @@ public abstract class BlockEntityMinionInstructionListener<E extends BlockEntity
         super(worldKey, pos, minionUuid, type);
     }
 
-    protected abstract Map<String, ConfiguredInstructionListener> getInstructionListeners();
+    protected abstract Map<Integer, ExecutingInstruction.Listener> getInstructionListeners();
 
     @Override
     public void onMinionSpawn(MinionFakePlayer minion) {
@@ -41,14 +41,14 @@ public abstract class BlockEntityMinionInstructionListener<E extends BlockEntity
     }
 
     public void registerInstructionListeners() {
-        for(Map.Entry<String, ConfiguredInstructionListener> listener : getInstructionListeners().entrySet()) {
-            minion.getInstructionManager().getInstruction(listener.getKey()).addListener(listener.getValue());
+        for(Map.Entry<Integer, ExecutingInstruction.Listener> listener : getInstructionListeners().entrySet()) {
+            minion.getRuntime().getInstruction(listener.getKey()).addListener(listener.getValue());
         }
     }
 
     public void removeInstructionListeners() {
-        for(Map.Entry<String, ConfiguredInstructionListener> listener : getInstructionListeners().entrySet()) {
-            minion.getInstructionManager().getInstruction(listener.getKey()).removeListener(listener.getValue());
+        for(Map.Entry<Integer, ExecutingInstruction.Listener> listener : getInstructionListeners().entrySet()) {
+            minion.getRuntime().getInstruction(listener.getKey()).removeListener(listener.getValue());
         }
     }
 }

@@ -54,6 +54,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -65,7 +66,7 @@ public class MinionFakePlayer extends ServerPlayer {
     private EntityPlayerActionPack actionPack;
 
     private final ModuleInventory moduleInventory = new ModuleInventory(this);
-    private final MinionRuntime instructionManager = new MinionRuntime(this);
+    private final MinionRuntime runtime = new MinionRuntime(this);
 
     public static void spawnMinion(MinionData data, ServerLevel level, @Nullable Vec3 pos, @Nullable Vec2 rot) {
         spawnMinion(data, level, pos, rot, false);
@@ -151,12 +152,12 @@ public class MinionFakePlayer extends ServerPlayer {
         return actionPack;
     }
 
-    public MinionRuntime getInstructionManager() {
-        return instructionManager;
+    public MinionRuntime getRuntime() {
+        return runtime;
     }
 
     public MinionData getData() {
-        return MinionPersistentState.get(getServer()).getMinionData(getUUID());
+        return Objects.requireNonNull(MinionPersistentState.get(getServer()).getMinionData(getUUID()));
     }
 
     public SerializableListenerManager<MinionListener> listeners() {
@@ -231,7 +232,7 @@ public class MinionFakePlayer extends ServerPlayer {
         {
             super.tick();
             this.doTick();
-            instructionManager.tick();
+            runtime.tick();
         }
         catch (NullPointerException ignored)
         {
@@ -328,13 +329,13 @@ public class MinionFakePlayer extends ServerPlayer {
     public void addAdditionalSaveData(ValueOutput view) {
         super.addAdditionalSaveData(view);
         moduleInventory.writeData(view.child("modules"));
-        instructionManager.save(view.child("instructionManager"));
+        runtime.save(view.child("instructionManager"));
     }
 
     @Override
     public void readAdditionalSaveData(ValueInput view) {
         super.readAdditionalSaveData(view);
         moduleInventory.readData(view.childOrEmpty("modules"));
-        instructionManager.load(view.childOrEmpty("instructionManager"));
+        runtime.load(view.childOrEmpty("instructionManager"));
     }
 }

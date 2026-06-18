@@ -15,6 +15,7 @@ import io.github.skippyall.minions.module.SpecialAbility;
 import io.github.skippyall.minions.program.consumer.ValueConsumerType;
 import io.github.skippyall.minions.program.conversion.ValueConverterType;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
+import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import io.github.skippyall.minions.program.value.ValueType;
@@ -27,15 +28,16 @@ import net.minecraft.resources.ResourceKey;
 
 public class MinionRegistries {
     public static final Registry<ValueType<?>> VALUE_TYPES = registry("value_type");
-    public static final Registry<ValueSupplierType<MinionRuntime>> VALUE_SUPPLIER_TYPES = registry("value_supplier");
+    public static final Registry<ValueSupplierType> VALUE_SUPPLIER_TYPES = registry("value_supplier");
     public static final Registry<ValueConsumerType<MinionRuntime>> VALUE_CONSUMER_TYPES = registry("value_consumer");
-    public static final Registry<InstructionType<MinionRuntime>> INSTRUCTION_TYPES = registry("instruction");
+    public static final Registry<InstructionType<?>> INSTRUCTION_TYPES = registry("instruction");
     public static final Registry<ValueConverterType<?>> VALUE_CONVERTER_TYPES = registry("value_converter");
 
     public static final Registry<SkinProvider> SKIN_PROVIDERS = registry("skin_provider");
     public static final Registry<Codec<? extends GuiDisplay>> GUI_DISPLAY_TYPE = registry("gui_display_type");
     public static final Registry<Codec<? extends ConfiguredInstructionListener>> INSTRUCTION_LISTENER_CODECS = registry("instruction_listener_codec");
     public static final Registry<Codec<? extends MinionListener>> MINION_LISTENER_CODECS = registry("minion_listener_codec");
+    public static final Registry<Codec<? extends ExecutingInstruction.Listener>> EXECUTING_INSTRUCTION_LISTENER_CODECS = registry("executing_instruction_listener_codec");
     public static final Registry<MapCodec<? extends Clipboard>> CLIPBOARD_TYPES = registry("clipboard");
     public static final Registry<SpecialAbility> SPECIAL_ABILITIES = registry("special_ability");
     public static final Registry<MinionConfig.Option<?>> MINION_CONFIG_OPTIONS = registry("minion_config_option");
