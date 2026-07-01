@@ -19,7 +19,7 @@ import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
 
 public class ArgumentGui extends MinionsGui {
-    private final ConfiguredInstruction<?> instruction;
+    private final ConfiguredInstruction instruction;
     private final Parameter<?> parameter;
 
     private SimpleGui gui;
@@ -27,13 +27,15 @@ public class ArgumentGui extends MinionsGui {
     private @Nullable ValueSupplierType argumentType;
     private ValueSupplierList. @Nullable ValueSupplierEntry<?> entry;
 
-    public ArgumentGui(MinionsGui parent, ConfiguredInstruction<?> instruction, Parameter<?> parameter) {
+    public ArgumentGui(MinionsGui parent, ConfiguredInstruction instruction, Parameter<?> parameter) {
         super(parent);
         this.instruction = instruction;
         this.parameter = parameter;
 
         this.entry = instruction.getArguments().getEntry(parameter);
-        this.argumentType = entry.getSupplier().getType();
+        if(entry != null) {
+            this.argumentType = entry.getSupplier().getType();
+        }
         open();
     }
 

@@ -83,7 +83,7 @@ public class MinionItems {
         return registerItem(identifier, Item::new);
     }
 
-    public static Item registerModule(Identifier identifier, List<InstructionType<MinionRuntime>> instructionTypes, List<SpecialAbility> specialAbilities) {
+    public static Item registerModule(Identifier identifier, List<InstructionType> instructionTypes, List<SpecialAbility> specialAbilities) {
         return registerItem(
                 identifier,
                 Item::new,
@@ -91,7 +91,7 @@ public class MinionItems {
         );
     }
 
-    public static Item registerModule(Identifier identifier, List<InstructionType<MinionRuntime>> instructionTypes) {
+    public static Item registerModule(Identifier identifier, List<InstructionType> instructionTypes) {
         return registerModule(
                 identifier,
                 instructionTypes,

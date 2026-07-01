@@ -1,9 +1,11 @@
 package io.github.skippyall.minions.program.instruction;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.listener.SerializableListenerManager;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
@@ -17,10 +19,9 @@ import java.util.OptionalInt;
 
 /**
  * Holds an instruction and its configuration
- * @param <R> The runtime that this object is configured for
  */
-public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
-    public static final MapCodec<ConfiguredInstruction<?>> MAP_CODEC = RecordCodecBuilder.mapCodec(instance ->
+public class ConfiguredInstruction {
+    public static final MapCodec<ConfiguredInstruction> MAP_CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     MinionRegistries.INSTRUCTION_TYPES.byNameCodec().fieldOf("instruction").forGetter(ConfiguredInstruction::getInstruction),
                     ValueSupplierList.CODEC.fieldOf("arguments").forGetter(ConfiguredInstruction::getArguments),
@@ -29,7 +30,9 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
             ).apply(instance, ConfiguredInstruction::new)
     );
 
-    private final InstructionType<R> instruction;
+    public static final Codec<ConfiguredInstruction> CODEC = MAP_CODEC.codec();
+
+    private final InstructionType instruction;
     private final ValueSupplierList arguments;
     //private final ValueConsumerList<R> valueConsumers;
 
@@ -37,7 +40,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     private SerializableListenerManager<ConfiguredInstructionListener> listeners = new SerializableListenerManager<>();
 
     private ConfiguredInstruction(
-            InstructionType<R> instruction,
+            InstructionType instruction,
             ValueSupplierList arguments,
             //ValueConsumerList<R> valueConsumers,
             SerializableListenerManager<ConfiguredInstructionListener> listeners
@@ -47,7 +50,7 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
     }
 
     private ConfiguredInstruction(
-            InstructionType<R> instruction,
+            InstructionType instruction,
             ValueSupplierList arguments //,
             //ValueConsumerList<R> valueConsumers
     ) {
@@ -58,11 +61,11 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         //valueConsumers.addListener(this::onConsumerChange);
     }
 
-    public ConfiguredInstruction(InstructionType<R> instruction) {
+    public ConfiguredInstruction(InstructionType instruction) {
         this(instruction, new ValueSupplierList() /*, new ValueConsumerList<>(),*/);
     }
 
-    public InstructionType<R> getInstruction() {
+    public InstructionType getInstruction() {
         return instruction;
     }
 
@@ -84,19 +87,19 @@ public class ConfiguredInstruction<R extends InstructionRuntime<R>> {
         return preCheck().isEmpty();
     }
 
-    public OptionalInt run(R runtime) {
+    public OptionalInt run(ExecutionContext context, InstructionRuntime runtime) {
         OptionalInt id = OptionalInt.empty();
         if(canRun()) {
             lastErrors = new ArrayList<>();
             try {
                 ParameterValueList resolvedArguments = arguments.resolve(runtime.getServer(), lastErrors::add);
                 if(lastErrors.isEmpty()) {
-                    InstructionExecution<R> execution = instruction.createExecution(resolvedArguments, runtime);
-                    id = OptionalInt.of(runtime.addInstruction(new ExecutingInstruction<>(instruction, execution)));
-                    execution.start(runtime);
+                    InstructionExecution execution = instruction.createExecution(resolvedArguments, context);
+                    id = OptionalInt.of(runtime.addInstruction(new ExecutingInstruction(instruction, execution)));
+                    execution.start(context);
 
                     for(ConfiguredInstructionListener listener : listeners) {
-                        listener.onRun(this, runtime, id.getAsInt());
+                        listener.onRun(this, context, id.getAsInt());
                     }
                 }
             } catch (Exception e) {

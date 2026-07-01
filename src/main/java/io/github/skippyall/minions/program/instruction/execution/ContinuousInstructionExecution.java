@@ -1,11 +1,11 @@
 package io.github.skippyall.minions.program.instruction.execution;
 
-import io.github.skippyall.minions.program.InstructionRuntime;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 
-public interface ContinuousInstructionExecution<R extends InstructionRuntime<R>> extends InstructionExecution<R> {
+public interface ContinuousInstructionExecution extends InstructionExecution {
     @Override
-    default boolean isDone(R minion) {
+    default boolean isDone(ExecutionContext context) {
         return false;
     }
 }

@@ -1,17 +1,17 @@
 package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.listener.SerializableListenerManager;
-import io.github.skippyall.minions.program.InstructionRuntime;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.supplier.Parameter;
 
 public interface ConfiguredInstructionListener extends SerializableListenerManager.SerializableListener {
-    default <R extends InstructionRuntime<R>> void onRun(ConfiguredInstruction<R> instruction, R runtime, int id) {}
+    default void onRun(ConfiguredInstruction instruction, ExecutionContext context, int id) {}
 
-    default void onStop(ConfiguredInstruction<?> instruction) {}
+    default void onStop(ConfiguredInstruction instruction) {}
 
-    default void onSupplierChange(ConfiguredInstruction<?> instruction, Parameter<?> parameter) {}
+    default void onSupplierChange(ConfiguredInstruction instruction, Parameter<?> parameter) {}
 
-    default void onConsumerChange(ConfiguredInstruction<?> instruction, Parameter<?> parameter) {}
+    default void onConsumerChange(ConfiguredInstruction instruction, Parameter<?> parameter) {}
 
-    default void onInstructionRemove(ConfiguredInstruction<?> instruction) {}
+    default void onInstructionRemove(ConfiguredInstruction instruction) {}
 }

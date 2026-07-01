@@ -1,9 +1,12 @@
 package io.github.skippyall.minions.block.miniontrigger;
 
 import com.mojang.serialization.MapCodec;
+import io.github.skippyall.minions.clipboard.MinionClipboard;
 import io.github.skippyall.minions.registration.MinionBlocks;
+import io.github.skippyall.minions.registration.MinionComponentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -39,7 +42,12 @@ public class MinionTriggerBlock extends Block implements EntityBlock {
 
     @Override
     protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        return super.useItemOn(itemStack, state, level, pos, player, hand, hitResult);
+        if(itemStack.get(MinionComponentTypes.REFERENCE) instanceof MinionClipboard minion) {
+            level.getBlockEntity(pos, MinionBlocks.MINION_TRIGGER_BE_TYPE).ifPresent(be -> be.setMinion(minion.minion()));
+            return InteractionResult.SUCCESS;
+        } else {
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
+        }
     }
 
     @Override

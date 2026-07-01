@@ -90,13 +90,13 @@ public class InstructionGui {
         return stillExists;
     }*/
 
-    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionModuleMenu(ServerPlayer viewer, @Nullable MinionsGui parent, MinionFakePlayer minion) {
+    public static CompletableFuture<InstructionType> selectInstructionModuleMenu(ServerPlayer viewer, @Nullable MinionsGui parent, MinionFakePlayer minion) {
         if (minion.getModuleInventory().getModules().isEmpty()) {
             viewer.sendSystemMessage(Component.translatable("minions.gui.instruction.no_modules"));
             return CompletableFuture.failedFuture(new NoSuchElementException("No modules"));
         }
 
-        CompletableFuture<InstructionType<MinionRuntime>> future = new CompletableFuture<>();
+        CompletableFuture<InstructionType> future = new CompletableFuture<>();
 
         new SimpleMinionsGui(viewer, parent, (closeHandler, me) -> {
             SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x4, viewer, false) {
@@ -130,8 +130,8 @@ public class InstructionGui {
         return future;
     }
 
-    public static CompletableFuture<InstructionType<MinionRuntime>> selectInstructionMenu(ServerPlayer viewer, @Nullable MinionsGui parent, MinionModule module) {
-        CompletableFuture<InstructionType<MinionRuntime>> future = new CompletableFuture<>();
+    public static CompletableFuture<InstructionType> selectInstructionMenu(ServerPlayer viewer, @Nullable MinionsGui parent, MinionModule module) {
+        CompletableFuture<InstructionType> future = new CompletableFuture<>();
 
         new SimpleMinionsGui(viewer, parent, (closeHandler, me) -> {
             SimpleGui gui = new SimpleGui(MenuType.GENERIC_9x4, viewer, false) {
@@ -147,7 +147,7 @@ public class InstructionGui {
 
             gui.setSlot(8, me.backButton());
             int slot = 9;
-            for (InstructionType<MinionRuntime> instructionType : module.instructions()) {
+            for (InstructionType instructionType : module.instructions()) {
                 gui.setSlot(slot, createInstructionElement(instructionType, viewer.registryAccess())
                         .setCallback(() -> {
                             future.complete(instructionType);
@@ -163,7 +163,7 @@ public class InstructionGui {
         return future;
     }
 
-    public static GuiElementBuilder createInstructionElement(@Nullable InstructionType<?> instructionType, RegistryAccess manager) {
+    public static GuiElementBuilder createInstructionElement(@Nullable InstructionType instructionType, RegistryAccess manager) {
         GuiElementBuilder instructionBuilder;
         if (instructionType != null) {
             instructionBuilder = new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.INSTRUCTION_TYPES, instructionType, manager));

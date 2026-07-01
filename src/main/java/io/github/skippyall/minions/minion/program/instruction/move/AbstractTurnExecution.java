@@ -3,11 +3,13 @@ package io.github.skippyall.minions.minion.program.instruction.move;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.minion.MinionRuntime;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 
 import java.util.function.BiFunction;
 
-public abstract class AbstractTurnExecution implements InstructionExecution<MinionRuntime> {
+public abstract class AbstractTurnExecution implements InstructionExecution {
     protected float targetYaw;
     protected float targetPitch;
 
@@ -30,15 +32,18 @@ public abstract class AbstractTurnExecution implements InstructionExecution<Mini
     }
 
     @Override
-    public void tick(MinionRuntime minion) {
-        float rotateYaw = targetYaw - minion.getMinion().getYRot();
-        float rotatePitch = targetPitch - minion.getMinion().getXRot();
+    public void tick(ExecutionContext context) {
+        MinionFakePlayer minion = context.getOrThrow(MinionRuntime.MINION_KEY);
 
-        minion.getMinion().getMinionActionPack().turn(Math.min(rotateYaw, anglePerTick), Math.min(rotatePitch, anglePerTick));
+        float rotateYaw = targetYaw - minion.getYRot();
+        float rotatePitch = targetPitch - minion.getXRot();
+
+        minion.getMinionActionPack().turn(Math.min(rotateYaw, anglePerTick), Math.min(rotatePitch, anglePerTick));
     }
 
     @Override
-    public boolean isDone(MinionRuntime minion) {
-        return Math.abs(targetYaw - minion.getMinion().getYRot()) < 0.001F && Math.abs(targetPitch - minion.getMinion().getXRot()) < 0.001F;
+    public boolean isDone(ExecutionContext context) {
+        MinionFakePlayer minion = context.getOrThrow(MinionRuntime.MINION_KEY);
+        return Math.abs(targetYaw - minion.getYRot()) < 0.001F && Math.abs(targetPitch - minion.getXRot()) < 0.001F;
     }
 }

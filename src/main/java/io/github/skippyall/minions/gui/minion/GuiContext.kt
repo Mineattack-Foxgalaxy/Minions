@@ -34,13 +34,13 @@ interface GuiContext {
     }
 
     interface Instruction : Minion {
-        val instruction: ConfiguredInstruction<MinionRuntime>
+        val instruction: ConfiguredInstruction
 
         var name: String
 
         companion object {
             @JvmStatic
-            fun create(context: Minion, instruction: ConfiguredInstruction<MinionRuntime>, name: String): Instruction {
+            fun create(context: Minion, instruction: ConfiguredInstruction, name: String): Instruction {
                 return InstructionImpl(
                     if(context is InstructionImpl) context.context else context,
                     instruction,

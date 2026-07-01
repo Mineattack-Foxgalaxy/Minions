@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import net.minecraft.core.BlockPos;
@@ -19,7 +20,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
-public class MineBlockExecution implements InstructionExecution.Argumentless<MinionRuntime> {
+public class MineBlockExecution implements InstructionExecution.Argumentless {
     public static final Codec<MineBlockExecution> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     BlockPos.CODEC.fieldOf("currentBlock").forGetter(e -> Objects.requireNonNull(e.currentBlock)),
@@ -42,8 +43,8 @@ public class MineBlockExecution implements InstructionExecution.Argumentless<Min
     }
 
     @Override
-    public void start(MinionRuntime runtime) {
-        MinionFakePlayer player = runtime.getMinion();
+    public void start(ExecutionContext context) {
+        MinionFakePlayer player = context.getOrThrow(MinionRuntime.MINION_KEY);
         if(EntityPlayerActionPack.getTarget(player) instanceof BlockHitResult hit) {
             this.currentBlock = hit.getBlockPos();
 
@@ -62,12 +63,12 @@ public class MineBlockExecution implements InstructionExecution.Argumentless<Min
     }
 
     @Override
-    public void tick(MinionRuntime runtime) {
+    public void tick(ExecutionContext context) {
         if(done || currentBlock == null) {
             return;
         }
 
-        MinionFakePlayer player = runtime.getMinion();
+        MinionFakePlayer player = context.getOrThrow(MinionRuntime.MINION_KEY);
         EntityPlayerActionPack ap = player.getMinionActionPack();
 
         HitResult newHit = EntityPlayerActionPack.getTarget(player);
@@ -121,13 +122,13 @@ public class MineBlockExecution implements InstructionExecution.Argumentless<Min
     }
 
     @Override
-    public boolean isDone(MinionRuntime runtime) {
+    public boolean isDone(ExecutionContext context) {
         return done;
     }
 
     @Override
-    public void stop(ParameterValueList list, MinionRuntime runtime) {
-        MinionFakePlayer player = runtime.getMinion();
+    public void stop(ParameterValueList list, ExecutionContext context) {
+        MinionFakePlayer player = context.getOrThrow(MinionRuntime.MINION_KEY);
         EntityPlayerActionPack ap = player.getMinionActionPack();
 
         if(currentBlock != null) {

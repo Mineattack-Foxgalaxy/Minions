@@ -3,13 +3,15 @@ package io.github.skippyall.minions.minion.program.instruction.move;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.minion.MinionRuntime;
+import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.world.entity.MoverType;
 
-public class WalkExecution implements InstructionExecution<MinionRuntime> {
+public class WalkExecution implements InstructionExecution {
     public static final Codec<WalkExecution> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Codec.DOUBLE.fieldOf("totalBlocksToMove").forGetter(e -> e.totalBlocksToMove),
@@ -30,19 +32,20 @@ public class WalkExecution implements InstructionExecution<MinionRuntime> {
     }
 
     @Override
-    public void tick(MinionRuntime minion) {
-        double speed = Math.min(minion.getMinion().getSpeed(), totalBlocksToMove - blocksMoved);
-        minion.getMinion().move(MoverType.SELF, minion.getMinion().getDirection().getUnitVec3().normalize().scale(speed));
+    public void tick(ExecutionContext context) {
+        MinionFakePlayer minion = context.getOrThrow(MinionRuntime.MINION_KEY);
+        double speed = Math.min(minion.getSpeed(), totalBlocksToMove - blocksMoved);
+        minion.move(MoverType.SELF, minion.getDirection().getUnitVec3().normalize().scale(speed));
         blocksMoved += speed;
     }
 
     @Override
-    public boolean isDone(MinionRuntime minion) {
+    public boolean isDone(ExecutionContext context) {
         return totalBlocksToMove - blocksMoved < ACCURACY;
     }
 
     @Override
-    public void readArguments(ParameterValueList parameters, MinionRuntime minion) {
+    public void readArguments(ParameterValueList parameters, ExecutionContext context) {
         totalBlocksToMove = parameters.getValue(blocksToMoveParam).floatValue();
         blocksMoved = 0;
     }

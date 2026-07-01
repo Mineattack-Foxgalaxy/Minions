@@ -10,10 +10,6 @@ public interface MinionListener extends SerializableListenerManager.Serializable
 
     default void onMinionRemove(MinionFakePlayer minion) {}
 
-    default void onInstructionsUpdate(MinionFakePlayer minion) {}
-
-    default void onInstructionRename(MinionFakePlayer minion, ConfiguredInstruction<?> instruction, String oldName, String newName) {}
-
     interface Delegating extends MinionListener {
         @Nullable MinionListener getBacking();
 
@@ -28,20 +24,6 @@ public interface MinionListener extends SerializableListenerManager.Serializable
         default void onMinionRemove(MinionFakePlayer minion) {
             if(getBacking() != null) {
                 getBacking().onMinionRemove(minion);
-            }
-        }
-
-        @Override
-        default void onInstructionsUpdate(MinionFakePlayer minion) {
-            if(getBacking() != null) {
-                getBacking().onInstructionsUpdate(minion);
-            }
-        }
-
-        @Override
-        default void onInstructionRename(MinionFakePlayer minion, ConfiguredInstruction<?> instruction, String oldName, String newName) {
-            if(getBacking() != null) {
-                getBacking().onInstructionRename(minion, instruction, oldName, newName);
             }
         }
     }

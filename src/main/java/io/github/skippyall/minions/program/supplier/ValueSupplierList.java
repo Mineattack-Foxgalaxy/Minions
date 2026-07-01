@@ -48,6 +48,7 @@ public class ValueSupplierList {
         }
     }
 
+    @Nullable
     public <P> ValueSupplierEntry<P> getEntry(Parameter<P> parameter) {
         //noinspection unchecked
         return (ValueSupplierEntry<P>) arguments.get(parameter);
@@ -83,7 +84,7 @@ public class ValueSupplierList {
         }
     }
 
-    public void checkRun(InstructionType<?> instructionType, Consumer<Component> errorConsumer) {
+    public void checkRun(InstructionType instructionType, Consumer<Component> errorConsumer) {
         checkHasArguments(instructionType.getParameters(), errorConsumer);
 
         for(ValueSupplierEntry<?> entry : arguments.values()) {

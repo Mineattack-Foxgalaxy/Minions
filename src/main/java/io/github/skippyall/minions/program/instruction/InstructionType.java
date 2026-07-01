@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.program.instruction;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.program.InstructionRuntime;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.MinionRegistries;
@@ -13,23 +13,24 @@ import java.util.function.Supplier;
 /**
  * Defines the semantics of an instruction and creates {@link InstructionExecution}
  * InstructionTypes can be registered to {@link MinionRegistries#INSTRUCTION_TYPES}
- * @param <R> The runtime that this instruction can be executed in
  */
-public class InstructionType<R extends InstructionRuntime<R>> {
+public class InstructionType {
     private final List<Parameter<?>> parameters;
     private final List<Parameter<?>> returnParameters;
-    private final Supplier<InstructionExecution<R>> executionFactory;
+    private final List<ExecutionContext.Key<?>> contextKeys;
+    private final Supplier<InstructionExecution> executionFactory;
 
-    private final Codec<? extends InstructionExecution<R>> executionCodec;
+    private final Codec<? extends InstructionExecution> executionCodec;
 
-    public InstructionType(Supplier<InstructionExecution<R>> executionFactory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters, Codec<? extends InstructionExecution<R>> executionCodec) {
+    public InstructionType(Supplier<InstructionExecution> executionFactory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters, Collection<ExecutionContext.Key<?>> contextKeys, Codec<? extends InstructionExecution> executionCodec) {
         this.parameters = List.copyOf(parameters);
         this.returnParameters = List.copyOf(returnParameters);
+        this.contextKeys = List.copyOf(contextKeys);
         this.executionFactory = executionFactory;
         this.executionCodec = executionCodec;
     }
 
-    public Codec<? extends InstructionExecution<R>> getExecutionCodec() {
+    public Codec<? extends InstructionExecution> getExecutionCodec() {
         return executionCodec;
     }
 
@@ -41,8 +42,12 @@ public class InstructionType<R extends InstructionRuntime<R>> {
         return returnParameters;
     }
 
-    public InstructionExecution<R> createExecution(ParameterValueList arguments, R minion) {
-        InstructionExecution<R> execution = executionFactory.get();
+    public List<ExecutionContext.Key<?>> getContextKeys() {
+        return contextKeys;
+    }
+
+    public InstructionExecution createExecution(ParameterValueList arguments, ExecutionContext minion) {
+        InstructionExecution execution = executionFactory.get();
         execution.readArguments(arguments, minion);
         return execution;
     }

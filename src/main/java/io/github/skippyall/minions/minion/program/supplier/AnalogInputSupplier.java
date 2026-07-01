@@ -70,11 +70,8 @@ public class AnalogInputSupplier implements ValueSupplier<Long> {
 
     public static class AnalogInputSupplierType extends ValueSupplierType {
         @Override
-        public <T> Codec<? extends ValueSupplier<T>> getCodec(ValueType<T> type) {
-            if(type == ValueTypes.LONG) {
-                return ValueSupplier.castCodec(CODEC, ValueTypes.LONG, type);
-            }
-            return null;
+        public Codec<? extends ValueSupplier<?>> getCodec() {
+            return CODEC;
         }
 
         @Override

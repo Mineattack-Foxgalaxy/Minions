@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
@@ -13,7 +14,7 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
+public class SwapItemExecution implements InstructionExecution {
     public static final Codec<SwapItemExecution> CODEC = MapCodec.unitCodec(SwapItemExecution::new);
 
     public static final Parameter<Long> FROM_SLOT = new Parameter<>("from_slot", ValueTypes.LONG);
@@ -29,8 +30,8 @@ public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
     private ItemStack cursor = ItemStack.EMPTY;
 
     @Override
-    public void start(MinionRuntime runtime) {
-        MinionFakePlayer minion = runtime.getMinion();
+    public void start(ExecutionContext context) {
+        MinionFakePlayer minion = context.getOrThrow(MinionRuntime.MINION_KEY);
 
         if((fromScreen || toScreen) && minion.containerMenu == null) {
             return;
@@ -100,17 +101,12 @@ public class SwapItemExecution implements InstructionExecution<MinionRuntime> {
     }
 
     @Override
-    public void tick(MinionRuntime runtime) {
-        InstructionExecution.super.tick(runtime);
-    }
-
-    @Override
-    public boolean isDone(MinionRuntime runtime) {
+    public boolean isDone(ExecutionContext context) {
         return true;
     }
 
     @Override
-    public void readArguments(ParameterValueList arguments, MinionRuntime runtime) {
+    public void readArguments(ParameterValueList arguments, ExecutionContext context) {
         fromSlot = Math.clamp(arguments.getValue(FROM_SLOT), 0, Integer.MAX_VALUE);
         fromScreen = arguments.getValue(FROM_SCREEN);
         toSlot = Math.clamp(arguments.getValue(TO_SLOT), 0, Integer.MAX_VALUE);

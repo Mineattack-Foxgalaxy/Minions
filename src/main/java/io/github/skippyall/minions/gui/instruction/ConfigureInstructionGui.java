@@ -19,24 +19,20 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Items;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public class ConfigureInstructionGui extends MinionsGui implements ConfiguredInstructionListener, MinionListener {
-    private final ConfiguredInstruction<?> instruction;
+    private final ConfiguredInstruction instruction;
+    private final @Nullable Runnable onDelete;
     
     private SimpleGui gui;
     
-    public ConfigureInstructionGui(ServerPlayer player, ConfiguredInstruction<?> instruction) {
-        super(player);
+    public ConfigureInstructionGui(ServerPlayer player, @Nullable MinionsGui parent, ConfiguredInstruction instruction, @Nullable Runnable onDelete) {
+        super(player, parent);
         this.instruction = instruction;
-        instruction.addListener(this);
-        open();
-    }
-
-    public ConfigureInstructionGui(MinionsGui parent, ConfiguredInstruction<?> instruction) {
-        super(parent);
-        this.instruction = instruction;
+        this.onDelete = onDelete;
         instruction.addListener(this);
         open();
     }
@@ -60,16 +56,19 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
                 }))
         );*/
 
-        /*gui.setSlot(7, new GuiElementBuilder(Items.LAVA_BUCKET)
-                .setName(Component.translatable("minions.gui.instruction.configure.delete"))
-                .setCallback(() -> BooleanInput.confirm(this, Component.translatable("minions.gui.instruction.configure.delete.confirm", name))
-                        .thenAccept((confirmed) -> {
-                            if(confirmed) {
-                                minion.getRuntime().removeInstruction(name);
-                                goBack();
-                            }
-                        }))
-        );*/
+        if(onDelete != null) {
+            gui.setSlot(7, new GuiElementBuilder(Items.LAVA_BUCKET)
+                    .setName(Component.translatable("minions.gui.instruction.configure.delete"))
+                    .setCallback(() -> BooleanInput.confirm(this, Component.translatable("minions.gui.instruction.configure.delete.confirm"))
+                            .thenAccept((confirmed) -> {
+                                if (confirmed) {
+                                    onDelete.run();
+                                    goBack();
+                                }
+                            })
+                    )
+            );
+        }
 
         gui.setSlot(8, backButton());
 
@@ -104,12 +103,12 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
     }*/
 
     @Override
-    public void onStop(ConfiguredInstruction<?> instruction) {
+    public void onStop(ConfiguredInstruction instruction) {
         //updateRunSlot();
     }
 
     @Override
-    public void onSupplierChange(ConfiguredInstruction<?> instruction, Parameter<?> parameter) {
+    public void onSupplierChange(ConfiguredInstruction instruction, Parameter<?> parameter) {
         updateSuppliers();
     }
 

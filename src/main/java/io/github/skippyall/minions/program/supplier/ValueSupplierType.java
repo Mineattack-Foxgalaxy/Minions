@@ -9,7 +9,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class ValueSupplierType {
-    public abstract <T> @Nullable Codec<? extends ValueSupplier<T>> getCodec(ValueType<T> type);
+    public abstract Codec<? extends ValueSupplier<?>> getCodec();
 
     public abstract <T> CompletableFuture<? extends ValueSupplier<?>> openConfiguration(MinionsGui gui, ValueType<T> valueType, @Nullable ValueSupplier<?> previous);
 }

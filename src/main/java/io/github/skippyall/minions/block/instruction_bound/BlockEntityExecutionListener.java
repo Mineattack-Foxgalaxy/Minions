@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.MinionRuntime;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
@@ -37,9 +38,9 @@ public class BlockEntityExecutionListener implements ExecutingInstruction.Listen
         return Optional.of(CODEC_ID);
     }
 
-    public ExecutingInstruction.@Nullable Listener getDelegate(InstructionRuntime<?> runtime) {
-        if(runtime instanceof MinionRuntime minionRuntime) {
-            Level level = minionRuntime.getMinion().getServer().getLevel(levelId);
+    public ExecutingInstruction.@Nullable Listener getDelegate(ExecutionContext context) {
+        if(context.get(MinionRuntime.MINION_KEY) != null) {
+            Level level = context.getOrThrow(MinionRuntime.MINION_KEY).getServer().getLevel(levelId);
             if (level != null && level.isLoaded(pos) && level.getBlockEntity(pos) instanceof ListenerProvider provider) {
                 return provider.getListener();
             }
@@ -47,16 +48,16 @@ public class BlockEntityExecutionListener implements ExecutingInstruction.Listen
         return null;
     }
 
-    private void ifDelegatePresent(InstructionRuntime<?> runtime, Consumer<ExecutingInstruction.Listener> listenerConsumer) {
-        ExecutingInstruction.Listener delegate = getDelegate(runtime);
+    private void ifDelegatePresent(ExecutionContext context, Consumer<ExecutingInstruction.Listener> listenerConsumer) {
+        ExecutingInstruction.Listener delegate = getDelegate(context);
         if(delegate != null) {
             listenerConsumer.accept(delegate);
         }
     }
 
     @Override
-    public void onStop(InstructionRuntime<?> runtime, ParameterValueList returnValues) {
-        ifDelegatePresent(runtime, d -> d.onStop(runtime, returnValues));
+    public void onStop(ExecutionContext context, ParameterValueList returnValues) {
+        ifDelegatePresent(context, d -> d.onStop(context, returnValues));
     }
 
     public interface ListenerProvider {

@@ -21,19 +21,7 @@ public interface ValueSupplier<T> {
     Codec<ValueSupplier<?>> CODEC = MinionRegistries.VALUE_SUPPLIER_TYPES.byNameCodec().dispatch(
             "type",
             ValueSupplier::getType,
-            type ->
-                    MinionRegistries.VALUE_TYPES.byNameCodec().<ValueSupplier<?>>partialDispatch(
-                            "type",
-                            s -> DataResult.success(s.getValueType()),
-                            valueType -> {
-                                Codec<? extends ValueSupplier<?>> valueTypeCodec = type.getCodec(valueType);
-                                if(valueTypeCodec != null) {
-                                    return DataResult.success(valueTypeCodec.fieldOf("valueType"));
-                                } else {
-                                    return DataResult.error(() -> "Supplier type " + type + "not available for value type " + valueType);
-                                }
-                            }
-                    ).fieldOf("valueType")
+            type -> type.getCodec().fieldOf("data")
     );
 
     T resolve(MinecraftServer server);
@@ -56,7 +44,7 @@ public interface ValueSupplier<T> {
     /**
      * WARNING: If originalType is not the type of the value suppliers from the codec, this will leak wrong generics!
      */
-    static <T, U, R extends InstructionRuntime<R>, A extends ValueSupplier<U>, C extends ValueSupplier<T>> @Nullable Codec<A> castCodec(Codec<C> codec, ValueType<T> originalType, ValueType<U> newType) {
+    static <T, U, R extends InstructionRuntime, A extends ValueSupplier<U>, C extends ValueSupplier<T>> @Nullable Codec<A> castCodec(Codec<C> codec, ValueType<T> originalType, ValueType<U> newType) {
         if(originalType == newType) {
             //noinspection unchecked
             return (Codec<A>) codec;

@@ -88,6 +88,7 @@ public class MinionFakePlayer extends ServerPlayer {
         data.setSpawned(true);
 
         if(pos != null && rot != null) {
+            //noinspection SuspiciousNameCombination
             instance.fixStartingPosition = () -> instance.snapTo(pos.x, pos.y, pos.z, rot.x, rot.y);
         }
         FakeClientConnection connection = new FakeClientConnection(PacketFlow.SERVERBOUND);
@@ -103,6 +104,7 @@ public class MinionFakePlayer extends ServerPlayer {
         instance.stopRiding(); // otherwise the created fake player will be on the vehicle
         System.out.println(instance.position());
         if(pos != null && rot != null) {
+            //noinspection SuspiciousNameCombination
             instance.teleportTo(level, pos.x, pos.y, pos.z, Set.of(), rot.x, rot.y, true);
         }
         instance.setDeltaMovement(0,0,0);
@@ -205,6 +207,7 @@ public class MinionFakePlayer extends ServerPlayer {
     public void kill(Component reason)
     {
         listeners().forEach(listener -> listener.onMinionRemove(this));
+
 
         shakeOff();
 
@@ -329,13 +332,11 @@ public class MinionFakePlayer extends ServerPlayer {
     public void addAdditionalSaveData(ValueOutput view) {
         super.addAdditionalSaveData(view);
         moduleInventory.writeData(view.child("modules"));
-        runtime.save(view.child("instructionManager"));
     }
 
     @Override
     public void readAdditionalSaveData(ValueInput view) {
         super.readAdditionalSaveData(view);
         moduleInventory.readData(view.childOrEmpty("modules"));
-        runtime.load(view.childOrEmpty("instructionManager"));
     }
 }

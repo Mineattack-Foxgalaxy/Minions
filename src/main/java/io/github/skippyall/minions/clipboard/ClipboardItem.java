@@ -20,4 +20,10 @@ public class ClipboardItem {
         stack.set(MinionComponentTypes.REFERENCE, new BlockPosClipboard(world.dimension(), pos));
         return stack;
     }
+
+    public static ItemStack createMinionReference(MinionFakePlayer minion) {
+        ItemStack stack = new ItemStack(MinionItems.REFERENCE_ITEM);
+        stack.set(MinionComponentTypes.REFERENCE, new MinionClipboard(minion.getUUID(), minion.getGameProfile().name()));
+        return stack;
+    }
 }

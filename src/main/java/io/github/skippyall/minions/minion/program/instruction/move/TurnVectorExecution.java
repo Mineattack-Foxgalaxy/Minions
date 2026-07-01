@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.minion.program.instruction.move;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.minion.MinionRuntime;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.ValueTypes;
@@ -23,7 +23,7 @@ public class TurnVectorExecution extends AbstractTurnExecution {
     }
 
     @Override
-    public void readArguments(ParameterValueList arguments, MinionRuntime runtime) {
+    public void readArguments(ParameterValueList arguments, ExecutionContext context) {
         double x = arguments.getValue(X);
         double y = arguments.getValue(Y);
         double z = arguments.getValue(Z);

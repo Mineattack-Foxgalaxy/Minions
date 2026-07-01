@@ -1,30 +1,29 @@
 package io.github.skippyall.minions.minion;
 
-import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.GlobalInstructionManager;
+import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.consumer.ValueConsumerType;
+import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
-import io.github.skippyall.minions.program.supplier.ValueSupplierType;
-import io.github.skippyall.minions.registration.MinionRegistries;
-import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import net.minecraft.core.Registry;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.OptionalInt;
 
-public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
+public class MinionRuntime implements InstructionRuntime {
+    public static final ExecutionContext.Key<MinionFakePlayer> MINION_KEY = new ExecutionContext.Key<>(Minions.id("minion"));
+
     private final MinionFakePlayer minion;
-    private final IntSet executingInstructions = new IntRBTreeSet();
+    private ExecutionContext context;
 
     public MinionRuntime(MinionFakePlayer minion) {
         this.minion = minion;
+        this.context = getContext();
     }
 
     public MinionFakePlayer getMinion() {
@@ -36,71 +35,75 @@ public class MinionRuntime implements InstructionRuntime<MinionRuntime> {
         return minion.getServer();
     }
 
+    public void onLoad() {
+        for(ExecutingInstruction instruction : getInstructions()) {
+            instruction.onLoaded(this);
+        }
+    }
+
+    public void onUnload() {
+        for(ExecutingInstruction instruction : getInstructions()) {
+            instruction.onUnloaded();
+        }
+    }
+
     public void tick() {
-        for(int id : executingInstructions) {
-            ExecutingInstruction<MinionRuntime> instruction = getInstruction(id);
-            if(instruction != null) {
-                instruction.tick(this);
+        for(ExecutingInstruction instruction : getInstructions()) {
+            instruction.tick(context);
+        }
+        removeStoppedInstructions();
+    }
+
+    public void disableInstructionType(InstructionType instructionType) {
+        for(ExecutingInstruction instruction : getInstructions()) {
+            if(instruction.getInstructionType() == instructionType) {
+                instruction.stop(context);
             }
         }
         removeStoppedInstructions();
     }
 
-    public void disableInstructionType(InstructionType<MinionRuntime> instructionType) {
-        for(int id : executingInstructions) {
-            ExecutingInstruction<MinionRuntime> instruction = getInstruction(id);
-            if(instruction != null && instruction.getInstructionType() == instructionType) {
-                instruction.stop(this);
-            }
-        }
-        removeStoppedInstructions();
+    public ExecutionContext getContext() {
+        ExecutionContext context = new ExecutionContext();
+        context.put(MINION_KEY, minion);
+        return context;
     }
 
-    public void enableInstructionType(InstructionType<MinionRuntime> instructionType) {}
+    public void enableInstructionType(InstructionType instructionType) {}
 
     @Override
-    public boolean isInstructionEnabled(InstructionType<MinionRuntime> type) {
+    public boolean isInstructionEnabled(InstructionType type) {
         return minion.getModuleInventory().hasInstruction(type);
     }
 
     @Override
-    public int addInstruction(ExecutingInstruction<MinionRuntime> executingInstruction) {
-        int id = GlobalInstructionManager.get(minion.getServer()).addInstruction(executingInstruction);
-        executingInstructions.add(id);
+    public OptionalInt run(ConfiguredInstruction instruction) {
+        return instruction.run(context, this);
+    }
+
+    @Override
+    public int addInstruction(ExecutingInstruction executingInstruction) {
+        int id = GlobalInstructionManager.get(minion.getServer()).addInstruction(minion.getUUID(), executingInstruction);
+        executingInstruction.onLoaded(this);
         return id;
     }
 
     @Nullable
-    public ExecutingInstruction<MinionRuntime> getInstruction(int id) {
-        //noinspection unchecked
-        return (ExecutingInstruction<MinionRuntime>) GlobalInstructionManager.get(minion.getServer()).getInstruction(id);
+    public ExecutingInstruction getInstruction(int id) {
+        return GlobalInstructionManager.get(minion.getServer()).getInstruction(minion.getUUID(), id);
+    }
+
+    public Int2ObjectMap<ExecutingInstruction> getInstructionMap() {
+        return GlobalInstructionManager.get(minion.getServer()).getInstructions(minion.getUUID());
+    }
+
+    public Collection<ExecutingInstruction> getInstructions() {
+        return getInstructionMap().values();
     }
 
     private void removeStoppedInstructions() {
-        executingInstructions.removeIf(id -> {
-            ExecutingInstruction<MinionRuntime> instruction = getInstruction(id);
-            return instruction == null || instruction.getState() == ExecutingInstruction.State.STOPPED;
+        getInstructions().removeIf(instruction -> {
+            return instruction.getState() == ExecutingInstruction.State.STOPPED;
         });
-    }
-
-    public void save(ValueOutput view) {
-        ValueOutput.TypedOutputList<Integer> list = view.list("executingInstructions", Codec.INT);
-        for (int id : executingInstructions) {
-            list.add(id);
-        }
-    }
-
-    public void load(ValueInput view) {
-        Optional<ValueInput.TypedInputList<Integer>> list = view.list("executingInstructions", Codec.INT);
-        if(list.isPresent()) {
-            for (int id : list.get()) {
-                executingInstructions.add(id);
-            }
-        }
-    }
-
-    @Override
-    public Registry<ValueConsumerType<MinionRuntime>> getValueConsumerTypeRegistry() {
-        return MinionRegistries.VALUE_CONSUMER_TYPES;
     }
 }

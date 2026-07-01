@@ -1,6 +1,5 @@
 package io.github.skippyall.minions.module;
 
-import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
@@ -19,7 +18,7 @@ import java.util.Set;
 
 public class ModuleInventory extends SimpleContainer {
     private final Set<MinionModule> modules = new HashSet<>();
-    private final Set<InstructionType<MinionRuntime>> instructions = new HashSet<>();
+    private final Set<InstructionType> instructions = new HashSet<>();
     private final Set<SpecialAbility> specialAbilities = new HashSet<>();
 
     private final MinionFakePlayer minion;
@@ -51,7 +50,7 @@ public class ModuleInventory extends SimpleContainer {
 
     public void updateModules() {
         Set<MinionModule> oldModules = Set.copyOf(modules);
-        Set<InstructionType<MinionRuntime>> oldInstructions = Set.copyOf(instructions);
+        Set<InstructionType> oldInstructions = Set.copyOf(instructions);
         Set<SpecialAbility> oldAbilities = Set.copyOf(specialAbilities);
 
         modules.clear();
@@ -64,7 +63,7 @@ public class ModuleInventory extends SimpleContainer {
                 instructions.addAll(module.instructions());
                 specialAbilities.addAll(module.specialAbilities());
 
-                for(InstructionType<MinionRuntime> instructionType : module.instructions()) {
+                for(InstructionType instructionType : module.instructions()) {
                     if(!oldInstructions.contains(instructionType)) {
                         minion.getRuntime().enableInstructionType(instructionType);
                     }
@@ -78,7 +77,7 @@ public class ModuleInventory extends SimpleContainer {
             }
         }
 
-        for(InstructionType<MinionRuntime> instructionType : oldInstructions) {
+        for(InstructionType instructionType : oldInstructions) {
             if(!instructions.contains(instructionType)) {
                 minion.getRuntime().disableInstructionType(instructionType);
             }
@@ -108,11 +107,11 @@ public class ModuleInventory extends SimpleContainer {
         return specialAbilities.contains(ability);
     }
 
-    public boolean hasInstruction(InstructionType<MinionRuntime> instructionType) {
+    public boolean hasInstruction(InstructionType instructionType) {
         return instructions.contains(instructionType);
     }
 
-    public Collection<InstructionType<MinionRuntime>> getAllInstructions() {
+    public Collection<InstructionType> getAllInstructions() {
         return instructions;
     }
 }

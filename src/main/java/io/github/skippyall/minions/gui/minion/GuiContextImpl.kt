@@ -1,6 +1,5 @@
 package io.github.skippyall.minions.gui.minion
 
-import io.github.skippyall.minions.minion.MinionRuntime
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction
 import io.github.skippyall.minions.program.supplier.Parameter
@@ -15,7 +14,7 @@ class GuiContextImpl(override val viewer: ServerPlayer) : GuiContext {
 
     class InstructionImpl(
         val context: GuiContext.Minion,
-        override val instruction: ConfiguredInstruction<MinionRuntime>,
+        override val instruction: ConfiguredInstruction,
         override var name: String
     ) : GuiContext.Minion by context, GuiContext.Instruction
 

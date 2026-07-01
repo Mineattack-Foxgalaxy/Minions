@@ -9,22 +9,21 @@ import net.minecraft.core.Registry;
 
 import java.util.List;
 
-public record MinionModule(List<InstructionType<MinionRuntime>> instructions, List<SpecialAbility> specialAbilities) {
+public record MinionModule(List<InstructionType> instructions, List<SpecialAbility> specialAbilities) {
     public static final Codec<MinionModule> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    //TODO Remove ugly cast
-                    ((Registry<InstructionType<MinionRuntime>>) (Registry<?>) MinionRegistries.INSTRUCTION_TYPES).byNameCodec().listOf().fieldOf("instructions").forGetter(MinionModule::instructions),
+                    MinionRegistries.INSTRUCTION_TYPES.byNameCodec().listOf().fieldOf("instructions").forGetter(MinionModule::instructions),
                     MinionRegistries.SPECIAL_ABILITIES.byNameCodec().listOf().fieldOf("specialAbilities").forGetter(MinionModule::specialAbilities)
             ).apply(instance, MinionModule::new)
     );
 
     public static final MinionModule EMPTY = new MinionModule(List.of());
 
-    public MinionModule(List<InstructionType<MinionRuntime>> instructions) {
+    public MinionModule(List<InstructionType> instructions) {
         this(instructions, List.of());
     }
 
-    public MinionModule(List<InstructionType<MinionRuntime>> instructions, List<SpecialAbility> specialAbilities) {
+    public MinionModule(List<InstructionType> instructions, List<SpecialAbility> specialAbilities) {
         this.instructions = List.copyOf(instructions);
         this.specialAbilities = List.copyOf(specialAbilities);
     }

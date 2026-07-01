@@ -12,6 +12,7 @@ import io.github.skippyall.minions.minion.program.instruction.move.ContinuousWal
 import io.github.skippyall.minions.minion.program.instruction.move.TurnExecution;
 import io.github.skippyall.minions.minion.program.instruction.move.TurnVectorExecution;
 import io.github.skippyall.minions.minion.program.instruction.move.WalkExecution;
+import io.github.skippyall.minions.program.ExecutionContext;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.supplier.Parameter;
@@ -23,68 +24,75 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class Instructions {
-    public static final InstructionType<MinionRuntime> WALK = register(
+    public static final InstructionType WALK = register(
             "walk",
             WalkExecution::new,
             List.of(WalkExecution.blocksToMoveParam),
+            List.of(MinionRuntime.MINION_KEY),
             WalkExecution.CODEC
-
     );
-    public static final InstructionType<MinionRuntime> WALK_CONTINUOUS = register(
+    public static final InstructionType WALK_CONTINUOUS = register(
             "walk_continuous",
             ContinuousWalkExecution::new,
+            List.of(MinionRuntime.MINION_KEY),
             ContinuousWalkExecution.CODEC
     );
 
-    public static final InstructionType<MinionRuntime> TURN = register(
+    public static final InstructionType TURN = register(
             "turn",
             TurnExecution::new,
             List.of(TurnExecution.ANGLE, TurnExecution.DIRECTION),
+            List.of(MinionRuntime.MINION_KEY),
             TurnExecution.CODEC
     );
 
-    public static final InstructionType<MinionRuntime> TURN_VECTOR = register(
+    public static final InstructionType TURN_VECTOR = register(
             "turn_vector",
             TurnVectorExecution::new,
             List.of(TurnVectorExecution.X, TurnVectorExecution.Y, TurnVectorExecution.Z),
+            List.of(MinionRuntime.MINION_KEY),
             TurnVectorExecution.CODEC
     );
 
-    public static final InstructionType<MinionRuntime> ATTACK = register(
+    public static final InstructionType ATTACK = register(
             "attack",
             () -> new ActionExecution(EntityPlayerActionPack.ActionType.ATTACK),
+            List.of(MinionRuntime.MINION_KEY),
             MapCodec.unitCodec(() -> new ActionExecution(EntityPlayerActionPack.ActionType.ATTACK))
     );
 
-    public static final InstructionType<MinionRuntime> MINE_BLOCK = register(
+    public static final InstructionType MINE_BLOCK = register(
             "mine_block",
             MineBlockExecution::new,
+            List.of(MinionRuntime.MINION_KEY),
             MineBlockExecution.CODEC
     );
 
-    public static final InstructionType<MinionRuntime> USE = register(
+    public static final InstructionType USE = register(
             "use",
             () -> new ActionExecution(EntityPlayerActionPack.ActionType.USE),
+            List.of(MinionRuntime.MINION_KEY),
             MapCodec.unitCodec(() -> new ActionExecution(EntityPlayerActionPack.ActionType.USE))
     );
 
-    public static final InstructionType<MinionRuntime> SWAP_ITEM = register(
+    public static final InstructionType SWAP_ITEM = register(
             "swap_item",
             SwapItemExecution::new,
             List.of(SwapItemExecution.FROM_SLOT, SwapItemExecution.FROM_SCREEN, SwapItemExecution.TO_SLOT, SwapItemExecution.TO_SCREEN),
+            List.of(MinionRuntime.MINION_KEY),
             SwapItemExecution.CODEC
     );
 
-    private static InstructionType<MinionRuntime> register(String id, Supplier<InstructionExecution<MinionRuntime>> factory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters, Codec<? extends InstructionExecution<MinionRuntime>> executionCodec) {
+    private static InstructionType register(String id, Supplier<InstructionExecution> factory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters, Collection<ExecutionContext.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {
         Identifier identifier = Identifier.fromNamespaceAndPath(Minions.MOD_ID, id);
-        return Registry.register(MinionRegistries.INSTRUCTION_TYPES, identifier, new InstructionType<>(factory, parameters, returnParameters, executionCodec));
+        return Registry.register(MinionRegistries.INSTRUCTION_TYPES, identifier, new InstructionType(factory, parameters, returnParameters, keys, executionCodec));
     }
 
-    private static InstructionType<MinionRuntime> register(String id, Supplier<InstructionExecution<MinionRuntime>> factory, Collection<Parameter<?>> parameters, Codec<? extends InstructionExecution<MinionRuntime>> executionCodec) {
-        return register(id, factory, parameters, List.of(), executionCodec);
+    private static InstructionType register(String id, Supplier<InstructionExecution> factory, Collection<Parameter<?>> parameters, Collection<ExecutionContext.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {
+        return register(id, factory, parameters, List.of(), List.of(), executionCodec);
     }
 
-    private static InstructionType<MinionRuntime> register(String id, Supplier<InstructionExecution<MinionRuntime>> factory, Codec<? extends InstructionExecution<MinionRuntime>> executionCodec) {
+    private static InstructionType register(String id, Supplier<InstructionExecution> factory, Collection<ExecutionContext.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {
         return register(id, factory, List.of(), List.of(), executionCodec);
     }
 

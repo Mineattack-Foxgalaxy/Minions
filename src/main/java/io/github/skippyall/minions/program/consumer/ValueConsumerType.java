@@ -8,8 +8,8 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public abstract class ValueConsumerType<R extends InstructionRuntime<R>> {
-    public abstract <T> Codec<? extends ValueConsumer<T,R>> getCodec(ValueType<T> type);
+public abstract class ValueConsumerType {
+    public abstract <T> Codec<? extends ValueConsumer<T>> getCodec(ValueType<T> type);
 
-    public abstract <T> CompletableFuture<? extends ValueConsumer<T,R>> openConfiguration(ServerPlayer player, ValueType<T> valueType, @Nullable ValueConsumer<T,R> previous);
+    public abstract <T> CompletableFuture<? extends ValueConsumer<T>> openConfiguration(ServerPlayer player, ValueType<T> valueType, @Nullable ValueConsumer<T> previous);
 }

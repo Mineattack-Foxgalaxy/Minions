@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ValueConsumerList<R extends InstructionRuntime<R>> {
+/*public class ValueConsumerList<R extends InstructionRuntime<R>> {
     private final Map<String, ValueConsumer<?, R>> valueConsumers;
     private final List<Consumer<Parameter<?>>> changeListeners = new ArrayList<>();
 
@@ -58,4 +58,4 @@ public class ValueConsumerList<R extends InstructionRuntime<R>> {
         return Codec.unboundedMap(Codec.STRING, valueConsumerCodec)
                 .xmap(ValueConsumerList::new, list -> list.valueConsumers);
     }
-}
+}*/
