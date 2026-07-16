@@ -17,7 +17,7 @@ public class MinionsCommand {
                 .then(DocsSubcommand.DOCS)
                 .then(TestSubcommand.TEST);
 
-        if(MinionsConfig.get().minion.enableMobCapHacks) {
+        if(MinionsConfig.get().minion.enableMobCapModification) {
             builder.then(MobCapDebugSubcommand.MOB_CAP_DEBUG);
         }
 

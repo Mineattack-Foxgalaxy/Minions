@@ -2,12 +2,12 @@ package io.github.skippyall.minions.minion.program.instruction.inventory;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.ExecutionContext;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.registration.ExecutionContext;
 import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
@@ -30,9 +30,10 @@ public class SwapItemExecution implements InstructionExecution {
     private ItemStack cursor = ItemStack.EMPTY;
 
     @Override
-    public void start(ExecutionContext context) {
-        MinionFakePlayer minion = context.getOrThrow(MinionRuntime.MINION_KEY);
+    public void start(Context context) {
+        MinionFakePlayer minion = context.getOrThrow(ExecutionContext.MINION_KEY);
 
+        //noinspection ConstantValue (Wrong nullability)
         if((fromScreen || toScreen) && minion.containerMenu == null) {
             return;
         }
@@ -101,12 +102,12 @@ public class SwapItemExecution implements InstructionExecution {
     }
 
     @Override
-    public boolean isDone(ExecutionContext context) {
+    public boolean isDone(Context context) {
         return true;
     }
 
     @Override
-    public void readArguments(ParameterValueList arguments, ExecutionContext context) {
+    public void readArguments(ParameterValueList arguments, Context context) {
         fromSlot = Math.clamp(arguments.getValue(FROM_SLOT), 0, Integer.MAX_VALUE);
         fromScreen = arguments.getValue(FROM_SCREEN);
         toSlot = Math.clamp(arguments.getValue(TO_SLOT), 0, Integer.MAX_VALUE);

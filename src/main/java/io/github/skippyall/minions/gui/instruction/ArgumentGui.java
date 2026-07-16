@@ -5,11 +5,14 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.PaginatedList;
+import io.github.skippyall.minions.gui.input.Result;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ValueSupplier;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
+import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
 import net.minecraft.network.chat.Component;
@@ -21,16 +24,18 @@ import org.jspecify.annotations.Nullable;
 public class ArgumentGui extends MinionsGui {
     private final ConfiguredInstruction instruction;
     private final Parameter<?> parameter;
+    private final Context resolutionContext;
 
     private SimpleGui gui;
 
     private @Nullable ValueSupplierType argumentType;
     private ValueSupplierList. @Nullable ValueSupplierEntry<?> entry;
 
-    public ArgumentGui(MinionsGui parent, ConfiguredInstruction instruction, Parameter<?> parameter) {
+    public ArgumentGui(MinionsGui parent, ConfiguredInstruction instruction, Parameter<?> parameter, Context resolutionContext) {
         super(parent);
         this.instruction = instruction;
         this.parameter = parameter;
+        this.resolutionContext = resolutionContext;
 
         this.entry = instruction.getArguments().getEntry(parameter);
         if(entry != null) {
@@ -39,7 +44,7 @@ public class ArgumentGui extends MinionsGui {
         open();
     }
 
-    public @Nullable ValueSupplier<?> getArgument() {
+    public @Nullable ValueSupplier getArgument() {
         if(entry != null) {
             return entry.getSupplier();
         }
@@ -122,7 +127,7 @@ public class ArgumentGui extends MinionsGui {
         updateTypeConfiguration();
     }
 
-    public void setArgument(ValueSupplier<?> argument) {
+    public void setArgument(ValueSupplier argument) {
         if(entry != null) {
             entry.setSupplier(argument);
         } else {
@@ -142,7 +147,10 @@ public class ArgumentGui extends MinionsGui {
 
     public void configureConvertersMenu() {
         if(entry != null) {
-            new ConverterListGui(this, entry.getConverters(), entry.getSupplier().getValueType(), entry.getParameter().type());
+            Result<TypedValue<?>, Component> result = entry.getSupplier().resolve(resolutionContext);
+            if(result instanceof Result.Success<TypedValue<?>, Component> success) {
+                new ConverterListGui(this, entry.getConverters(), success.result().type(), entry.getParameter().type());
+            }
         }
     }
 }

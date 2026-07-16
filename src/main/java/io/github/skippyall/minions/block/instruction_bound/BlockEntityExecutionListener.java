@@ -3,11 +3,10 @@ package io.github.skippyall.minions.block.instruction_bound;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.minion.MinionRuntime;
-import io.github.skippyall.minions.program.ExecutionContext;
-import io.github.skippyall.minions.program.InstructionRuntime;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.registration.ExecutionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -38,9 +37,9 @@ public class BlockEntityExecutionListener implements ExecutingInstruction.Listen
         return Optional.of(CODEC_ID);
     }
 
-    public ExecutingInstruction.@Nullable Listener getDelegate(ExecutionContext context) {
-        if(context.get(MinionRuntime.MINION_KEY) != null) {
-            Level level = context.getOrThrow(MinionRuntime.MINION_KEY).getServer().getLevel(levelId);
+    public ExecutingInstruction.@Nullable Listener getDelegate(Context context) {
+        if(context.get(ExecutionContext.MINION_KEY) != null) {
+            Level level = context.getOrThrow(ExecutionContext.MINION_KEY).getServer().getLevel(levelId);
             if (level != null && level.isLoaded(pos) && level.getBlockEntity(pos) instanceof ListenerProvider provider) {
                 return provider.getListener();
             }
@@ -48,7 +47,7 @@ public class BlockEntityExecutionListener implements ExecutingInstruction.Listen
         return null;
     }
 
-    private void ifDelegatePresent(ExecutionContext context, Consumer<ExecutingInstruction.Listener> listenerConsumer) {
+    private void ifDelegatePresent(Context context, Consumer<ExecutingInstruction.Listener> listenerConsumer) {
         ExecutingInstruction.Listener delegate = getDelegate(context);
         if(delegate != null) {
             listenerConsumer.accept(delegate);
@@ -56,7 +55,7 @@ public class BlockEntityExecutionListener implements ExecutingInstruction.Listen
     }
 
     @Override
-    public void onStop(ExecutionContext context, ParameterValueList returnValues) {
+    public void onStop(Context context, ParameterValueList returnValues) {
         ifDelegatePresent(context, d -> d.onStop(context, returnValues));
     }
 

@@ -1,25 +1,23 @@
 package io.github.skippyall.minions.minion;
 
 import io.github.skippyall.minions.GlobalInstructionManager;
-import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.ExecutionContext;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
+import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.instruction.InstructionType;
+import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.registration.ExecutionContext;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.server.MinecraftServer;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.OptionalInt;
 
 public class MinionRuntime implements InstructionRuntime {
-    public static final ExecutionContext.Key<MinionFakePlayer> MINION_KEY = new ExecutionContext.Key<>(Minions.id("minion"));
-
     private final MinionFakePlayer minion;
-    private ExecutionContext context;
+    private Context context;
 
     public MinionRuntime(MinionFakePlayer minion) {
         this.minion = minion;
@@ -63,10 +61,10 @@ public class MinionRuntime implements InstructionRuntime {
         removeStoppedInstructions();
     }
 
-    public ExecutionContext getContext() {
-        ExecutionContext context = new ExecutionContext();
-        context.put(MINION_KEY, minion);
-        return context;
+    public Context getContext() {
+        return Context.builder()
+                .put(ExecutionContext.MINION_KEY, minion)
+                .build();
     }
 
     public void enableInstructionType(InstructionType instructionType) {}
@@ -77,8 +75,11 @@ public class MinionRuntime implements InstructionRuntime {
     }
 
     @Override
-    public OptionalInt run(ConfiguredInstruction instruction) {
-        return instruction.run(context, this);
+    public int run(InstructionType instructionType, ParameterValueList arguments) {
+        InstructionExecution execution = instructionType.createExecution(arguments, context);
+        int id = addInstruction(new ExecutingInstruction(instructionType, execution));
+        execution.start(context);
+        return id;
     }
 
     @Override

@@ -26,8 +26,8 @@ public class MinionMixinConfigPlugin implements IMixinConfigPlugin {
         if(mixinClassName.startsWith("io.github.skippyall.minions.mixins.compat.universal_graves.")) {
             return MinionsConfig.get().compat.enableGravesCompat && FabricLoader.getInstance().isModLoaded("universal-graves");
         }
-        if(mixinClassName.startsWith("io.github.skippyall.minions.mixins.antimobcap.")) {
-            return MinionsConfig.get().minion.enableMobCapHacks;
+        if(mixinClassName.startsWith("io.github.skippyall.minions.mixins.mobcap.")) {
+            return MinionsConfig.get().minion.enableMobCapModification;
         }
         return true;
     }

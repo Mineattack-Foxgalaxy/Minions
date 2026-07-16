@@ -3,12 +3,12 @@ package io.github.skippyall.minions.minion.program.instruction;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.ExecutionContext;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.registration.ExecutionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
@@ -43,8 +43,8 @@ public class MineBlockExecution implements InstructionExecution.Argumentless {
     }
 
     @Override
-    public void start(ExecutionContext context) {
-        MinionFakePlayer player = context.getOrThrow(MinionRuntime.MINION_KEY);
+    public void start(Context context) {
+        MinionFakePlayer player = context.getOrThrow(ExecutionContext.MINION_KEY);
         if(EntityPlayerActionPack.getTarget(player) instanceof BlockHitResult hit) {
             this.currentBlock = hit.getBlockPos();
 
@@ -63,12 +63,12 @@ public class MineBlockExecution implements InstructionExecution.Argumentless {
     }
 
     @Override
-    public void tick(ExecutionContext context) {
+    public void tick(Context context) {
         if(done || currentBlock == null) {
             return;
         }
 
-        MinionFakePlayer player = context.getOrThrow(MinionRuntime.MINION_KEY);
+        MinionFakePlayer player = context.getOrThrow(ExecutionContext.MINION_KEY);
         EntityPlayerActionPack ap = player.getMinionActionPack();
 
         HitResult newHit = EntityPlayerActionPack.getTarget(player);
@@ -122,13 +122,13 @@ public class MineBlockExecution implements InstructionExecution.Argumentless {
     }
 
     @Override
-    public boolean isDone(ExecutionContext context) {
+    public boolean isDone(Context context) {
         return done;
     }
 
     @Override
-    public void stop(ParameterValueList list, ExecutionContext context) {
-        MinionFakePlayer player = context.getOrThrow(MinionRuntime.MINION_KEY);
+    public void stop(ParameterValueList list, Context context) {
+        MinionFakePlayer player = context.getOrThrow(ExecutionContext.MINION_KEY);
         EntityPlayerActionPack ap = player.getMinionActionPack();
 
         if(currentBlock != null) {

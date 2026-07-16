@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.mixins.antimobcap;
+package io.github.skippyall.minions.mixins.mobcap;
 
 import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
 import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManagerAccessor;

@@ -1,16 +1,5 @@
 package io.github.skippyall.minions.program.consumer;
 
-import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.supplier.Parameter;
-import org.jspecify.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
 /*public class ValueConsumerList<R extends InstructionRuntime<R>> {
     private final Map<String, ValueConsumer<?, R>> valueConsumers;
     private final List<Consumer<Parameter<?>>> changeListeners = new ArrayList<>();

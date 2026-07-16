@@ -1,11 +1,11 @@
 package io.github.skippyall.minions.minion.program.instruction.move;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.ExecutionContext;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.registration.ExecutionContext;
 import io.github.skippyall.minions.registration.ValueTypes;
 
 public class TurnExecution extends AbstractTurnExecution {
@@ -21,8 +21,8 @@ public class TurnExecution extends AbstractTurnExecution {
     }
 
     @Override
-    public void readArguments(ParameterValueList arguments, ExecutionContext context) {
-        MinionFakePlayer minion = context.getOrThrow(MinionRuntime.MINION_KEY);
+    public void readArguments(ParameterValueList arguments, Context context) {
+        MinionFakePlayer minion = context.getOrThrow(ExecutionContext.MINION_KEY);
 
         float maxAngle = arguments.getValue(ANGLE).floatValue();
         TurnDirection direction = arguments.getValue(DIRECTION);

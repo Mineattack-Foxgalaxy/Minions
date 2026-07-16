@@ -1,7 +1,6 @@
 package io.github.skippyall.minions.registration;
 
 import io.github.skippyall.minions.minion.MinionItem;
-import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.module.MinionModule;
 import io.github.skippyall.minions.module.SpecialAbility;
 import io.github.skippyall.minions.program.instruction.InstructionType;
@@ -62,6 +61,12 @@ public class MinionItems {
     public static final BlockItem ANALOG_INPUT_ITEM = registerItem(
             MinionBlocks.ANALOG_INPUT_BLOCK_ID,
             settings -> new BlockItem(MinionBlocks.ANALOG_INPUT_BLOCK, settings),
+            new Item.Properties().useBlockDescriptionPrefix()
+    );
+
+    public static final BlockItem CONNECTOR_ITEM = registerItem(
+            MinionBlocks.CONNECTOR_ID,
+            settings -> new BlockItem(MinionBlocks.CONNECTOR, settings),
             new Item.Properties().useBlockDescriptionPrefix()
     );
 

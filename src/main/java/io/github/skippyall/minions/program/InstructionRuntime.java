@@ -1,11 +1,9 @@
 package io.github.skippyall.minions.program;
 
-import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
+import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import net.minecraft.server.MinecraftServer;
-
-import java.util.OptionalInt;
 
 public interface InstructionRuntime {
     boolean isInstructionEnabled(InstructionType type);
@@ -14,7 +12,7 @@ public interface InstructionRuntime {
 
     MinecraftServer getServer();
 
-    ExecutionContext getContext();
+    Context getContext();
 
-    OptionalInt run(ConfiguredInstruction instruction);
+    int run(InstructionType instructionType, ParameterValueList arguments);
 }

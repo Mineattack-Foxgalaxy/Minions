@@ -9,6 +9,7 @@ import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import eu.pb4.polymer.virtualentity.api.BlockWithElementHolder;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.polymer.block.AnalogInputBlockOverlay;
+import io.github.skippyall.minions.polymer.block.ConnectorBlockOverlay;
 import io.github.skippyall.minions.polymer.block.MinionTriggerBlockOverlay;
 import io.github.skippyall.minions.polymer.item.ClipboardItemOverlay;
 import io.github.skippyall.minions.polymer.item.MinionItemOverlay;
@@ -31,9 +32,11 @@ public class PolymerRegistration {
         registerBlockOverlay(MinionBlocks.MINION_TRIGGER_BLOCK, new MinionTriggerBlockOverlay());
         PolymerBlockUtils.registerBlockEntity(MinionBlocks.MINION_TRIGGER_BE_TYPE);
         registerBlockOverlay(MinionBlocks.ANALOG_INPUT_BLOCK, new AnalogInputBlockOverlay());
+        registerBlockOverlay(MinionBlocks.CONNECTOR, new ConnectorBlockOverlay());
 
         registerItemOverlay(MinionItems.MINION_TRIGGER_ITEM, new MinionsBlockItemOverlay(MinionItems.MINION_TRIGGER_ITEM, Items.COMPARATOR));
         registerItemOverlay(MinionItems.ANALOG_INPUT_ITEM, new MinionsBlockItemOverlay(MinionItems.ANALOG_INPUT_ITEM, Items.REPEATER));
+        registerItemOverlay(MinionItems.CONNECTOR_ITEM, new MinionsBlockItemOverlay(MinionItems.CONNECTOR_ITEM, Items.CHORUS_PLANT));
 
         registerItemOverlay(MinionItems.REFERENCE_ITEM, new ClipboardItemOverlay());
         registerItemOverlay(MinionItems.MINION_ITEM, new MinionItemOverlay());

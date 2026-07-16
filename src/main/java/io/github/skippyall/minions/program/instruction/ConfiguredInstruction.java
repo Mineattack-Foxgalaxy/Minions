@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.listener.SerializableListenerManager;
-import io.github.skippyall.minions.program.ExecutionContext;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.OptionalInt;
 
 /**
- * Holds an instruction and its configuration
+ * Holds an instruction and configured value suppliers and value consumers
  */
 public class ConfiguredInstruction {
     public static final MapCodec<ConfiguredInstruction> MAP_CODEC = RecordCodecBuilder.mapCodec(instance ->
@@ -36,7 +36,7 @@ public class ConfiguredInstruction {
     private final ValueSupplierList arguments;
     //private final ValueConsumerList<R> valueConsumers;
 
-    private List<Component> lastErrors;
+    private List<Component> lastErrors = List.of();
     private SerializableListenerManager<ConfiguredInstructionListener> listeners = new SerializableListenerManager<>();
 
     private ConfiguredInstruction(
@@ -87,19 +87,21 @@ public class ConfiguredInstruction {
         return preCheck().isEmpty();
     }
 
-    public OptionalInt run(ExecutionContext context, InstructionRuntime runtime) {
+    public List<Component> getLastErrors() {
+        return lastErrors;
+    }
+
+    public OptionalInt run(InstructionRuntime runtime, Context resolutionContext) {
         OptionalInt id = OptionalInt.empty();
         if(canRun()) {
             lastErrors = new ArrayList<>();
             try {
-                ParameterValueList resolvedArguments = arguments.resolve(runtime.getServer(), lastErrors::add);
+                ParameterValueList resolvedArguments = arguments.resolve(resolutionContext, lastErrors::add);
                 if(lastErrors.isEmpty()) {
-                    InstructionExecution execution = instruction.createExecution(resolvedArguments, context);
-                    id = OptionalInt.of(runtime.addInstruction(new ExecutingInstruction(instruction, execution)));
-                    execution.start(context);
+                    id = OptionalInt.of(runtime.run(instruction, resolvedArguments));
 
                     for(ConfiguredInstructionListener listener : listeners) {
-                        listener.onRun(this, context, id.getAsInt());
+                        listener.onRun(this, runtime, id.getAsInt());
                     }
                 }
             } catch (Exception e) {

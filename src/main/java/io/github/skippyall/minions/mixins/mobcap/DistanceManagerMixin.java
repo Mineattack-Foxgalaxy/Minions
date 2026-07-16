@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.mixins.antimobcap;
+package io.github.skippyall.minions.mixins.mobcap;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
@@ -21,8 +21,10 @@ import java.util.concurrent.Executor;
 
 @Mixin(DistanceManager.class)
 public class DistanceManagerMixin implements ChunkLevelManagerAccessor {
-    @Shadow @Final Long2ObjectMap<ObjectSet<ServerPlayer>> playersPerChunk;
-    @Shadow @Final private DistanceManager.FixedPlayerDistanceChunkTracker naturalSpawnChunkCounter;
+    @Shadow @Final
+    private Long2ObjectMap<ObjectSet<ServerPlayer>> playersPerChunk;
+    @Shadow @Final
+    private DistanceManager.FixedPlayerDistanceChunkTracker naturalSpawnChunkCounter;
     @Unique
     DistanceManager.FixedPlayerDistanceChunkTracker minionless;
 

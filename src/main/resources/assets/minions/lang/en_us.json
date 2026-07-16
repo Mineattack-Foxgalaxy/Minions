@@ -90,6 +90,7 @@
   "value_type.minions.turn_direction": "Turn Direction",
 
   "value_supplier.minions.fixed": "Fixed Value",
+  "value_supplier.minions.connected_block": "Connected Block",
   "value_supplier.minions.analog_input": "Analog Input",
   "value_supplier.minions.analog_input.display": "Analog Input at %s in %s",
   "value_supplier.minions.analog_input.config.click_with_reference": "Click here with a position clipboard",

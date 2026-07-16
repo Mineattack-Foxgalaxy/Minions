@@ -1,26 +1,5 @@
 package io.github.skippyall.minions.block.miniontrigger;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.listener.BlockEntityMinionInstructionListener;
-import io.github.skippyall.minions.minion.MinionRuntime;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
-import io.github.skippyall.minions.program.supplier.ParameterValueList;
-import io.github.skippyall.minions.registration.MinionBlocks;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.UUIDUtil;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.Level;
-
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
 /*public class MinionTriggerMinionListener extends BlockEntityMinionInstructionListener<MinionTriggerBlockEntity> {
     public static final Codec<MinionTriggerMinionListener> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(

@@ -1,34 +1,30 @@
 package io.github.skippyall.minions.program.supplier;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.value.ValueType;
-import io.github.skippyall.minions.registration.MinionRegistries;
 import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 public class FixedValueSupplierType extends ValueSupplierType {
     @Override
-    public Codec<FixedValueSupplier<?>> getCodec() {
-        return MinionRegistries.VALUE_TYPES.byNameCodec().dispatch(
-                FixedValueSupplier::getValueType,
-                this::codecHelper
-        );
-    }
-
-    private <T> MapCodec<FixedValueSupplier<T>> codecHelper(ValueType<T> valueType) {
-        return valueType.codec()
-                .xmap(value -> new FixedValueSupplier<>(this, valueType, value), FixedValueSupplier::getValue)
-                .fieldOf("value");
+    public Codec<FixedValueSupplier> getCodec() {
+        return TypedValue.CODEC.xmap(v -> new FixedValueSupplier(this, v), FixedValueSupplier::getValue);
     }
 
     @Override
-    public <V> CompletableFuture<FixedValueSupplier<?>> openConfiguration(MinionsGui parent, ValueType<V> valueType, @Nullable ValueSupplier<?> previousValueSupplier) {
-        return valueType.openValueDialog(
-                parent,
-                previousValueSupplier instanceof FixedValueSupplier<?> val && val.getValueType() == valueType ? valueType.checkedCast(val.getValue()) : valueType.defaultValue()
-        ).thenApply(value -> new FixedValueSupplier<>(this, valueType, value));
+    public <V> CompletableFuture<FixedValueSupplier> openConfiguration(MinionsGui parent, ValueType<V> valueType, @Nullable ValueSupplier previousValueSupplier) {
+        V value = null;
+        if(previousValueSupplier instanceof FixedValueSupplier val) {
+            value = valueType.checkedCast(val.getValue());
+        }
+        if(value == null) {
+            value = valueType.defaultValue();
+        }
+
+        return valueType.openValueDialog(parent, value)
+                .thenApply(newValue -> new FixedValueSupplier(this, new TypedValue<>(newValue, valueType)));
     }
 }

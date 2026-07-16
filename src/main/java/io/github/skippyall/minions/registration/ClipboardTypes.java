@@ -5,6 +5,7 @@ import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.clipboard.BlockPosClipboard;
 import io.github.skippyall.minions.clipboard.Clipboard;
 import io.github.skippyall.minions.clipboard.InstructionClipboard;
+import io.github.skippyall.minions.clipboard.MinionClipboard;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 
@@ -16,5 +17,6 @@ public class ClipboardTypes {
     static void register() {
         register("instruction", InstructionClipboard.CODEC);
         register("position", BlockPosClipboard.CODEC);
+        register("minion", MinionClipboard.CODEC);
     }
 }

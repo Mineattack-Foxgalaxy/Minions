@@ -19,12 +19,12 @@
     "ServerGamePacketListenerImplMixin",
     "SleepStatusMixin",
     "TickRateManagerMixin",
-    "antimobcap.ChunkTrackerMixin",
-    "antimobcap.DistanceManager$FixedPlayerDistanceChunkTrackerMixin",
-    "antimobcap.DistanceManagerMixin",
-    "antimobcap.ServerChunkCacheAccessor",
-    "antimobcap.ServerChunkCacheMixin",
-    "compat.universal_graves.GraveMixin"
+    "compat.universal_graves.GraveMixin",
+    "mobcap.ChunkTrackerMixin",
+    "mobcap.DistanceManager$FixedPlayerDistanceChunkTrackerMixin",
+    "mobcap.DistanceManagerMixin",
+    "mobcap.ServerChunkCacheAccessor",
+    "mobcap.ServerChunkCacheMixin"
   ],
   "client": [],
   "server": [],

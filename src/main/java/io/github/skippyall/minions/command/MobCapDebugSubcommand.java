@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
 import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManagerAccessor;
-import io.github.skippyall.minions.mixins.antimobcap.ServerChunkCacheAccessor;
+import io.github.skippyall.minions.mixins.mobcap.ServerChunkCacheAccessor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.DistanceManager;

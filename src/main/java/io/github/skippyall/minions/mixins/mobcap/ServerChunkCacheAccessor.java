@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.mixins.antimobcap;
+package io.github.skippyall.minions.mixins.mobcap;
 
 import net.minecraft.server.level.DistanceManager;
 import net.minecraft.server.level.ServerChunkCache;

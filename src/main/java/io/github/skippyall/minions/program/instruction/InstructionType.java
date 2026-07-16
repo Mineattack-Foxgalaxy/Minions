@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.program.instruction;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.program.ExecutionContext;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.MinionRegistries;
@@ -17,12 +17,12 @@ import java.util.function.Supplier;
 public class InstructionType {
     private final List<Parameter<?>> parameters;
     private final List<Parameter<?>> returnParameters;
-    private final List<ExecutionContext.Key<?>> contextKeys;
+    private final List<Context.Key<?>> contextKeys;
     private final Supplier<InstructionExecution> executionFactory;
 
     private final Codec<? extends InstructionExecution> executionCodec;
 
-    public InstructionType(Supplier<InstructionExecution> executionFactory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters, Collection<ExecutionContext.Key<?>> contextKeys, Codec<? extends InstructionExecution> executionCodec) {
+    public InstructionType(Supplier<InstructionExecution> executionFactory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters, Collection<Context.Key<?>> contextKeys, Codec<? extends InstructionExecution> executionCodec) {
         this.parameters = List.copyOf(parameters);
         this.returnParameters = List.copyOf(returnParameters);
         this.contextKeys = List.copyOf(contextKeys);
@@ -42,11 +42,11 @@ public class InstructionType {
         return returnParameters;
     }
 
-    public List<ExecutionContext.Key<?>> getContextKeys() {
+    public List<Context.Key<?>> getContextKeys() {
         return contextKeys;
     }
 
-    public InstructionExecution createExecution(ParameterValueList arguments, ExecutionContext minion) {
+    public InstructionExecution createExecution(ParameterValueList arguments, Context minion) {
         InstructionExecution execution = executionFactory.get();
         execution.readArguments(arguments, minion);
         return execution;

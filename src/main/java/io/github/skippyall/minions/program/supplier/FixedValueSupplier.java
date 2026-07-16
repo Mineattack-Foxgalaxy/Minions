@@ -1,35 +1,29 @@
 package io.github.skippyall.minions.program.supplier;
 
-import io.github.skippyall.minions.program.value.ValueType;
+import io.github.skippyall.minions.gui.input.Result;
+import io.github.skippyall.minions.program.Context;
+import io.github.skippyall.minions.program.value.TypedValue;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 
 /**
  * A supplier that always resolves to a fixed value
  */
-public class FixedValueSupplier<T> implements ValueSupplier<T> {
+public class FixedValueSupplier implements ValueSupplier {
     private final FixedValueSupplierType type;
-    private final ValueType<T> valueType;
-    private final T value;
+    private final TypedValue<?> value;
 
-    public FixedValueSupplier(FixedValueSupplierType type, ValueType<T> valueType, T value) {
+    public FixedValueSupplier(FixedValueSupplierType type, TypedValue<?> value) {
         this.type = type;
-        this.valueType = valueType;
         this.value = value;
     }
 
-    public T getValue() {
+    public TypedValue<?> getValue() {
         return value;
     }
 
     @Override
-    public T resolve(MinecraftServer server) {
-        return value;
-    }
-
-    @Override
-    public ValueType<T> getValueType() {
-        return valueType;
+    public Result<TypedValue<?>, Component> resolve(Context context) {
+        return new Result.Success<>(value);
     }
 
     @Override
@@ -39,6 +33,6 @@ public class FixedValueSupplier<T> implements ValueSupplier<T> {
 
     @Override
     public Component getDisplayText() {
-        return valueType.getDisplayText(value);
+        return value.getDisplayText();
     }
 }

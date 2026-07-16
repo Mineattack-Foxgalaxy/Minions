@@ -1,18 +1,5 @@
 package io.github.skippyall.minions.gui.instruction;
 
-import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import eu.pb4.sgui.api.gui.SimpleGui;
-import io.github.skippyall.minions.gui.GuiDisplay;
-import io.github.skippyall.minions.gui.MinionsGui;
-import io.github.skippyall.minions.gui.minion.GuiContext;
-import io.github.skippyall.minions.minion.MinionListener;
-import io.github.skippyall.minions.minion.MinionRuntime;
-import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
-import io.github.skippyall.minions.registration.MinionRegistries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.MenuType;
-
 /*public class InstructionListGui extends MinionsGui implements MinionListener {
     private final GuiContext.Minion context;
     private final MinionFakePlayer minion;

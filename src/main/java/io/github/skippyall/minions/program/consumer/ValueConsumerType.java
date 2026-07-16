@@ -1,7 +1,6 @@
 package io.github.skippyall.minions.program.consumer;
 
 import com.mojang.serialization.Codec;
-import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.value.ValueType;
 import net.minecraft.server.level.ServerPlayer;
 import org.jspecify.annotations.Nullable;

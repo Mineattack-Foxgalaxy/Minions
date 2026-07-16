@@ -1,7 +1,9 @@
 package io.github.skippyall.minions.registration;
 
 import io.github.skippyall.minions.Minions;
+import io.github.skippyall.minions.block.ConnectorBlock;
 import io.github.skippyall.minions.block.input.AnalogInputBlock;
+import io.github.skippyall.minions.block.input.ValueProvider;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlock;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -10,6 +12,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -45,7 +48,16 @@ public class MinionBlocks {
             )
     );
 
-    public static void register() {
+    public static final Identifier CONNECTOR_ID = Minions.id("connector");
+    public static final Block CONNECTOR = Registry.register(
+            BuiltInRegistries.BLOCK,
+            CONNECTOR_ID,
+            new ConnectorBlock(BlockBehaviour.Properties.of()
+                    .setId(ResourceKey.create(Registries.BLOCK, CONNECTOR_ID))
+            )
+    );
 
+    public static void register() {
+        ValueProvider.SIDED.registerForBlocks(ANALOG_INPUT_BLOCK, ANALOG_INPUT_BLOCK);
     }
 }

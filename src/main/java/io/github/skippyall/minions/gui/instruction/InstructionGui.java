@@ -4,14 +4,9 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.gui.MinionsGui;
-import io.github.skippyall.minions.gui.input.Result;
-import io.github.skippyall.minions.gui.input.TextInput;
-import io.github.skippyall.minions.gui.minion.GuiContext;
 import io.github.skippyall.minions.gui.minion.SimpleMinionsGui;
-import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.MinionModule;
-import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.supplier.Parameter;
 import io.github.skippyall.minions.program.supplier.ValueSupplier;
@@ -174,7 +169,7 @@ public class InstructionGui {
         return instructionBuilder;
     }
 
-    public static GuiElementBuilder createParameterElement(Parameter<?> parameter, @Nullable ValueSupplier<?> valueSupplier, RegistryAccess manager) {
+    public static GuiElementBuilder createParameterElement(Parameter<?> parameter, @Nullable ValueSupplier valueSupplier, RegistryAccess manager) {
         GuiElementBuilder builder = new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_TYPES, parameter.type(), manager))
                 .setName(Component.translatable("minions.gui.instruction.parameter", parameter.name(), Component.translatable(TranslationUtil.getTranslationKey(parameter.type(), MinionRegistries.VALUE_TYPES))));
         if(valueSupplier != null) {

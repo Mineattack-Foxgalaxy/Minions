@@ -1,11 +1,11 @@
 package io.github.skippyall.minions.minion.program.instruction;
 
-import io.github.skippyall.minions.minion.MinionRuntime;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.program.ExecutionContext;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.execution.ContinuousInstructionExecution;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.registration.ExecutionContext;
 
 public class ActionExecution implements ContinuousInstructionExecution {
     private final EntityPlayerActionPack.ActionType action;
@@ -15,8 +15,8 @@ public class ActionExecution implements ContinuousInstructionExecution {
     }
 
     @Override
-    public void start(ExecutionContext context) {
-        MinionFakePlayer minion = context.getOrThrow(MinionRuntime.MINION_KEY);
+    public void start(Context context) {
+        MinionFakePlayer minion = context.getOrThrow(ExecutionContext.MINION_KEY);
         EntityPlayerActionPack ap = minion.getMinionActionPack();
         if(!ap.hasAction(action)) {
             minion.getMinionActionPack().start(action, EntityPlayerActionPack.Action.startContinuous());
@@ -24,21 +24,21 @@ public class ActionExecution implements ContinuousInstructionExecution {
     }
 
     @Override
-    public void stop(ParameterValueList list, ExecutionContext context) {
-        MinionFakePlayer minion = context.getOrThrow(MinionRuntime.MINION_KEY);
+    public void stop(ParameterValueList list, Context context) {
+        MinionFakePlayer minion = context.getOrThrow(ExecutionContext.MINION_KEY);
         minion.getMinionActionPack().stop(action);
     }
 
     @Override
-    public void pause(ExecutionContext context) {
-        context.getOrThrow(MinionRuntime.MINION_KEY).getMinionActionPack().stop(action);
+    public void pause(Context context) {
+        context.getOrThrow(ExecutionContext.MINION_KEY).getMinionActionPack().stop(action);
     }
 
     @Override
-    public void resume(ExecutionContext context) {
-        context.getOrThrow(MinionRuntime.MINION_KEY).getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
+    public void resume(Context context) {
+        context.getOrThrow(ExecutionContext.MINION_KEY).getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
     }
 
     @Override
-    public void readArguments(ParameterValueList parameters, ExecutionContext context) {}
+    public void readArguments(ParameterValueList parameters, Context context) {}
 }

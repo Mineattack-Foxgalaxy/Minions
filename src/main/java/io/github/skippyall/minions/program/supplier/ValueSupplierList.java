@@ -3,12 +3,13 @@ package io.github.skippyall.minions.program.supplier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.gui.input.Result;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.conversion.Casts;
 import io.github.skippyall.minions.program.conversion.ConverterList;
 import io.github.skippyall.minions.program.instruction.InstructionType;
 import io.github.skippyall.minions.program.value.TypedValue;
+import io.github.skippyall.minions.registration.ResolutionContext;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class ValueSupplierList {
         return List.copyOf(arguments.values());
     }
 
-    public @Nullable ValueSupplier<?> getArgument(Parameter<?> parameter) {
+    public @Nullable ValueSupplier getArgument(Parameter<?> parameter) {
         if(arguments.containsKey(parameter)) {
             return arguments.get(parameter).supplier;
         } else {
@@ -54,7 +55,7 @@ public class ValueSupplierList {
         return (ValueSupplierEntry<P>) arguments.get(parameter);
     }
 
-    public <P> ValueSupplierEntry<P> createEntry(Parameter<P> parameter, ValueSupplier<?> supplier) {
+    public <P> ValueSupplierEntry<P> createEntry(Parameter<P> parameter, ValueSupplier supplier) {
         ValueSupplierEntry<P> entry = new ValueSupplierEntry<>(parameter, supplier, new ConverterList());
         arguments.put(parameter, entry);
         return entry;
@@ -64,10 +65,10 @@ public class ValueSupplierList {
         arguments.remove(parameter);
     }
 
-    public ParameterValueList resolve(MinecraftServer server, Consumer<Component> errorConsumer) {
+    public ParameterValueList resolve(Context context, Consumer<Component> errorConsumer) {
         ParameterValueList list = new ParameterValueList();
         for(ValueSupplierEntry<?> argument : arguments.values()) {
-            argument.addToList(list, server, errorConsumer);
+            argument.addToList(list, context, errorConsumer);
         }
         return list;
     }
@@ -114,10 +115,10 @@ public class ValueSupplierList {
         ).apply(instance, ValueSupplierEntry::new));
 
         private Parameter<P> parameter;
-        private ValueSupplier<?> supplier;
+        private ValueSupplier supplier;
         private ConverterList converters;
 
-        public ValueSupplierEntry(Parameter<P> parameter, ValueSupplier<?> supplier, ConverterList converters) {
+        public ValueSupplierEntry(Parameter<P> parameter, ValueSupplier supplier, ConverterList converters) {
             this.parameter = parameter;
             this.supplier = supplier;
             this.converters = converters;
@@ -131,7 +132,7 @@ public class ValueSupplierList {
             return parameter;
         }
 
-        public ValueSupplier<?> getSupplier() {
+        public ValueSupplier getSupplier() {
             return supplier;
         }
 
@@ -139,12 +140,12 @@ public class ValueSupplierList {
             this.parameter = parameter;
         }
 
-        public void setSupplier(ValueSupplier<?> supplier) {
+        public void setSupplier(ValueSupplier supplier) {
             this.supplier = supplier;
         }
 
-        private void addToList(ParameterValueList list, MinecraftServer server, Consumer<Component> errorConsumer) {
-            Result<P, Component> result = getValue(supplier, server);
+        private void addToList(ParameterValueList list, Context context, Consumer<Component> errorConsumer) {
+            Result<P, Component> result = getValue(supplier, context);
             switch (result) {
                 case Result.Success<P, Component> success -> list.setValue(parameter, success.result());
                 case Result.Error<P, Component> error -> {
@@ -154,15 +155,19 @@ public class ValueSupplierList {
             }
         }
 
-        private <S> Result<P, Component> getValue(ValueSupplier<S> supplier, MinecraftServer server) {
-            S value = supplier.resolve(server);
-            Result<TypedValue<?>, Component> convertedResult = converters.convert(new TypedValue<>(value, supplier.getValueType()));
+        private Result<P, Component> getValue(ValueSupplier supplier, Context context) {
+            Context newContext = context.toBuilder()
+                    .put(ResolutionContext.PARAMETER_NAME, parameter.name())
+                    .build();
+
+            Result<TypedValue<?>, Component> value = supplier.resolve(newContext);
+            Result<TypedValue<?>, Component> convertedResult = value.flatMap(v -> converters.convert(v));
 
             return convertedResult.flatMap(convertedValue -> Casts.castOrError(convertedValue, parameter.type()));
         }
 
         public void check(Consumer<Component> errorConsumer) {
-            converters.check(errorConsumer, parameter.type(), supplier.getValueType());
+            //converters.check(errorConsumer, parameter.type(), supplier.getValueType());
         }
     }
 }

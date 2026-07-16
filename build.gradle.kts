@@ -104,6 +104,10 @@ tasks.jar {
     from("LICENSE") {
         rename { "${it}_$projectName" }
     }
+
+    from("src/main/resources/assets/minions/lang") {
+        into("data/minions/lang")
+    }
 }
 
 // configure the maven publication

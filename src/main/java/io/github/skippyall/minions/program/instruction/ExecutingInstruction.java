@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.listener.SerializableListenerManager;
-import io.github.skippyall.minions.program.ExecutionContext;
+import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.supplier.ParameterValueList;
 import io.github.skippyall.minions.registration.MinionRegistries;
@@ -59,7 +59,7 @@ public class ExecutingInstruction {
         }
     }
 
-    public void tick(ExecutionContext context) {
+    public void tick(Context context) {
         if(state.isCurrentlyExecuting()) {
             if(execution.isDone(context)) {
                 stop(context);
@@ -78,7 +78,7 @@ public class ExecutingInstruction {
         setState(State.STOPPING);
     }
 
-    public void stop(ExecutionContext context) {
+    public void stop(Context context) {
         ParameterValueList list = new ParameterValueList();
         execution.stop(list, context);
         state = State.STOPPED;
@@ -131,6 +131,6 @@ public class ExecutingInstruction {
     }
 
     public interface Listener extends SerializableListenerManager.SerializableListener {
-        default void onStop(ExecutionContext context, ParameterValueList returnValues) {}
+        default void onStop(Context context, ParameterValueList returnValues) {}
     }
 }

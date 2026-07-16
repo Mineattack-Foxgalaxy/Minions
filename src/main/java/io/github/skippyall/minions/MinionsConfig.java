@@ -28,7 +28,7 @@ public class MinionsConfig {
 
         @SerdeComment("Makes minions not raise the mob cap if they can't spawn mobs.")
         @SerdeComment("Might cause incompatibilities.")
-        public boolean enableMobCapHacks = true;
+        public boolean enableMobCapModification = true;
     }
 
     public Compat compat = new Compat();
@@ -74,14 +74,4 @@ public class MinionsConfig {
             INSTANCE = new MinionsConfig();
         }
     }
-
-    /*public static void saveConfig() {
-        try {
-            CommentedConfig config = ObjectSerializer.standard().serializeFields(INSTANCE, TomlFormat::newConfig);
-            new TomlWriter().write(config, getPath(), WritingMode.REPLACE);
-        } catch (SerdeException | ParsingException | WritingException e) {
-            System.out.println("[minions] Error while writing config");
-            e.printStackTrace();
-        }
-    }*/
 }
