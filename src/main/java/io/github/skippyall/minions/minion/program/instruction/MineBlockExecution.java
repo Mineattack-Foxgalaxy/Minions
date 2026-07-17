@@ -7,7 +7,7 @@ import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
-import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.program.handler.ParameterValueList;
 import io.github.skippyall.minions.registration.ExecutionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

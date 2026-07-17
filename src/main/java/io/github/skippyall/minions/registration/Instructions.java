@@ -14,7 +14,7 @@ import io.github.skippyall.minions.minion.program.instruction.move.WalkExecution
 import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.instruction.InstructionType;
-import io.github.skippyall.minions.program.supplier.Parameter;
+import io.github.skippyall.minions.program.handler.Parameter;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 

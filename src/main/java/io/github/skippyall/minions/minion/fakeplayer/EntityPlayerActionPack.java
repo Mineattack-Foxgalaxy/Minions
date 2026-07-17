@@ -1,4 +1,4 @@
-//partially code from https://github.com/gnembon/fabric-carpet
+//code from https://github.com/gnembon/fabric-carpet/blob/master/src/main/java/carpet/helpers/EntityPlayerActionPack.java
 package io.github.skippyall.minions.minion.fakeplayer;
 
 
@@ -26,6 +26,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class EntityPlayerActionPack
 
     private final Map<ActionType, Action> actions = new EnumMap<>(ActionType.class);
 
-    private BlockPos currentBlock;
+    private @Nullable BlockPos currentBlock;
     public int blockHitDelay;
     private boolean isHittingBlock;
     private float curBlockDamageMP;
@@ -79,7 +80,7 @@ public class EntityPlayerActionPack
         return actions.containsKey(type);
     }
 
-    public EntityPlayerActionPack start(ActionType type, Action action)
+    public EntityPlayerActionPack start(ActionType type, @Nullable Action action)
     {
         Action previous = actions.remove(type);
         if (previous != null) type.stop(player, previous);
@@ -196,7 +197,7 @@ public class EntityPlayerActionPack
         {
             entities = player.level().getEntities(player, player.getBoundingBox().inflate(3.0D, 1.0D, 3.0D));
         }
-        if (entities.size()==0)
+        if (entities.isEmpty())
             return this;
         Entity closest = null;
         double distance = Double.POSITIVE_INFINITY;
@@ -378,7 +379,7 @@ public class EntityPlayerActionPack
                     }
 
                     @Override
-                    void inactiveTick(MinionFakePlayer player, Action action)
+                    void inactiveTick(MinionFakePlayer player, @Nullable Action action)
                     {
                         EntityPlayerActionPack ap = player.getMinionActionPack();
                         ap.itemUseCooldown = 0;
@@ -470,7 +471,7 @@ public class EntityPlayerActionPack
             }
 
             @Override
-            void inactiveTick(MinionFakePlayer player, Action action)
+            void inactiveTick(MinionFakePlayer player, @Nullable Action action)
             {
                 EntityPlayerActionPack ap = player.getMinionActionPack();
                 if (ap.currentBlock == null) return;
@@ -497,7 +498,7 @@ public class EntityPlayerActionPack
                     }
 
                     @Override
-                    void inactiveTick(MinionFakePlayer player, Action action)
+                    void inactiveTick(MinionFakePlayer player, @Nullable Action action)
                     {
                         player.setJumping(false);
                     }
@@ -544,8 +545,8 @@ public class EntityPlayerActionPack
 
         void start(MinionFakePlayer player, Action action) {}
         abstract boolean execute(MinionFakePlayer player, Action action);
-        void inactiveTick(MinionFakePlayer player, Action action) {}
-        void stop(MinionFakePlayer player, Action action)
+        void inactiveTick(MinionFakePlayer player, @Nullable Action action) {}
+        void stop(MinionFakePlayer player, @Nullable Action action)
         {
             inactiveTick(player, action);
         }
@@ -596,7 +597,7 @@ public class EntityPlayerActionPack
             return new Action(-1, interval, offset, false, false);
         }
 
-        Boolean tick(EntityPlayerActionPack actionPack, ActionType type)
+        @Nullable Boolean tick(EntityPlayerActionPack actionPack, ActionType type)
         {
             next--;
             Boolean cancel = null;

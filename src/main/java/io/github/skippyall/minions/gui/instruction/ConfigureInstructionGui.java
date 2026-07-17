@@ -4,11 +4,10 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.input.BooleanInput;
-import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
-import io.github.skippyall.minions.program.supplier.Parameter;
+import io.github.skippyall.minions.program.handler.Parameter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
@@ -18,7 +17,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-public class ConfigureInstructionGui extends MinionsGui implements ConfiguredInstructionListener, MinionListener {
+public class ConfigureInstructionGui extends MinionsGui implements ConfiguredInstructionListener {
     private final ConfiguredInstruction instruction;
     private final @Nullable Runnable onDelete;
     private final Context resolutionContext;
@@ -113,7 +112,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
     private void updateSuppliers() {
         int slot = 12;
         for(Parameter<?> parameter : instruction.getInstruction().getParameters().reversed()) {
-            gui.setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getArgument(parameter), viewer.registryAccess())
+            gui.setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getHandler(parameter), viewer.registryAccess())
                     .setCallback(() -> new ArgumentGui(this, instruction, parameter, resolutionContext))
             );
             slot--;

@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.program.instruction;
 
 import io.github.skippyall.minions.program.Context;
-import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.program.handler.ParameterValueList;
 
 /**
  * Responsible for executing instructions.
@@ -46,5 +46,12 @@ public interface InstructionExecution {
     interface Argumentless extends InstructionExecution {
         @Override
         default void readArguments(ParameterValueList arguments, Context context) {}
+    }
+
+    interface Continuous extends InstructionExecution {
+        @Override
+        default boolean isDone(Context context) {
+            return false;
+        }
     }
 }

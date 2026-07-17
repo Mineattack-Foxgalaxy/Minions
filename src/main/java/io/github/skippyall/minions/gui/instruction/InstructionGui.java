@@ -8,7 +8,7 @@ import io.github.skippyall.minions.gui.minion.SimpleMinionsGui;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.MinionModule;
 import io.github.skippyall.minions.program.instruction.InstructionType;
-import io.github.skippyall.minions.program.supplier.Parameter;
+import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.supplier.ValueSupplier;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionRegistries;

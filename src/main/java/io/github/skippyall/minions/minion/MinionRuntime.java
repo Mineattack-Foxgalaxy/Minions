@@ -7,7 +7,7 @@ import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.instruction.InstructionType;
-import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.program.handler.ParameterValueList;
 import io.github.skippyall.minions.registration.ExecutionContext;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.server.MinecraftServer;

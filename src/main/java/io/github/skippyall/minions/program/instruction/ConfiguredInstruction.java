@@ -4,11 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.Minions;
-import io.github.skippyall.minions.listener.SerializableListenerManager;
+import io.github.skippyall.minions.listener.ListenerManager;
 import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.InstructionRuntime;
-import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.program.handler.Parameter;
+import io.github.skippyall.minions.program.handler.ParameterValueList;
 import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.network.chat.Component;
@@ -24,9 +24,8 @@ public class ConfiguredInstruction {
     public static final MapCodec<ConfiguredInstruction> MAP_CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     MinionRegistries.INSTRUCTION_TYPES.byNameCodec().fieldOf("instruction").forGetter(ConfiguredInstruction::getInstruction),
-                    ValueSupplierList.CODEC.fieldOf("arguments").forGetter(ConfiguredInstruction::getArguments),
-                    //runtime.getValueConsumerListCodec().fieldOf("valueConsumers").forGetter(ConfiguredInstruction::getValueConsumers),
-                    SerializableListenerManager.getCodec(MinionRegistries.INSTRUCTION_LISTENER_CODECS).fieldOf("listeners").forGetter(i -> i.listeners)
+                    ValueSupplierList.CODEC.fieldOf("arguments").forGetter(ConfiguredInstruction::getArguments)
+                    //runtime.getValueConsumerListCodec().fieldOf("valueConsumers").forGetter(ConfiguredInstruction::getValueConsumers)
             ).apply(instance, ConfiguredInstruction::new)
     );
 
@@ -37,17 +36,7 @@ public class ConfiguredInstruction {
     //private final ValueConsumerList<R> valueConsumers;
 
     private List<Component> lastErrors = List.of();
-    private SerializableListenerManager<ConfiguredInstructionListener> listeners = new SerializableListenerManager<>();
-
-    private ConfiguredInstruction(
-            InstructionType instruction,
-            ValueSupplierList arguments,
-            //ValueConsumerList<R> valueConsumers,
-            SerializableListenerManager<ConfiguredInstructionListener> listeners
-    ) {
-        this(instruction, arguments /*, valueConsumers*/);
-        this.listeners = listeners;
-    }
+    private ListenerManager<ConfiguredInstructionListener> listeners = new ListenerManager<>();
 
     private ConfiguredInstruction(
             InstructionType instruction,

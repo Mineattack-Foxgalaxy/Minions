@@ -5,8 +5,8 @@ import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
-import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.program.handler.Parameter;
+import io.github.skippyall.minions.program.handler.ParameterValueList;
 import io.github.skippyall.minions.registration.ExecutionContext;
 import io.github.skippyall.minions.registration.ValueTypes;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -76,20 +76,7 @@ public class SwapItemExecution implements InstructionExecution {
         if(!slot.getItem().isEmpty() && !slot.mayPickup(minion)) {
             return false;
         }
-        if(!newStack.isEmpty() && !slot.mayPlace(newStack)) {
-            return false;
-        }
-        /*else {
-            if(slotIndex >= PlayerInventory.MAIN_SIZE && slotIndex < PlayerInventory.OFF_HAND_SLOT) {
-                if(!minion.canEquip(newStack, PlayerInventory.EQUIPMENT_SLOTS.get(slotIndex))) {
-                    return false;
-                }
-                if(EnchantmentHelper.hasAnyEnchantmentsWith(minion.getInventory().getStack(slotIndex), EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
-                    return false;
-                }
-            }
-        }*/
-        return true;
+        return newStack.isEmpty() || slot.mayPlace(newStack);
     }
 
     private void simulateClick(MinionFakePlayer minion, int slotIndex, boolean screen) {

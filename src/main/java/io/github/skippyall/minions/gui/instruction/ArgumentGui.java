@@ -8,9 +8,9 @@ import io.github.skippyall.minions.gui.PaginatedList;
 import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
-import io.github.skippyall.minions.program.supplier.Parameter;
+import io.github.skippyall.minions.program.supplier.ConfiguredValueSupplier;
+import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.supplier.ValueSupplier;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
 import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.registration.MinionRegistries;
@@ -29,7 +29,7 @@ public class ArgumentGui extends MinionsGui {
     private SimpleGui gui;
 
     private @Nullable ValueSupplierType argumentType;
-    private ValueSupplierList. @Nullable ValueSupplierEntry<?> entry;
+    private @Nullable ConfiguredValueSupplier<?> entry;
 
     public ArgumentGui(MinionsGui parent, ConfiguredInstruction instruction, Parameter<?> parameter, Context resolutionContext) {
         super(parent);

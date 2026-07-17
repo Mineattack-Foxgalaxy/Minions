@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.program.supplier;
+package io.github.skippyall.minions.program.handler;
 
 import java.util.HashMap;
 import java.util.Map;

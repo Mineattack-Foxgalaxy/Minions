@@ -1,4 +1,4 @@
-//code from https://github.com/gnembon/fabric-carpet
+//code from https://github.com/gnembon/fabric-carpet/blob/master/src/main/java/carpet/script/utils/Tracer.java
 package io.github.skippyall.minions.minion.fakeplayer;
 
 import net.minecraft.world.entity.Entity;
@@ -9,6 +9,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -27,7 +28,7 @@ public class Tracer
         return entityHit == null ? blockHit : entityHit;
     }
 
-    public static BlockHitResult rayTraceBlocks(Entity source, float partialTicks, double reach, boolean fluids)
+    public static @Nullable BlockHitResult rayTraceBlocks(Entity source, float partialTicks, double reach, boolean fluids)
     {
         Vec3 pos = source.getEyePosition(partialTicks);
         Vec3 rotation = source.getViewVector(partialTicks);
@@ -36,7 +37,7 @@ public class Tracer
                 ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, source));
     }
 
-    public static EntityHitResult rayTraceEntities(Entity source, float partialTicks, double reach, double maxSqDist)
+    public static @Nullable EntityHitResult rayTraceEntities(Entity source, float partialTicks, double reach, double maxSqDist)
     {
         Vec3 pos = source.getEyePosition(partialTicks);
         Vec3 reachVec = source.getViewVector(partialTicks).scale(reach);
@@ -44,7 +45,7 @@ public class Tracer
         return rayTraceEntities(source, pos, pos.add(reachVec), box, e -> !e.isSpectator() && e.isPickable(), maxSqDist);
     }
 
-    public static EntityHitResult rayTraceEntities(Entity source, Vec3 start, Vec3 end, AABB box, Predicate<Entity> predicate, double maxSqDistance)
+    public static @Nullable EntityHitResult rayTraceEntities(Entity source, Vec3 start, Vec3 end, AABB box, Predicate<Entity> predicate, double maxSqDistance)
     {
         Level world = source.level();
         double targetDistance = maxSqDistance;

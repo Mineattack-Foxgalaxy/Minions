@@ -1,6 +1,7 @@
-//code from https://github.com/gnembon/fabric-carpet
+//code from https://github.com/gnembon/fabric-carpet/blob/master/src/main/java/carpet/patches/FakeClientConnection.java
 package io.github.skippyall.minions.minion.fakeplayer;
 
+import io.github.skippyall.minions.mixins.ClientConnectionInterface;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.network.Connection;
@@ -20,25 +21,17 @@ public class FakeClientConnection extends Connection {
     }
 
     @Override
-    public void send(Packet<?> packet, @Nullable ChannelFutureListener listener, boolean flush) {
-
-    }
+    public void send(Packet<?> packet, @Nullable ChannelFutureListener listener, boolean flush) {}
 
     @Override
-    public void setReadOnly()
-    {
-    }
+    public void setReadOnly() {}
 
     @Override
-    public void handleDisconnection() {
-    }
+    public void handleDisconnection() {}
 
     @Override
-    public void setListenerForServerboundHandshake(PacketListener packetListener)
-    {
-    }
+    public void setListenerForServerboundHandshake(PacketListener packetListener) {}
 
     @Override
-    public <T extends PacketListener> void setupInboundProtocol(ProtocolInfo<T> state, T packetListener) {
-    }
+    public <T extends PacketListener> void setupInboundProtocol(ProtocolInfo<T> state, T packetListener) {}
 }

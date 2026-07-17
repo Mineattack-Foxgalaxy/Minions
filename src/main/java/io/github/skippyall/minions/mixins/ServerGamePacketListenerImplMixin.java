@@ -1,7 +1,6 @@
 package io.github.skippyall.minions.mixins;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.registration.MinionConfigOptions;
 import net.minecraft.network.chat.Component;
@@ -17,10 +16,8 @@ public class ServerGamePacketListenerImplMixin {
     @Shadow
     public ServerPlayer player;
 
-    @WrapOperation(method = "removePlayerFromWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"))
-    public void noLogoutMessage(PlayerList instance, Component message, boolean overlay, Operation<Void> original) {
-        if(!(player instanceof MinionFakePlayer minion && !minion.getData().getConfig().getOption(MinionConfigOptions.sendLogoutMessage))) {
-            original.call(instance, message, overlay);
-        }
+    @WrapWithCondition(method = "removePlayerFromWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V"))
+    public boolean noLogoutMessage(PlayerList instance, Component message, boolean overlay) {
+        return !(player instanceof MinionFakePlayer minion && !minion.getData().getConfig().getOption(MinionConfigOptions.sendLogoutMessage));
     }
 }

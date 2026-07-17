@@ -3,8 +3,8 @@ package io.github.skippyall.minions.minion.program.instruction.move;
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.Context;
-import io.github.skippyall.minions.program.supplier.Parameter;
-import io.github.skippyall.minions.program.supplier.ParameterValueList;
+import io.github.skippyall.minions.program.handler.Parameter;
+import io.github.skippyall.minions.program.handler.ParameterValueList;
 import io.github.skippyall.minions.registration.ExecutionContext;
 import io.github.skippyall.minions.registration.ValueTypes;
 
