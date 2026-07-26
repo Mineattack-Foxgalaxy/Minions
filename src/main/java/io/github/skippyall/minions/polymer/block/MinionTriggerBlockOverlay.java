@@ -19,14 +19,14 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.DiodeBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
 public class MinionTriggerBlockOverlay implements PolymerBlock, PolymerClientDecoded, BlockWithElementHolder {
     @Override
     public BlockState getPolymerBlockState(BlockState state, @Nullable PacketContext context) {
-        return VersionSync.isOnClient(context) ? state : net.minecraft.world.level.block.Blocks.COMPARATOR.defaultBlockState().setValue(DiodeBlock.POWERED, state.getValue(MinionTriggerBlock.POWERED));
+        return VersionSync.isOnClient(context) ? state : Blocks.SMOOTH_STONE_SLAB.defaultBlockState();
     }
 
     @Override

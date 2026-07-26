@@ -8,7 +8,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public interface ValueType<T> {
-    CompletableFuture<T> openValueDialog(MinionsGui gui, T previousValue);
+    CompletableFuture<@Nullable T> openValueDialog(MinionsGui gui, @Nullable T previousValue);
 
     Component getDisplayText(T value);
 

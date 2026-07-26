@@ -3,8 +3,8 @@ package io.github.skippyall.minions.minion.program.instruction;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.Context;
-import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.program.handler.ParameterValueList;
+import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.registration.ExecutionContext;
 
 public class ActionExecution implements InstructionExecution.Continuous {

@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.program.supplier;
+package io.github.skippyall.minions.program.handler.supplier;
 
 import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.Context;

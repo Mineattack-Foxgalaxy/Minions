@@ -9,6 +9,6 @@ import org.jspecify.annotations.Nullable;
 public class AnalogInputBlockOverlay implements PolymerBlock {
     @Override
     public BlockState getPolymerBlockState(BlockState blockState, @Nullable PacketContext packetContext) {
-        return Blocks.AMETHYST_BLOCK.defaultBlockState();
+        return Blocks.COMPARATOR.defaultBlockState();
     }
 }

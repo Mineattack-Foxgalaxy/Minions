@@ -12,7 +12,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.component.DamageResistant;
 
@@ -50,24 +49,6 @@ public class MinionItems {
             Identifier.fromNamespaceAndPath(MOD_ID, "mob_spawning_module"),
             List.of(),
             List.of(SpecialAbilities.MOB_SPAWNING)
-    );
-
-    public static final BlockItem MINION_TRIGGER_ITEM = registerItem(
-            MinionBlocks.MINION_TRIGGER_ID,
-            settings -> new BlockItem(MinionBlocks.MINION_TRIGGER_BLOCK, settings),
-            new Item.Properties().useBlockDescriptionPrefix()
-    );
-
-    public static final BlockItem ANALOG_INPUT_ITEM = registerItem(
-            MinionBlocks.ANALOG_INPUT_BLOCK_ID,
-            settings -> new BlockItem(MinionBlocks.ANALOG_INPUT_BLOCK, settings),
-            new Item.Properties().useBlockDescriptionPrefix()
-    );
-
-    public static final BlockItem CONNECTOR_ITEM = registerItem(
-            MinionBlocks.CONNECTOR_ID,
-            settings -> new BlockItem(MinionBlocks.CONNECTOR, settings),
-            new Item.Properties().useBlockDescriptionPrefix()
     );
 
     public static final Item REFERENCE_ITEM = registerItem(Identifier.fromNamespaceAndPath(MOD_ID, "clipboard"), Item::new);

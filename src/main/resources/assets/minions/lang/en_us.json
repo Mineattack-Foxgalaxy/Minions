@@ -3,7 +3,7 @@
   "minions.gui.main.modules": "Modules",
   "minions.gui.main.inventory": "Inventory",
   "minions.gui.main.pickup": "Pick up",
-  "minions.gui.main.reference": "Copy Minion Reference",
+  "minions.gui.main.reference": "Create Minion Clipboard",
   "minions.gui.inventory.title": "Inventory",
   "minions.gui.modules.title": "Modules",
   "minions.gui.ok": "OK",
@@ -19,6 +19,8 @@
   "minions.gui.look.skin.base64": "Base64",
   "minions.gui.look.skin.base64.title": "Enter a skin in base64 encoding",
   "minions.gui.look.rename.title": "Enter a name",
+
+  "minions.gui.trigger.no_minion": "To link a Minion, use a Minion Clipboard from its GUI",
 
   "minions.gui.instruction.title": "Instructions",
   "minions.gui.instruction.list": "Instruction List",
@@ -91,9 +93,6 @@
 
   "value_supplier.minions.fixed": "Fixed Value",
   "value_supplier.minions.connected_block": "Connected Block",
-  "value_supplier.minions.analog_input": "Analog Input",
-  "value_supplier.minions.analog_input.display": "Analog Input at %s in %s",
-  "value_supplier.minions.analog_input.config.click_with_reference": "Click here with a position clipboard",
 
   "value_converter.minions.cast.display": "Cast from %s to %s",
   "value_converter.minions.cast.cast_failed": "Cast of value %s to %s failed",
@@ -113,6 +112,8 @@
   "item.minions.clipboard": "Clipboard",
 
   "block.minions.minion_trigger": "Minion Trigger",
+  "block.minions.analog_input": "Analog Input",
+  "block.minions.connector": "Trigger Connector",
 
   "minions.minion_item.tooltip": "Name: %s",
   "minions.generic.name.invalid_char": "Name contains invalid character",

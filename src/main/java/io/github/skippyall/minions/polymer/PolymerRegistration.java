@@ -29,14 +29,14 @@ public class PolymerRegistration {
         VersionSync.register();
         PolymerResourcePackUtils.addModAssets(Minions.MOD_ID);
 
-        registerBlockOverlay(MinionBlocks.MINION_TRIGGER_BLOCK, new MinionTriggerBlockOverlay());
+        registerBlockOverlay(MinionBlocks.MINION_TRIGGER, new MinionTriggerBlockOverlay());
         PolymerBlockUtils.registerBlockEntity(MinionBlocks.MINION_TRIGGER_BE_TYPE);
-        registerBlockOverlay(MinionBlocks.ANALOG_INPUT_BLOCK, new AnalogInputBlockOverlay());
-        registerBlockOverlay(MinionBlocks.CONNECTOR, new ConnectorBlockOverlay());
+        registerBlockOverlay(MinionBlocks.ANALOG_INPUT, new AnalogInputBlockOverlay());
+        registerBlockOverlay(MinionBlocks.TRIGGER_CONNECTOR, new ConnectorBlockOverlay());
 
-        registerItemOverlay(MinionItems.MINION_TRIGGER_ITEM, new MinionsBlockItemOverlay(MinionItems.MINION_TRIGGER_ITEM, Items.COMPARATOR));
-        registerItemOverlay(MinionItems.ANALOG_INPUT_ITEM, new MinionsBlockItemOverlay(MinionItems.ANALOG_INPUT_ITEM, Items.REPEATER));
-        registerItemOverlay(MinionItems.CONNECTOR_ITEM, new MinionsBlockItemOverlay(MinionItems.CONNECTOR_ITEM, Items.CHORUS_PLANT));
+        registerItemOverlay(MinionBlocks.MINION_TRIGGER.asItem(), new MinionsBlockItemOverlay(MinionBlocks.MINION_TRIGGER.asItem(), Items.COMPARATOR));
+        registerItemOverlay(MinionBlocks.ANALOG_INPUT.asItem(), new MinionsBlockItemOverlay(MinionBlocks.ANALOG_INPUT.asItem(), Items.COMPARATOR));
+        registerItemOverlay(MinionBlocks.TRIGGER_CONNECTOR.asItem(), new MinionsBlockItemOverlay(MinionBlocks.TRIGGER_CONNECTOR.asItem(), Items.CHORUS_PLANT));
 
         registerItemOverlay(MinionItems.REFERENCE_ITEM, new ClipboardItemOverlay());
         registerItemOverlay(MinionItems.MINION_ITEM, new MinionItemOverlay());

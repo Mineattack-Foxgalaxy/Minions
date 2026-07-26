@@ -11,12 +11,13 @@ import io.github.skippyall.minions.minion.MinionConfig;
 import io.github.skippyall.minions.minion.MinionListener;
 import io.github.skippyall.minions.minion.skin.SkinProvider;
 import io.github.skippyall.minions.module.SpecialAbility;
-import io.github.skippyall.minions.program.consumer.ValueConsumerType;
 import io.github.skippyall.minions.program.conversion.ValueConverterType;
+import io.github.skippyall.minions.program.handler.ValueHandlerType;
+import io.github.skippyall.minions.program.handler.consumer.ValueConsumer;
+import io.github.skippyall.minions.program.handler.supplier.ValueSupplier;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
 import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.instruction.InstructionType;
-import io.github.skippyall.minions.program.supplier.ValueSupplierType;
 import io.github.skippyall.minions.program.value.ValueType;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
@@ -27,8 +28,8 @@ import net.minecraft.resources.ResourceKey;
 
 public class MinionRegistries {
     public static final Registry<ValueType<?>> VALUE_TYPES = registry("value_type");
-    public static final Registry<ValueSupplierType> VALUE_SUPPLIER_TYPES = registry("value_supplier");
-    public static final Registry<ValueConsumerType> VALUE_CONSUMER_TYPES = registry("value_consumer");
+    public static final Registry<ValueHandlerType<ValueSupplier>> VALUE_SUPPLIER_TYPES = registry("value_supplier");
+    public static final Registry<ValueHandlerType<ValueConsumer>> VALUE_CONSUMER_TYPES = registry("value_consumer");
     public static final Registry<InstructionType> INSTRUCTION_TYPES = registry("instruction");
     public static final Registry<ValueConverterType<?>> VALUE_CONVERTER_TYPES = registry("value_converter");
 

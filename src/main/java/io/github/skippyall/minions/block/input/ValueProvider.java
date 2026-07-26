@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
@@ -15,7 +16,11 @@ public interface ValueProvider {
 
     TypedValue<?> getValue();
 
-    interface Block extends BlockApiLookup.BlockApiProvider<ValueProvider, @Nullable Direction> {
+    static void registerBlock(Block block, BlockValueProvider provider) {
+        SIDED.registerForBlocks(provider, block);
+    }
+
+    interface BlockValueProvider extends BlockApiLookup.BlockApiProvider<ValueProvider, @Nullable Direction> {
         @Override
         default @Nullable ValueProvider find(Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, @Nullable Direction context) {
             return () -> getValue(level, pos, state, blockEntity, context);

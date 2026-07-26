@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.program.supplier;
+package io.github.skippyall.minions.program.handler.supplier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -6,10 +6,10 @@ import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.conversion.Casts;
 import io.github.skippyall.minions.program.conversion.ConverterList;
-import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.handler.ConfiguredValueHandler;
 import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.handler.ParameterValueList;
+import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.registration.ResolutionContext;
 import net.minecraft.network.chat.Component;
 

@@ -7,10 +7,10 @@ import io.github.skippyall.minions.gui.instruction.ConfigureInstructionGui;
 import io.github.skippyall.minions.gui.instruction.InstructionGui;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.Context;
-import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
-import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.handler.ParameterValueList;
+import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
+import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
 import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.registration.ExecutionContext;
 import io.github.skippyall.minions.registration.MinionBlocks;
@@ -77,6 +77,8 @@ public class MinionTriggerBlockEntity extends BlockEntity {
                         });
             }
             return true;
+        } else {
+            player.sendOverlayMessage(Component.translatable("minions.gui.trigger.no_minion"));
         }
         return false;
     }
@@ -134,7 +136,7 @@ public class MinionTriggerBlockEntity extends BlockEntity {
     public void onStop() {
         running = false;
         if(level != null) {
-            level.updateNeighbourForOutputSignal(worldPosition, MinionBlocks.MINION_TRIGGER_BLOCK);
+            level.updateNeighbourForOutputSignal(worldPosition, MinionBlocks.MINION_TRIGGER);
         }
     }
 
@@ -147,7 +149,7 @@ public class MinionTriggerBlockEntity extends BlockEntity {
     }
 
     public void updateConnectedBlocks() {
-        Collection<Pair<BlockPos, Direction>> connectedBlocks = findConnectedBlocks(level, worldPosition, 16, MinionBlocks.CONNECTOR);
+        Collection<Pair<BlockPos, Direction>> connectedBlocks = findConnectedBlocks(level, worldPosition, 16, MinionBlocks.TRIGGER_CONNECTOR);
 
         Collection<String> requiredParams = new HashSet<>();
         for(Parameter<?> parameter : instruction.getInstruction().getParameters()) {

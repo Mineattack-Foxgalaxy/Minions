@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.program.supplier;
+package io.github.skippyall.minions.program.handler.supplier;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.MinionsGui;

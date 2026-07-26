@@ -1,6 +1,5 @@
 package io.github.skippyall.minions.gui.input;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
@@ -8,7 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public sealed interface Result<T extends @Nullable Object, E extends @Nullable Object> permits Result.Success, Result.Error {
+public sealed interface Result<T, E> permits Result.Success, Result.Error {
     static <T> Result<T, String> wrap(UnsafeOperation<T> toWrap) {
         return wrapCustomError(toWrap, Exception::getMessage);
     }
@@ -27,7 +26,7 @@ public sealed interface Result<T extends @Nullable Object, E extends @Nullable O
 
     static <T, E> Result<T, E> ofNullable(@Nullable T value, E error) {
         if(value != null) {
-            return new Success<T, E>(value);
+            return new Success<>(value);
         } else {
             return new Error<>(error);
         }
@@ -35,7 +34,7 @@ public sealed interface Result<T extends @Nullable Object, E extends @Nullable O
 
     static <T, E> Result<T, E> ofNullable(@Nullable T value, Supplier<E> error) {
         if(value != null) {
-            return new Success<T, E>(value);
+            return new Success<>(value);
         } else {
             return new Error<>(error.get());
         }
@@ -49,9 +48,9 @@ public sealed interface Result<T extends @Nullable Object, E extends @Nullable O
 
     E getErrorOrThrow();
 
-    Optional<@NonNull T> getOptional();
+    Optional<T> getOptional();
 
-    Optional<@NonNull E> getOptionalError();
+    Optional<E> getOptionalError();
 
     void ifSuccess(Consumer<T> handler);
 
@@ -63,7 +62,7 @@ public sealed interface Result<T extends @Nullable Object, E extends @Nullable O
 
     <U> Result<T,U> mapError(Function<E, U> mapper);
 
-    record Success<T extends @Nullable Object, E extends @Nullable Object>(T result) implements Result<T, E> {
+    record Success<T, E>(T result) implements Result<T, E> {
         @Override
         public boolean isSuccess() {
             return true;
@@ -75,7 +74,7 @@ public sealed interface Result<T extends @Nullable Object, E extends @Nullable O
         }
 
         @Override
-        public Optional<@NonNull E> getOptionalError() {
+        public Optional<E> getOptionalError() {
             return Optional.empty();
         }
 
@@ -90,8 +89,8 @@ public sealed interface Result<T extends @Nullable Object, E extends @Nullable O
         }
 
         @Override
-        public Optional<@NonNull T> getOptional() {
-            return Optional.ofNullable(result);
+        public Optional<T> getOptional() {
+            return Optional.of(result);
         }
 
         @Override
@@ -120,7 +119,7 @@ public sealed interface Result<T extends @Nullable Object, E extends @Nullable O
         }
     }
 
-    record Error<T extends @Nullable Object, E extends @Nullable Object>(E message) implements Result<T, E> {
+    record Error<T, E>(E message) implements Result<T, E> {
         @Override
         public boolean isSuccess() {
             return false;
@@ -143,13 +142,13 @@ public sealed interface Result<T extends @Nullable Object, E extends @Nullable O
         }
 
         @Override
-        public Optional<@NonNull T> getOptional() {
+        public Optional<T> getOptional() {
             return Optional.empty();
         }
 
         @Override
-        public Optional<@NonNull E> getOptionalError() {
-            return Optional.ofNullable(message);
+        public Optional<E> getOptionalError() {
+            return Optional.of(message);
         }
 
         @Override

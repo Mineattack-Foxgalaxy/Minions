@@ -44,7 +44,7 @@ public class ConnectorBlock extends PipeBlock {
     }
 
     public boolean canConnectTo(LevelReader levelReader, BlockPos neighbourPos, BlockState neighbourState, Direction directionToNeighbour) {
-        if(neighbourState.getBlock() == MinionBlocks.CONNECTOR || neighbourState.getBlock() == MinionBlocks.MINION_TRIGGER_BLOCK) {
+        if(neighbourState.getBlock() == MinionBlocks.TRIGGER_CONNECTOR || neighbourState.getBlock() == MinionBlocks.MINION_TRIGGER) {
             return true;
         } else if (levelReader instanceof Level level) {
             return ValueProvider.SIDED.find(level, neighbourPos, neighbourState, level.getBlockEntity(neighbourPos), directionToNeighbour.getOpposite()) != null;

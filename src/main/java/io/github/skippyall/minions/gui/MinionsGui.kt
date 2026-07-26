@@ -71,7 +71,7 @@ abstract class MinionsGui {
         }
     }
 
-    fun backButton(): GuiElementBuilder? {
+    fun backButton(): GuiElementBuilder {
         return GuiElementBuilder(Items.MANGROVE_DOOR)
             .setName(Component.translatable("gui.back"))
             .setCallback(Runnable { this.goBack() })

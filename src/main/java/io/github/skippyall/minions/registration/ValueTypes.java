@@ -40,7 +40,7 @@ public class ValueTypes {
                     (parent, oldValue) -> TextInput.inputDouble(
                             parent,
                             Component.literal("Number"),
-                            oldValue != null ? oldValue : 0D
+                            oldValue
                     ),
                     value -> Component.literal(value.toString())
             )
@@ -57,9 +57,10 @@ public class ValueTypes {
             )
     );
 
+    @SuppressWarnings("Convert2Diamond")
     public static ValueType<String> STRING = register(
             "string",
-            new SimpleValueType<>(
+            new SimpleValueType<String>(
                     Codec.STRING,
                     "",
                     o -> o instanceof String s ? s : null,
@@ -72,9 +73,10 @@ public class ValueTypes {
             )
     );
 
+    @SuppressWarnings("Convert2Diamond")
     public static ValueType<TurnDirection> TURN_DIRECTION = register(
             "turn_direction",
-            new SimpleValueType<>(
+            new SimpleValueType<TurnDirection>(
                     TurnDirection.CODEC,
                     TurnDirection.RIGHT,
                     o -> o instanceof TurnDirection d ? d : null,

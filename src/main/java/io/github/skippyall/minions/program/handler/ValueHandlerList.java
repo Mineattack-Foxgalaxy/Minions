@@ -5,7 +5,6 @@ import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,17 +52,7 @@ public abstract class ValueHandlerList<H, E extends ConfiguredValueHandler<?, H>
         return arguments.containsKey(parameter);
     }
 
-    public void checkHasArguments(Collection<Parameter<?>> checkParameters, Consumer<Component> errorConsumer) {
-        for(Parameter<?> parameter : checkParameters) {
-            if(!hasArgumentFor(parameter)) {
-                errorConsumer.accept(Component.translatable("minions.gui.instruction.check.argument_not_set", parameter.name()));
-            }
-        }
-    }
-
     public void checkRun(InstructionType instructionType, Consumer<Component> errorConsumer) {
-        checkHasArguments(instructionType.getParameters(), errorConsumer);
-
         for(E entry : arguments.values()) {
             entry.check(errorConsumer);
         }

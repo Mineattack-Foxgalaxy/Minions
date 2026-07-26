@@ -9,7 +9,8 @@ import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.handler.ParameterValueList;
-import io.github.skippyall.minions.program.supplier.ValueSupplierList;
+import io.github.skippyall.minions.program.handler.consumer.ValueConsumerList;
+import io.github.skippyall.minions.program.handler.supplier.ValueSupplierList;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.network.chat.Component;
 
@@ -24,8 +25,8 @@ public class ConfiguredInstruction {
     public static final MapCodec<ConfiguredInstruction> MAP_CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     MinionRegistries.INSTRUCTION_TYPES.byNameCodec().fieldOf("instruction").forGetter(ConfiguredInstruction::getInstruction),
-                    ValueSupplierList.CODEC.fieldOf("arguments").forGetter(ConfiguredInstruction::getArguments)
-                    //runtime.getValueConsumerListCodec().fieldOf("valueConsumers").forGetter(ConfiguredInstruction::getValueConsumers)
+                    ValueSupplierList.CODEC.fieldOf("arguments").forGetter(ConfiguredInstruction::getArguments),
+                    ValueConsumerList.CODEC.fieldOf("valueConsumers").forGetter(ConfiguredInstruction::getValueConsumers)
             ).apply(instance, ConfiguredInstruction::new)
     );
 
@@ -33,25 +34,25 @@ public class ConfiguredInstruction {
 
     private final InstructionType instruction;
     private final ValueSupplierList arguments;
-    //private final ValueConsumerList<R> valueConsumers;
+    private final ValueConsumerList valueConsumers;
 
     private List<Component> lastErrors = List.of();
     private ListenerManager<ConfiguredInstructionListener> listeners = new ListenerManager<>();
 
     private ConfiguredInstruction(
             InstructionType instruction,
-            ValueSupplierList arguments //,
-            //ValueConsumerList<R> valueConsumers
+            ValueSupplierList arguments,
+            ValueConsumerList valueConsumers
     ) {
         this.instruction = instruction;
         this.arguments = arguments;
-        //this.valueConsumers = valueConsumers;
+        this.valueConsumers = valueConsumers;
         arguments.addListener(this::onSupplierChange);
-        //valueConsumers.addListener(this::onConsumerChange);
+        valueConsumers.addListener(this::onConsumerChange);
     }
 
     public ConfiguredInstruction(InstructionType instruction) {
-        this(instruction, new ValueSupplierList() /*, new ValueConsumerList<>(),*/);
+        this(instruction, new ValueSupplierList(), new ValueConsumerList());
     }
 
     public InstructionType getInstruction() {
@@ -62,9 +63,9 @@ public class ConfiguredInstruction {
         return arguments;
     }
 
-    /*public ValueConsumerList<R> getValueConsumers() {
+    public ValueConsumerList getValueConsumers() {
         return valueConsumers;
-    }*/
+    }
 
     public List<Component> preCheck() {
         List<Component> errors = new ArrayList<>();

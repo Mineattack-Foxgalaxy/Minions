@@ -60,6 +60,11 @@ public class GlobalInstructionManager extends SavedData {
 
     private void addInstruction(UUID runtimeId, int id, ExecutingInstruction executingInstruction) {
         instructions.computeIfAbsent(runtimeId, _ -> new Int2ObjectRBTreeMap<>()).put(currentId, executingInstruction);
+        setDirty();
+    }
+
+    public void removeInstruction(UUID runtimeId, int id) {
+        Int2ObjectMap<ExecutingInstruction> entry = instructions.get(runtimeId);
     }
 
     public Int2ObjectMap<ExecutingInstruction> getInstructions(UUID runtimeId) {

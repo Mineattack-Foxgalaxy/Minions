@@ -32,7 +32,7 @@ public class MinionTriggerBlock extends Block implements EntityBlock {
     public static final MapCodec<MinionTriggerBlock> CODEC = simpleCodec(MinionTriggerBlock::new);
 
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
-    public static final VoxelShape SHAPE = Block.column(16.0, 0.0, 2.0);
+    public static final VoxelShape SHAPE = Block.column(16.0, 0.0, 8.0);
 
     public MinionTriggerBlock(Properties settings) {
         super(settings);

@@ -5,9 +5,9 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.input.BooleanInput;
 import io.github.skippyall.minions.program.Context;
+import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
-import io.github.skippyall.minions.program.handler.Parameter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
@@ -113,9 +113,19 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
         int slot = 12;
         for(Parameter<?> parameter : instruction.getInstruction().getParameters().reversed()) {
             gui.setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getHandler(parameter), viewer.registryAccess())
-                    .setCallback(() -> new ArgumentGui(this, instruction, parameter, resolutionContext))
+                    .setCallback(() -> new ValueSupplierGui(this, instruction, parameter, resolutionContext))
             );
             slot--;
+        }
+    }
+
+    private void updateConsumers() {
+        int slot = 14;
+        for(Parameter<?> parameter : instruction.getInstruction().getReturnParameters()) {
+            gui.setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getHandler(parameter), viewer.registryAccess())
+                    .setCallback(() -> new ValueConsumerGui(this, instruction, parameter, resolutionContext))
+            );
+            slot++;
         }
     }
 }

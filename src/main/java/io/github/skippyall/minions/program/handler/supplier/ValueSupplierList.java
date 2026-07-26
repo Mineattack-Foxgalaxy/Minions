@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.program.supplier;
+package io.github.skippyall.minions.program.handler.supplier;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.program.Context;
@@ -6,9 +6,11 @@ import io.github.skippyall.minions.program.conversion.ConverterList;
 import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.handler.ParameterValueList;
 import io.github.skippyall.minions.program.handler.ValueHandlerList;
+import io.github.skippyall.minions.program.instruction.InstructionType;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -50,5 +52,19 @@ public class ValueSupplierList extends ValueHandlerList<ValueSupplier, Configure
             argument.addToList(list, context, errorConsumer);
         }
         return list;
+    }
+
+    public void checkHasArguments(Collection<Parameter<?>> checkParameters, Consumer<Component> errorConsumer) {
+        for (Parameter<?> parameter : checkParameters) {
+            if (!hasArgumentFor(parameter)) {
+                errorConsumer.accept(Component.translatable("minions.gui.instruction.check.argument_not_set", parameter.name()));
+            }
+        }
+    }
+
+    @Override
+    public void checkRun(InstructionType instructionType, Consumer<Component> errorConsumer) {
+        checkHasArguments(instructionType.getParameters(), errorConsumer);
+        super.checkRun(instructionType, errorConsumer);
     }
 }
