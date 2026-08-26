@@ -1,5 +1,6 @@
 package io.github.skippyall.minions.registration;
 
+import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.MinionItem;
 import io.github.skippyall.minions.module.MinionModule;
 import io.github.skippyall.minions.module.SpecialAbility;
@@ -43,6 +44,11 @@ public class MinionItems {
     public static final Item INTERACT_MODULE = registerModule(
             Identifier.fromNamespaceAndPath(MOD_ID, "interact_module"),
             List.of(Instructions.USE)
+    );
+
+    public static final Item EXPERIMENTAL_MODULE = registerModule(
+            Minions.id("experimental"),
+            List.of(Instructions.SWAP_ITEM, Instructions.CHAT, Instructions.ECHO)
     );
 
     public static final Item MOB_SPAWNING_MODULE = registerModule(

@@ -79,6 +79,17 @@ public class PaginatedList extends MinionsGui {
         return future;
     }
 
+    public static <T> CompletableFuture<T> createListFuture(MinionsGui parent, Component title, IdMap<T> list, Function<T, GuiElementBuilder> display) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        new PaginatedList(parent, title, list.size(), (i, me) -> display.apply(Objects.requireNonNull(list.byId(i)))
+                .setCallback(() -> {
+                    future.complete(Objects.requireNonNull(list.byId(i)));
+                    me.goBack();
+                })
+        );
+        return future;
+    }
+
     private void addItemsAndNavigation() {
         int slot = 9;
         for(int registryIndex = firstItemOf(page); registryIndex < Math.min(lastItemOf(page), size); registryIndex++) {

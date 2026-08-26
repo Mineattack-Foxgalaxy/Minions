@@ -1,57 +1,45 @@
 package io.github.skippyall.minions.block.miniontrigger;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.skippyall.minions.GlobalInstructionManager;
-import io.github.skippyall.minions.block.input.ValueProvider;
 import io.github.skippyall.minions.gui.instruction.ConfigureInstructionGui;
 import io.github.skippyall.minions.gui.instruction.InstructionGui;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.program.Context;
-import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.handler.ParameterValueList;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.ExecutingInstruction;
-import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.registration.ExecutionContext;
 import io.github.skippyall.minions.registration.MinionBlocks;
 import io.github.skippyall.minions.registration.ResolutionContext;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.OptionalInt;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class MinionTriggerBlockEntity extends BlockEntity {
     private final Context resolutionContext = Context.builder()
             .put(ResolutionContext.MINION_TRIGGER, this)
             .build();
 
-    private Map<String, Pair<BlockPos, Direction>> connectedParamBlocks = new HashMap<>();
-
     private @Nullable UUID minionUuid;
     private @Nullable ConfiguredInstruction instruction;
     private boolean running = false;
     private int instructionId = -1;
+
+    private @Nullable ConnectedBlockCache connectedBlockCache;
 
     public MinionTriggerBlockEntity(BlockPos pos, BlockState state) {
         super(MinionBlocks.MINION_TRIGGER_BE_TYPE, pos, state);
@@ -105,8 +93,7 @@ public class MinionTriggerBlockEntity extends BlockEntity {
     public void start() {
         if(instruction != null && minionUuid != null && level instanceof ServerLevel serverLevel) {
             if (serverLevel.getServer().getPlayerList().getPlayer(minionUuid) instanceof MinionFakePlayer minion) {
-                updateConnectedBlocks();
-                OptionalInt id = instruction.run(minion.getRuntime(), resolutionContext);
+                OptionalInt id = withConnectedBlockCache(cache -> instruction.run(minion.getRuntime(), resolutionContext));
                 if (id.isPresent()) {
                     running = true;
                     this.instructionId = id.getAsInt();
@@ -135,8 +122,15 @@ public class MinionTriggerBlockEntity extends BlockEntity {
 
     public void onStop() {
         running = false;
-        if(level != null) {
-            level.updateNeighbourForOutputSignal(worldPosition, MinionBlocks.MINION_TRIGGER);
+        if(level != null && level.getServer() != null) {
+            GlobalInstructionManager globalInstructionManager = GlobalInstructionManager.get(level.getServer());
+            ExecutingInstruction executingInstruction = globalInstructionManager.getInstruction(minionUuid, instructionId);
+            if(executingInstruction != null && executingInstruction.getReturnValues() != null) {
+                level.updateNeighbourForOutputSignal(worldPosition, MinionBlocks.MINION_TRIGGER);
+                instruction.onStop(executingInstruction.getReturnValues(), resolutionContext);
+                globalInstructionManager.removeInstruction(minionUuid, instructionId);
+                instructionId = -1;
+            }
         }
     }
 
@@ -148,84 +142,31 @@ public class MinionTriggerBlockEntity extends BlockEntity {
         }
     }
 
-    public void updateConnectedBlocks() {
-        Collection<Pair<BlockPos, Direction>> connectedBlocks = findConnectedBlocks(level, worldPosition, 16, MinionBlocks.TRIGGER_CONNECTOR);
-
-        Collection<String> requiredParams = new HashSet<>();
-        for(Parameter<?> parameter : instruction.getInstruction().getParameters()) {
-            requiredParams.add(parameter.name());
-        }
-
-        for(Pair<BlockPos, Direction> pos : connectedBlocks) {
-            String signText = findSignText(level, pos.getFirst());
-            if(signText != null && requiredParams.contains(signText)) {
-                connectedParamBlocks.put(signText, pos);
-                requiredParams.remove(signText);
-            }
-        }
+    public void executeWithConnectedBlockCache(Consumer<ConnectedBlockCache> callable) {
+        withConnectedBlockCache(cache -> {
+            callable.accept(cache);
+            return null;
+        });
     }
 
-    public @Nullable TypedValue<?> getValue(String paramName) {
-        Pair<BlockPos, Direction> pos = connectedParamBlocks.get(paramName);
-        if(pos != null && level != null) {
-            ValueProvider provider = ValueProvider.SIDED.find(level, pos.getFirst(), pos.getSecond());
-            if (provider != null) {
-                return provider.getValue();
-            }
+    public <T extends @Nullable Object> T withConnectedBlockCache(Function<ConnectedBlockCache, T> callable) {
+        boolean cached = true;
+        if(connectedBlockCache == null) {
+            connectedBlockCache = ConnectedBlockCache.create(level, worldPosition, instruction);
+            cached = false;
         }
-        return null;
-    }
-
-    public static @Nullable String findSignText(Level level, BlockPos pos) {
-        for(Direction dir : Direction.values()) {
-            BlockPos neighbor = pos.relative(dir);
-            BlockState state = level.getBlockState(neighbor);
-            if(state.getBlock() instanceof SignBlock block && level.getBlockEntity(neighbor) instanceof SignBlockEntity be) {
-                StringBuilder text = new StringBuilder();
-                for(Component partialText : be.getFrontText().getMessages(false)) {
-                    text.append(partialText.getString().strip());
-                }
-                return text.toString();
-            }
+        T result = callable.apply(connectedBlockCache);
+        if(!cached) {
+            connectedBlockCache = null;
         }
-        return null;
-    }
-
-    public static Collection<Pair<BlockPos, Direction>> findConnectedBlocks(Level level, BlockPos startPos, int range, Block connectorBlock) {
-        Collection<BlockPos> visitedPositions = new HashSet<>();
-        Collection<BlockPos> currentPositions = new ArrayList<>();
-        Collection<BlockPos> newPositions = new HashSet<>();
-        Collection<Pair<BlockPos, Direction>> foundPositions = new LinkedHashSet<>();
-
-        currentPositions.add(startPos);
-
-        for(int i = 0; i < range && !currentPositions.isEmpty(); i++) {
-            visitedPositions.addAll(currentPositions);
-
-            for(BlockPos pos : currentPositions) {
-                for(Direction dir : Direction.values()) {
-                    BlockPos newPos = pos.relative(dir);
-                    if(!visitedPositions.contains(newPos)) {
-                        if (level.getBlockState(newPos).getBlock() == connectorBlock) {
-                            newPositions.add(newPos);
-                        } else if (ValueProvider.SIDED.find(level, newPos, dir.getOpposite()) != null) {
-                            foundPositions.add(Pair.of(newPos, dir));
-                        }
-                    }
-                }
-            }
-            currentPositions.clear();
-            currentPositions.addAll(newPositions);
-            newPositions.clear();
-        }
-        return foundPositions;
+        return result;
     }
 
     @Override
     public void setLevel(Level level) {
         super.setLevel(level);
         if(level instanceof ServerLevel serverLevel) {
-            serverLevel.getServer().execute(this::checkStop);
+            checkStop();
         }
     }
 

@@ -2,6 +2,7 @@ package io.github.skippyall.minions.gui;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.registration.MinionRegistries;
+import io.github.skippyall.minions.util.RegistryUtil;
 import io.github.skippyall.minions.util.TranslationUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
@@ -20,6 +21,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.component.TooltipDisplay;
+import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedHashSet;
 import java.util.UUID;
@@ -62,6 +64,26 @@ public interface GuiDisplay {
         ItemStack stack = getDisplayStack(registry, element, manager);
         stack.set(DataComponents.CUSTOM_NAME, Component.translatable(TranslationUtil.getTranslationKey(element, registry)).withStyle(style -> style.withItalic(false).withColor(ChatFormatting.WHITE)));
         return stack;
+    }
+
+    static <T> ItemStack getDisplayStack(@Nullable T value, RegistryAccess access) {
+        Registry<T> registry = RegistryUtil.getRegistry(value);
+
+        if(registry != null && value != null) {
+            return getDisplayStack(registry, value, access);
+        } else {
+            return DEFAULT_DISPLAY.createItemStack();
+        }
+    }
+
+    static <T> ItemStack getDisplayStackWithName(@Nullable T value, RegistryAccess access) {
+        Registry<T> registry = RegistryUtil.getRegistry(value);
+
+        if(registry != null && value != null) {
+            return getDisplayStackWithName(registry, value, access);
+        } else {
+            return DEFAULT_DISPLAY.createItemStack();
+        }
     }
 
     ItemStackTemplate createItemStackTemplate();

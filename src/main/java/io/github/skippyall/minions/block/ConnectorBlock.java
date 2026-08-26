@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.block;
 
 import com.mojang.serialization.MapCodec;
-import io.github.skippyall.minions.block.input.ValueProvider;
+import io.github.skippyall.minions.block.input.BlockValueSupplier;
 import io.github.skippyall.minions.registration.MinionBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -47,7 +47,7 @@ public class ConnectorBlock extends PipeBlock {
         if(neighbourState.getBlock() == MinionBlocks.TRIGGER_CONNECTOR || neighbourState.getBlock() == MinionBlocks.MINION_TRIGGER) {
             return true;
         } else if (levelReader instanceof Level level) {
-            return ValueProvider.SIDED.find(level, neighbourPos, neighbourState, level.getBlockEntity(neighbourPos), directionToNeighbour.getOpposite()) != null;
+            return BlockValueSupplier.SIDED.find(level, neighbourPos, neighbourState, level.getBlockEntity(neighbourPos), directionToNeighbour.getOpposite()) != null;
         } else {
             return false;
         }

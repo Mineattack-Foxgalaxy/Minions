@@ -9,6 +9,7 @@ import io.github.skippyall.minions.program.InstructionRuntime;
 import io.github.skippyall.minions.program.handler.ParameterValueList;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.util.StringRepresentable;
+import org.jspecify.annotations.Nullable;
 
 public class ExecutingInstruction {
     public static final MapCodec<ExecutingInstruction> MAP_CODEC = MinionRegistries.INSTRUCTION_TYPES.byNameCodec().dispatchMap(
@@ -29,6 +30,8 @@ public class ExecutingInstruction {
 
     private final InstructionType instructionType;
     private final InstructionExecution execution;
+
+    private @Nullable ParameterValueList returnValues;
 
     private State state;
 
@@ -92,7 +95,12 @@ public class ExecutingInstruction {
         ParameterValueList list = new ParameterValueList();
         execution.stop(list, context);
         state = State.STOPPED;
+        returnValues = list;
         listeners.forEach(listener -> listener.onStop(context, list));
+    }
+
+    public @Nullable ParameterValueList getReturnValues() {
+        return returnValues;
     }
 
     public void addListener(Listener listener) {

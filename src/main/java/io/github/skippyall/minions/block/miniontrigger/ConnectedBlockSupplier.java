@@ -17,7 +17,9 @@ public class ConnectedBlockSupplier implements ValueSupplier {
         MinionTriggerBlockEntity be = context.getOrThrow(ResolutionContext.MINION_TRIGGER);
         String paramName = context.getOrThrow(ResolutionContext.PARAMETER_NAME);
 
-        return Result.ofNullable(be.getValue(paramName), Component.literal("What?"));
+        TypedValue<?> value = be.withConnectedBlockCache(cache -> cache.getConnectedBlockValue(paramName));
+
+        return Result.ofNullable(value, Component.translatable("value_supplier.minions.connected_block.no_block"));
     }
 
     @Override

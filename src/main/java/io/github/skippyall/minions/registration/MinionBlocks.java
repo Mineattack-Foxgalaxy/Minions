@@ -2,7 +2,7 @@ package io.github.skippyall.minions.registration;
 
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.block.ConnectorBlock;
-import io.github.skippyall.minions.block.input.ValueProvider;
+import io.github.skippyall.minions.block.input.BlockValueSupplier;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlock;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlockEntity;
 import io.github.skippyall.minions.program.value.TypedValue;
@@ -41,6 +41,10 @@ public class MinionBlocks {
             "analog_input",
             Block::new,
             BlockBehaviour.Properties.of()
+                    .noOcclusion()
+                    .instabreak()
+                    .sound(SoundType.STONE)
+                    .pushReaction(PushReaction.DESTROY)
     );
 
     public static final Block TRIGGER_CONNECTOR = registerBlockWithItem(
@@ -83,6 +87,6 @@ public class MinionBlocks {
     }
 
     public static void register() {
-        ValueProvider.registerBlock(MinionBlocks.ANALOG_INPUT, (level, pos, state, blockEntity, direction) -> new TypedValue<>((long) level.getBestNeighborSignal(pos), ValueTypes.LONG));
+        BlockValueSupplier.SIDED.registerForBlocks((level, pos, state, blockEntity, direction) -> () -> new TypedValue<>((long) level.getBestNeighborSignal(pos), ValueTypes.LONG), MinionBlocks.ANALOG_INPUT);
     }
 }

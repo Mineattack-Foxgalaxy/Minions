@@ -89,10 +89,6 @@ public class ConfiguredInstruction {
                 ParameterValueList resolvedArguments = arguments.resolve(resolutionContext, lastErrors::add);
                 if(lastErrors.isEmpty()) {
                     id = OptionalInt.of(runtime.run(instruction, resolvedArguments));
-
-                    for(ConfiguredInstructionListener listener : listeners) {
-                        listener.onRun(this, runtime, id.getAsInt());
-                    }
                 }
             } catch (Exception e) {
                 Minions.LOGGER.error("An error occurred while executing configured Instruction", e);
@@ -100,6 +96,10 @@ public class ConfiguredInstruction {
             }
         }
         return id;
+    }
+
+    public void onStop(ParameterValueList returnValues, Context resolutionContext) {
+        valueConsumers.consumeValues(returnValues, resolutionContext);
     }
 
     private void onSupplierChange(Parameter<?> parameter) {

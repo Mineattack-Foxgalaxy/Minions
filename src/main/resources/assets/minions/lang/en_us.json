@@ -51,6 +51,8 @@
 
   "minions.gui.instruction.converters": "Converters",
   "minions.gui.instruction.converters.cast": "Cast from %s to %s",
+  "minions.gui.instruction.converters.cast.input_type": "Input type",
+  "minions.gui.instruction.converters.cast.output_type": "Output type",
   "minions.gui.instruction.converter.title": "Configure Converter",
   "minions.gui.instruction.converter.type.title": "Select a Converter Type",
   "minions.gui.instruction.converter.data": "Converter Data",
@@ -93,6 +95,7 @@
 
   "value_supplier.minions.fixed": "Fixed Value",
   "value_supplier.minions.connected_block": "Connected Block",
+  "value_supplier.minions.connected_block.no_block": "No connected block found",
 
   "value_converter.minions.cast.display": "Cast from %s to %s",
   "value_converter.minions.cast.cast_failed": "Cast of value %s to %s failed",

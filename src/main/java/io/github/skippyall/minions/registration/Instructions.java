@@ -5,6 +5,8 @@ import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.minion.fakeplayer.EntityPlayerActionPack;
 import io.github.skippyall.minions.minion.program.instruction.ActionExecution;
+import io.github.skippyall.minions.minion.program.instruction.ChatExecution;
+import io.github.skippyall.minions.minion.program.instruction.EchoExecution;
 import io.github.skippyall.minions.minion.program.instruction.MineBlockExecution;
 import io.github.skippyall.minions.minion.program.instruction.inventory.SwapItemExecution;
 import io.github.skippyall.minions.minion.program.instruction.move.ContinuousWalkExecution;
@@ -80,6 +82,23 @@ public class Instructions {
             List.of(SwapItemExecution.FROM_SLOT, SwapItemExecution.FROM_SCREEN, SwapItemExecution.TO_SLOT, SwapItemExecution.TO_SCREEN),
             List.of(ExecutionContext.MINION_KEY),
             SwapItemExecution.CODEC
+    );
+
+    public static final InstructionType CHAT = register(
+            "chat",
+            ChatExecution::new,
+            List.of(ChatExecution.MESSAGE),
+            List.of(ExecutionContext.MINION_KEY),
+            ChatExecution.CODEC
+    );
+
+    public static final InstructionType ECHO = register(
+            "echo",
+            EchoExecution::new,
+            List.of(EchoExecution.MESSAGE),
+            List.of(EchoExecution.ECHO),
+            List.of(ExecutionContext.MINION_KEY),
+            ChatExecution.CODEC
     );
 
     private static InstructionType register(String id, Supplier<InstructionExecution> factory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters, Collection<Context.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {

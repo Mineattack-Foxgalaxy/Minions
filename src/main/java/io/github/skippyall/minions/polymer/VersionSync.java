@@ -14,7 +14,7 @@ public class VersionSync {
     public static final int NETWORK_VERSION = 1;
 
     public static boolean isOnClient(@Nullable PacketContext context) {
-        if(context != null && context.get(PacketContext.CONNECTION).getPacketListener() instanceof ServerGamePacketListenerImpl gamePacketListener) {
+        if(context != null && context.orElseThrow(PacketContext.CONNECTION).getPacketListener() instanceof ServerGamePacketListenerImpl gamePacketListener) {
             return isOnClient(gamePacketListener);
         }
         return false;

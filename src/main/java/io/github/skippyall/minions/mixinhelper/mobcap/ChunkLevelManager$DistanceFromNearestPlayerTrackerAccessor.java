@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.mixinhelper.antimobcap;
+package io.github.skippyall.minions.mixinhelper.mobcap;
 
 public interface ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor {
     void minions$markAsMinionless();

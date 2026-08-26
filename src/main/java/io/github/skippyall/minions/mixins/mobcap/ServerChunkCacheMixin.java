@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.mixins.mobcap;
 
-import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
-import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManagerAccessor;
+import io.github.skippyall.minions.mixinhelper.mobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
+import io.github.skippyall.minions.mixinhelper.mobcap.ChunkLevelManagerAccessor;
 import net.minecraft.server.level.DistanceManager;
 import net.minecraft.server.level.ServerChunkCache;
 import org.spongepowered.asm.mixin.Final;

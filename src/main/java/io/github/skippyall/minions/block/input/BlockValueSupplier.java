@@ -11,8 +11,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jspecify.annotations.Nullable;
 
-public interface ValueProvider {
-    BlockApiLookup<ValueProvider, @Nullable Direction> SIDED = BlockApiLookup.get(Minions.id("value_provider"), ValueProvider.class, Direction.class);
+public interface BlockValueSupplier {
+    BlockApiLookup<BlockValueSupplier, @Nullable Direction> SIDED = BlockApiLookup.get(Minions.id("value_provider"), BlockValueSupplier.class, Direction.class);
 
     TypedValue<?> getValue();
 
@@ -20,9 +20,9 @@ public interface ValueProvider {
         SIDED.registerForBlocks(provider, block);
     }
 
-    interface BlockValueProvider extends BlockApiLookup.BlockApiProvider<ValueProvider, @Nullable Direction> {
+    interface BlockValueProvider extends BlockApiLookup.BlockApiProvider<BlockValueSupplier, @Nullable Direction> {
         @Override
-        default @Nullable ValueProvider find(Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, @Nullable Direction context) {
+        default @Nullable BlockValueSupplier find(Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, @Nullable Direction context) {
             return () -> getValue(level, pos, state, blockEntity, context);
         }
 

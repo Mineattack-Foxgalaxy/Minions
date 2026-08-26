@@ -8,6 +8,7 @@ import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstructionListener;
+import io.github.skippyall.minions.registration.ResolutionContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
@@ -49,6 +50,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
                             .thenAccept((confirmed) -> {
                                 if (confirmed) {
                                     onDelete.run();
+                                    instruction.onInstructionRemove();
                                     goBack();
                                 }
                             })
@@ -68,19 +70,29 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
     }
 
     @Override
+    protected void reopen() {
+        gui.open();
+    }
+
+    @Override
     protected void closeBacking() {
         gui.close();
         instruction.removeListener(this);
     }
 
     @Override
-    public void onStop(ConfiguredInstruction instruction) {
-        //updateRunSlot();
+    public void onSupplierChange(ConfiguredInstruction instruction, Parameter<?> parameter) {
+        updateSuppliers();
     }
 
     @Override
-    public void onSupplierChange(ConfiguredInstruction instruction, Parameter<?> parameter) {
-        updateSuppliers();
+    public void onConsumerChange(ConfiguredInstruction instruction, Parameter<?> parameter) {
+        updateConsumers();
+    }
+
+    @Override
+    public void onInstructionRemove(ConfiguredInstruction instruction) {
+        goBack();
     }
 
     private void updateCompileErrorSlot() {
@@ -113,7 +125,13 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
         int slot = 12;
         for(Parameter<?> parameter : instruction.getInstruction().getParameters().reversed()) {
             gui.setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getHandler(parameter), viewer.registryAccess())
-                    .setCallback(() -> new ValueSupplierGui(this, instruction, parameter, resolutionContext))
+                    .setCallback(() -> {
+                        Context newContext = resolutionContext.toBuilder()
+                                .put(ResolutionContext.PARAMETER_NAME, parameter.name())
+                                .build();
+
+                        new ValueSupplierGui(this, instruction, parameter, newContext);
+                    })
             );
             slot--;
         }
@@ -123,7 +141,12 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
         int slot = 14;
         for(Parameter<?> parameter : instruction.getInstruction().getReturnParameters()) {
             gui.setSlot(slot, InstructionGui.createParameterElement(parameter, instruction.getArguments().getHandler(parameter), viewer.registryAccess())
-                    .setCallback(() -> new ValueConsumerGui(this, instruction, parameter, resolutionContext))
+                    .setCallback(() -> {
+                        Context newContext = resolutionContext.toBuilder()
+                                .put(ResolutionContext.PARAMETER_NAME, parameter.name())
+                                .build();
+                        new ValueConsumerGui(this, instruction, parameter, newContext);
+                    })
             );
             slot++;
         }

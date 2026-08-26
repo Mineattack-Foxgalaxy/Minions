@@ -1,8 +1,8 @@
 package io.github.skippyall.minions.mixins.mobcap;
 
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
-import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
-import io.github.skippyall.minions.mixinhelper.antimobcap.ChunkLevelManagerAccessor;
+import io.github.skippyall.minions.mixinhelper.mobcap.ChunkLevelManager$DistanceFromNearestPlayerTrackerAccessor;
+import io.github.skippyall.minions.mixinhelper.mobcap.ChunkLevelManagerAccessor;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.server.level.DistanceManager;

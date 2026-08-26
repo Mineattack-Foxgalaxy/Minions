@@ -45,6 +45,7 @@ public class PolymerRegistration {
         registerSimpleItemOverlay(MinionItems.MOVE_MODULE, Items.IRON_BOOTS);
         registerSimpleItemOverlay(MinionItems.ATTACK_MODULE, Items.IRON_PICKAXE);
         registerSimpleItemOverlay(MinionItems.INTERACT_MODULE, Items.LEVER);
+        registerSimpleItemOverlay(MinionItems.EXPERIMENTAL_MODULE, Items.TNT);
         registerSimpleItemOverlay(MinionItems.MOB_SPAWNING_MODULE, Items.SPAWNER);
 
         PolymerComponent.registerDataComponent(MinionComponentTypes.MINION_DATA, MinionComponentTypes.REFERENCE, MinionComponentTypes.MODULE);

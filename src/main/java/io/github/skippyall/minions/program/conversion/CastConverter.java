@@ -2,7 +2,10 @@ package io.github.skippyall.minions.program.conversion;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import eu.pb4.sgui.api.elements.GuiElementBuilder;
+import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.gui.PaginatedList;
 import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.value.ValueType;
@@ -67,7 +70,13 @@ public class CastConverter<F,T> implements ValueConverter<F,T> {
 
         @Override
         public <F,T> CompletableFuture<CastConverter<?,?>> configure(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter<?, ?> old) {
-            return CompletableFuture.completedFuture(new CastConverter<>(from, to));
+            return PaginatedList.createListFuture(parent, Component.translatable("minions.gui.instruction.converters.cast.input_type"), MinionRegistries.VALUE_TYPES, type -> new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_TYPES, type, parent.viewer.registryAccess())))
+                    .thenCompose(inputType ->
+                        PaginatedList.createListFuture(parent, Component.translatable("minions.gui.instruction.converters.cast.output_type"), MinionRegistries.VALUE_TYPES, type -> new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_TYPES, type, parent.viewer.registryAccess())))
+                                .thenApply(outputType ->
+                                    new CastConverter<>(inputType, outputType)
+                                )
+                    );
         }
     }
 }

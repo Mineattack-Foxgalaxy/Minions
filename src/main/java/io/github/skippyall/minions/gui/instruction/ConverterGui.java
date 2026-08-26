@@ -116,7 +116,7 @@ public class ConverterGui extends MinionsGui {
     }
 
     public static GuiElementBuilder createConverterElement(ValueConverter<?,?> converter, RegistryAccess manager) {
-        GuiElementBuilder builder = new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_CONVERTER_TYPES, converter.getType(), manager));
+        GuiElementBuilder builder = new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_CONVERTER_TYPES, converter.getType(), manager));
         builder.addLoreLine(converter.getDisplayText());
         return builder;
     }

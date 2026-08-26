@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * Defines the semantics of an instruction and creates {@link InstructionExecution}
  * InstructionTypes can be registered to {@link MinionRegistries#INSTRUCTION_TYPES}
  */
-public class InstructionType {
+public final class InstructionType {
     private final List<Parameter<?>> parameters;
     private final List<Parameter<?>> returnParameters;
     private final List<Context.Key<?>> contextKeys;
@@ -38,8 +38,26 @@ public class InstructionType {
         return parameters;
     }
 
+    public boolean hasParameter(String name) {
+        for(Parameter<?> parameter : parameters) {
+            if(parameter.name().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<Parameter<?>> getReturnParameters() {
         return returnParameters;
+    }
+
+    public boolean hasReturnParameter(String name) {
+        for(Parameter<?> parameter : returnParameters) {
+            if(parameter.name().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<Context.Key<?>> getContextKeys() {

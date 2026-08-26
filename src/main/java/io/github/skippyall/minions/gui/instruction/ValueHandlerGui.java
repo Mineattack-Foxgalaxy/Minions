@@ -2,6 +2,7 @@ package io.github.skippyall.minions.gui.instruction;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.PaginatedList;
 import io.github.skippyall.minions.program.Context;
@@ -10,7 +11,6 @@ import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.handler.ValueHandler;
 import io.github.skippyall.minions.program.handler.ValueHandlerList;
 import io.github.skippyall.minions.program.handler.ValueHandlerType;
-import io.github.skippyall.minions.program.handler.supplier.ValueSupplierType;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
@@ -81,31 +81,39 @@ public abstract class ValueHandlerGui<H extends ValueHandler<H>> extends Minions
 
     private void updateTypeConfiguration() {
         ItemStack displayStack;
+        Component translation;
         if(argumentType != null) {
-            displayStack = argumentType.getDisplayStack(viewer.registryAccess());
+            displayStack = GuiDisplay.getDisplayStack(argumentType, viewer.registryAccess());
+            translation = TranslationUtil.getTranslation(argumentType);
         } else {
             displayStack = new ItemStack(Items.BARRIER);
+            translation = Component.translatable("minions.gui.instruction.argument.configure.type.title");
         }
 
         gui.setSlot(3, new GuiElementBuilder(displayStack)
                 .setName(Component.translatable("minions.gui.instruction.argument.configure.type"))
-                .addLoreLine(argumentType.getTranslation())
+                .addLoreLine(translation)
                 .setCallback(this::selectArgumentType)
         );
     }
 
     private void updateArgumentConfiguration() {
-        if(argumentType != null && !(argumentType instanceof ValueSupplierType.Singleton)) {
-            gui.setSlot(4, new GuiElementBuilder(Items.STRUCTURE_VOID)
-                    .setName(Component.translatable("minions.gui.instruction.argument.configure.data"))
-                    .addLoreLine(getArgument() != null ? getArgument().getDisplayText() : Component.translatable("minions.gui.not_set"))
-                    .setCallback(() -> {
-                        if (argumentType != null) {
-                            argumentType.openConfiguration(this, parameter.type(), getArgument())
-                                    .thenAccept(this::setArgument);
-                        }
-                    })
-            );
+        if(argumentType != null) {
+            if(!(argumentType instanceof ValueHandlerType.Singleton)) {
+                gui.setSlot(4, new GuiElementBuilder(Items.STRUCTURE_VOID)
+                        .setName(Component.translatable("minions.gui.instruction.argument.configure.data"))
+                        .addLoreLine(getArgument() != null ? getArgument().getDisplayText() : Component.translatable("minions.gui.not_set"))
+                        .setCallback(() -> {
+                            if (argumentType != null) {
+                                argumentType.openConfiguration(this, parameter.type(), getArgument())
+                                        .thenAccept(this::setArgument);
+                            }
+                        })
+                );
+            } else if(entry == null) {
+                //noinspection unchecked (Type lost by instanceof)
+                setArgument(((ValueHandlerType.Singleton<H>) argumentType).getHandler());
+            }
         }
     }
 
@@ -149,7 +157,7 @@ public abstract class ValueHandlerGui<H extends ValueHandler<H>> extends Minions
 
     public void selectArgumentType() {
         PaginatedList.createList(this, Component.translatable("minions.gui.instruction.argument.configure.type.title"), getTypeRegistry(), (type, me) ->
-                new GuiElementBuilder(type.getDisplayStack(viewer.registryAccess()))
+                new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(type, viewer.registryAccess()))
                         .setCallback(() -> {
                             setArgumentType(type);
                             me.goBack();
