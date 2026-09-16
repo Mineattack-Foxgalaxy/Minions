@@ -6,7 +6,6 @@ import io.github.skippyall.minions.program.conversion.ConverterList;
 import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.handler.ParameterValueList;
 import io.github.skippyall.minions.program.handler.ValueHandlerList;
-import io.github.skippyall.minions.program.value.TypedValue;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -45,7 +44,7 @@ public class ValueConsumerList extends ValueHandlerList<ValueConsumer, Configure
 
     public void consumeValues(ParameterValueList list, Context context) {
         for(ConfiguredValueConsumer<?> consumer : arguments.values()) {
-            consumer.consumeValue(TypedValue.of(list.getValue(consumer.getParameter()), consumer.getParameter().type()), context);
+            consumer.consumeValue(list.getTypedValue(consumer.getParameter()), context);
         }
     }
 }

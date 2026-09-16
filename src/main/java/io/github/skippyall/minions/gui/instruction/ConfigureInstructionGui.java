@@ -51,7 +51,6 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
                                 if (confirmed) {
                                     onDelete.run();
                                     instruction.onInstructionRemove();
-                                    goBack();
                                 }
                             })
                     )
@@ -61,6 +60,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
         gui.setSlot(8, backButton());
 
         updateSuppliers();
+        updateConsumers();
 
         gui.setSlot(13, InstructionGui.createInstructionElement(instruction.getInstruction(), viewer.registryAccess()));
 

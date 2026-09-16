@@ -1,6 +1,8 @@
 package io.github.skippyall.minions.program.conversion;
 
+import io.github.skippyall.minions.gui.input.Result;
 import io.github.skippyall.minions.program.value.ValueType;
+import net.minecraft.network.chat.Component;
 
 public class Cast<F, T> {
     private final ValueType<F> from;
@@ -23,7 +25,7 @@ public class Cast<F, T> {
         this.canFail = canFail;
     }
 
-    public T cast(F from) {
+    public Result<T, Component> cast(F from) {
         return caster.cast(from);
     }
 
@@ -74,6 +76,6 @@ public class Cast<F, T> {
 
     @FunctionalInterface
     public interface Caster<F, T> {
-        T cast(F from);
+        Result<T, Component> cast(F from);
     }
 }

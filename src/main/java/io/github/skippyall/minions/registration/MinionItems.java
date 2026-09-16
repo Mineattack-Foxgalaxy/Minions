@@ -46,9 +46,14 @@ public class MinionItems {
             List.of(Instructions.USE)
     );
 
+    public static final Item INVENTORY_MODULE = registerModule(
+            Identifier.fromNamespaceAndPath(MOD_ID, "inventory_module"),
+            List.of(Instructions.SWAP_ITEM, Instructions.GET_STACK, Instructions.FIND_ITEM)
+    );
+
     public static final Item EXPERIMENTAL_MODULE = registerModule(
             Minions.id("experimental"),
-            List.of(Instructions.SWAP_ITEM, Instructions.CHAT, Instructions.ECHO)
+            List.of(Instructions.CHAT, Instructions.ECHO, Instructions.GET_BLOCK)
     );
 
     public static final Item MOB_SPAWNING_MODULE = registerModule(

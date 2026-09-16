@@ -7,7 +7,6 @@ import io.github.skippyall.minions.program.handler.ParameterValueList;
  * Responsible for executing instructions.
  * When an instruction is executed:
  * <li>A new instance is created using the factory</li>
- * <li>{@link InstructionExecution#readArguments(ParameterValueList, Context) readFromParameters} is called</li>
  * <li>{@link InstructionExecution#start(Context) start} is called</li>
  */
 public interface InstructionExecution {
@@ -37,16 +36,6 @@ public interface InstructionExecution {
      * This should undo changes to the minion unless they are supposed to be permanent.
      */
     default void stop(ParameterValueList list, Context context) {}
-
-    /**
-     * Initializes the execution with its parameters. The parameters must be defined by the InstructionType
-     */
-    void readArguments(ParameterValueList arguments, Context context);
-
-    interface Argumentless extends InstructionExecution {
-        @Override
-        default void readArguments(ParameterValueList arguments, Context context) {}
-    }
 
     interface Continuous extends InstructionExecution {
         @Override

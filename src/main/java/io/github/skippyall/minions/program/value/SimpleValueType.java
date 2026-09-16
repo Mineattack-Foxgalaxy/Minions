@@ -2,6 +2,7 @@ package io.github.skippyall.minions.program.value;
 
 import com.mojang.serialization.Codec;
 import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
@@ -26,5 +27,10 @@ public record SimpleValueType<T>(Codec<T> codec, T defaultValue, Function<Object
     @Override
     public @Nullable T checkedCast(Object value) {
         return checkedCast.apply(value);
+    }
+
+    @Override
+    public String toString() {
+        return MinionRegistries.VALUE_TYPES.getKey(this).toString();
     }
 }

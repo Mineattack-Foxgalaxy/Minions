@@ -24,11 +24,14 @@ public class WalkExecution implements InstructionExecution {
     private double totalBlocksToMove;
     private double blocksMoved;
 
-    public WalkExecution() {}
-
     public WalkExecution(double totalBlocksToMove, double blocksMoved) {
         this.totalBlocksToMove = totalBlocksToMove;
         this.blocksMoved = blocksMoved;
+    }
+
+    public WalkExecution(ParameterValueList parameters, Context context) {
+        totalBlocksToMove = parameters.getValue(blocksToMoveParam).floatValue();
+        blocksMoved = 0;
     }
 
     @Override
@@ -42,11 +45,5 @@ public class WalkExecution implements InstructionExecution {
     @Override
     public boolean isDone(Context context) {
         return totalBlocksToMove - blocksMoved < ACCURACY;
-    }
-
-    @Override
-    public void readArguments(ParameterValueList parameters, Context context) {
-        totalBlocksToMove = parameters.getValue(blocksToMoveParam).floatValue();
-        blocksMoved = 0;
     }
 }

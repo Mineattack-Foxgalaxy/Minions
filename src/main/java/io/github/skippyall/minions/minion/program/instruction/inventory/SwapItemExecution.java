@@ -29,6 +29,17 @@ public class SwapItemExecution implements InstructionExecution {
 
     private ItemStack cursor = ItemStack.EMPTY;
 
+    public SwapItemExecution(ParameterValueList arguments, Context context) {
+        fromSlot = Math.clamp(arguments.getValue(FROM_SLOT), 0, Integer.MAX_VALUE);
+        fromScreen = arguments.getValue(FROM_SCREEN);
+        toSlot = Math.clamp(arguments.getValue(TO_SLOT), 0, Integer.MAX_VALUE);
+        toScreen = arguments.getValue(TO_SCREEN);
+    }
+
+    public SwapItemExecution() {
+
+    }
+
     @Override
     public void start(Context context) {
         MinionFakePlayer minion = context.getOrThrow(ExecutionContext.MINION_KEY);
@@ -54,7 +65,7 @@ public class SwapItemExecution implements InstructionExecution {
         minion.getInventory().placeItemBackInInventory(cursor);
     }
 
-    private AbstractContainerMenu getScreen(MinionFakePlayer minion, boolean screen) {
+    public static AbstractContainerMenu getScreen(MinionFakePlayer minion, boolean screen) {
         if(screen) {
             return minion.containerMenu;
         } else  {
@@ -62,15 +73,15 @@ public class SwapItemExecution implements InstructionExecution {
         }
     }
 
-    private boolean checkBounds(MinionFakePlayer minion, int slot, boolean screen) {
+    public static boolean checkBounds(MinionFakePlayer minion, int slot, boolean screen) {
         return slot >= 0 && slot < getScreen(minion, screen).slots.size();
     }
 
-    private ItemStack getStack(MinionFakePlayer minion, int slot, boolean screen) {
+    public static ItemStack getStack(MinionFakePlayer minion, int slot, boolean screen) {
         return getScreen(minion, screen).getSlot(slot).getItem();
     }
 
-    private boolean canExchange(MinionFakePlayer minion, int slotIndex, boolean screen, ItemStack newStack) {
+    public static boolean canExchange(MinionFakePlayer minion, int slotIndex, boolean screen, ItemStack newStack) {
         AbstractContainerMenu screenHandler = getScreen(minion, screen);
         Slot slot = screenHandler.getSlot(slotIndex);
         if(!slot.getItem().isEmpty() && !slot.mayPickup(minion)) {
@@ -91,13 +102,5 @@ public class SwapItemExecution implements InstructionExecution {
     @Override
     public boolean isDone(Context context) {
         return true;
-    }
-
-    @Override
-    public void readArguments(ParameterValueList arguments, Context context) {
-        fromSlot = Math.clamp(arguments.getValue(FROM_SLOT), 0, Integer.MAX_VALUE);
-        fromScreen = arguments.getValue(FROM_SCREEN);
-        toSlot = Math.clamp(arguments.getValue(TO_SLOT), 0, Integer.MAX_VALUE);
-        toScreen = arguments.getValue(TO_SCREEN);
     }
 }

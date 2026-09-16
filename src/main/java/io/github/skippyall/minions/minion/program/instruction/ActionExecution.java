@@ -38,7 +38,4 @@ public class ActionExecution implements InstructionExecution.Continuous {
     public void resume(Context context) {
         context.getOrThrow(ExecutionContext.MINION_KEY).getMinionActionPack().start(action, EntityPlayerActionPack.Action.continuous());
     }
-
-    @Override
-    public void readArguments(ParameterValueList parameters, Context context) {}
 }

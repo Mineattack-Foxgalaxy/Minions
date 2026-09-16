@@ -14,10 +14,12 @@ public class EchoExecution implements InstructionExecution {
 
     private String message;
 
-    public EchoExecution() {}
-
     public EchoExecution(String message) {
         this.message = message;
+    }
+
+    public EchoExecution(ParameterValueList arguments, Context context) {
+        message = arguments.getValue(MESSAGE);
     }
 
     @Override
@@ -28,10 +30,5 @@ public class EchoExecution implements InstructionExecution {
     @Override
     public void stop(ParameterValueList list, Context context) {
         list.setValue(ECHO, message);
-    }
-
-    @Override
-    public void readArguments(ParameterValueList arguments, Context context) {
-        message = arguments.getValue(MESSAGE);
     }
 }

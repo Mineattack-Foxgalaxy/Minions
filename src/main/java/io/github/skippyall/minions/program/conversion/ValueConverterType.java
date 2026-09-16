@@ -12,5 +12,5 @@ public interface ValueConverterType<C extends ValueConverter<?,?>> {
 
     boolean isSupportedConversion(ValueType<?> from, ValueType<?> to);
 
-    <F,T> CompletableFuture<C> configure(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter<?,?> old);
+    <F,T> CompletableFuture<? extends C> configure(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter<?,?> old);
 }

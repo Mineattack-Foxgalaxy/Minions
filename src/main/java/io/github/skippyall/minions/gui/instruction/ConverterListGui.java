@@ -73,7 +73,7 @@ public class ConverterListGui extends MinionsGui {
         } else if(converterIndex == converters.getConverters().size()) {
             return outputType;
         } else {
-            throw new IndexOutOfBoundsException("Can't get input type of converter " + converterIndex + ", list size " + converters.getConverters().size());
+            throw new IndexOutOfBoundsException("Can't get io type of converter " + converterIndex + ", list size " + converters.getConverters().size());
         }
     }
 
@@ -95,7 +95,7 @@ public class ConverterListGui extends MinionsGui {
         int lastConverter = Math.min(5, converters.getConverters().size() + 2 - page * 4);
         for(int i = 0; i < lastConverter; i++) {
             //Each page has 5 converters, but the last is displayed on the next page as well
-            //The input element index is -1, the output element index is the list size
+            //The io element index is -1, the output element index is the list size
             int converterIndex = page * 4 + i - 1;
             int slot = 9 + 2 * i;
 

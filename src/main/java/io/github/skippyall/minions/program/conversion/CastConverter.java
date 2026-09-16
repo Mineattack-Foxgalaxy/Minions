@@ -34,7 +34,7 @@ public class CastConverter<F,T> implements ValueConverter<F,T> {
 
     @Override
     public Result<T, Component> convert(F fromValue) {
-        return Casts.castOrError(new TypedValue<>(fromValue, from), to);
+        return Casts.cast(new TypedValue<>(fromValue, from), to);
     }
 
     @Override

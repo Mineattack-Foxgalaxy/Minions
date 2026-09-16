@@ -36,7 +36,7 @@ public class MinionTriggerBlock extends Block implements EntityBlock {
 
     public MinionTriggerBlock(Properties settings) {
         super(settings);
-        registerDefaultState(defaultBlockState().setValue(POWERED, false));
+        registerDefaultState(getStateDefinition().any().setValue(POWERED, false));
     }
 
     @Override

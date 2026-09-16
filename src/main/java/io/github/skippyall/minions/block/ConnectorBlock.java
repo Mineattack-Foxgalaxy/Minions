@@ -1,7 +1,8 @@
 package io.github.skippyall.minions.block;
 
 import com.mojang.serialization.MapCodec;
-import io.github.skippyall.minions.block.input.BlockValueSupplier;
+import io.github.skippyall.minions.block.io.BlockValueConsumer;
+import io.github.skippyall.minions.block.io.BlockValueSupplier;
 import io.github.skippyall.minions.registration.MinionBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -11,12 +12,12 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PipeBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public class ConnectorBlock extends PipeBlock {
-
     public ConnectorBlock(Properties properties) {
         super(10F, properties);
         this.registerDefaultState(
@@ -47,7 +48,9 @@ public class ConnectorBlock extends PipeBlock {
         if(neighbourState.getBlock() == MinionBlocks.TRIGGER_CONNECTOR || neighbourState.getBlock() == MinionBlocks.MINION_TRIGGER) {
             return true;
         } else if (levelReader instanceof Level level) {
-            return BlockValueSupplier.SIDED.find(level, neighbourPos, neighbourState, level.getBlockEntity(neighbourPos), directionToNeighbour.getOpposite()) != null;
+            BlockEntity be = level.getBlockEntity(neighbourPos);
+            return BlockValueSupplier.SIDED.find(level, neighbourPos, neighbourState, be, directionToNeighbour.getOpposite()) != null ||
+                    BlockValueConsumer.SIDED.find(level, neighbourPos, neighbourState, be, directionToNeighbour.getOpposite()) != null;
         } else {
             return false;
         }

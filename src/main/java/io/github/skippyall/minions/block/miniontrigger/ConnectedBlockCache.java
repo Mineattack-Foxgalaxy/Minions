@@ -1,7 +1,7 @@
 package io.github.skippyall.minions.block.miniontrigger;
 
-import io.github.skippyall.minions.block.input.BlockValueConsumer;
-import io.github.skippyall.minions.block.input.BlockValueSupplier;
+import io.github.skippyall.minions.block.io.BlockValueConsumer;
+import io.github.skippyall.minions.block.io.BlockValueSupplier;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
 import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.value.ValueType;

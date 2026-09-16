@@ -5,6 +5,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class CodecUtil {
     public static <T, S extends T> Codec<T> checkedSuperclassCodec(Codec<S> subclassCodec, Class<S> subclass) {
         return new Codec<>() {
@@ -23,5 +28,41 @@ public class CodecUtil {
                 }
             }
         };
+    }
+
+    public static <K, V> Codec<Map<K, V>> createMapAsListCodec(Codec<K> key, Codec<V> value, String keyName, String valueName) {
+        return Codec.mapPair(
+                key.fieldOf(keyName),
+                value.fieldOf(valueName)
+        ).codec().listOf().comapFlatMap(
+                list -> {
+                    Map<K, V> map = new LinkedHashMap<>();
+                    List<Pair<K, V>> missingKeys = new ArrayList<>();
+                    for(Pair<K, V> pair : list) {
+                        V previous = map.putIfAbsent(pair.getFirst(), pair.getSecond());
+                        if(previous != null) {
+                            missingKeys.add(pair);
+                        }
+                    }
+                    if(missingKeys.isEmpty()) {
+                        return DataResult.success(map);
+                    } else {
+                        return DataResult.error(() -> {
+                            StringBuilder builder = new StringBuilder("Pairs could not be added due to duplicate keys: ");
+                            for(Pair<K, V> pair : missingKeys) {
+                                builder.append(pair);
+                            }
+                            return builder.toString();
+                        });
+                    }
+                }, map -> {
+                    List<Pair<K, V>> list = new ArrayList<>();
+
+                    for(Map.Entry<K, V> entry : map.entrySet()) {
+                        list.add(Pair.of(entry.getKey(), entry.getValue()));
+                    }
+                    return list;
+                }
+        );
     }
 }

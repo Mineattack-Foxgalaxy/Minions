@@ -8,7 +8,7 @@ import io.github.skippyall.minions.program.instruction.InstructionExecution;
 import io.github.skippyall.minions.registration.ExecutionContext;
 import net.minecraft.world.entity.MoverType;
 
-public class ContinuousWalkExecution implements InstructionExecution.Continuous, InstructionExecution.Argumentless {
+public class ContinuousWalkExecution implements InstructionExecution.Continuous {
     public static final Codec<ContinuousWalkExecution> CODEC = MapCodec.unitCodec(ContinuousWalkExecution::new);
 
     @Override

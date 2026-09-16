@@ -16,14 +16,11 @@ public class TurnVectorExecution extends AbstractTurnExecution {
     public static final Parameter<Double> Y = new Parameter<>("y", ValueTypes.DOUBLE);
     public static final Parameter<Double> Z = new Parameter<>("z", ValueTypes.DOUBLE);
 
-    public TurnVectorExecution() {}
-
     public TurnVectorExecution(float targetYaw, float targetPitch) {
         super(targetYaw, targetPitch);
     }
 
-    @Override
-    public void readArguments(ParameterValueList arguments, Context context) {
+    public TurnVectorExecution(ParameterValueList arguments, Context context) {
         double x = arguments.getValue(X);
         double y = arguments.getValue(Y);
         double z = arguments.getValue(Z);

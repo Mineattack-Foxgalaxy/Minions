@@ -1,4 +1,4 @@
-package io.github.skippyall.minions.block.input;
+package io.github.skippyall.minions.block.io;
 
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.program.value.TypedValue;

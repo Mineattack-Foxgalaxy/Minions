@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -24,6 +25,14 @@ public record TypedValue<T>(T value, ValueType<T> type) {
 
     public static <T> TypedValue<T> of(Object o, ValueType<T> type) {
         return new TypedValue<T>(Objects.requireNonNull(type.checkedCast(o)), type);
+    }
+
+    public <U> @Nullable TypedValue<U> checkedCast(ValueType<U> valueType) {
+        if(valueType == type) {
+            return TypedValue.of(value, valueType);
+        } else {
+            return null;
+        }
     }
 
     public Component getDisplayText() {

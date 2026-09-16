@@ -20,10 +20,12 @@ public class ChatExecution implements InstructionExecution {
 
     private String message;
 
-    public ChatExecution() {}
-
     public ChatExecution(String message) {
         this.message = message;
+    }
+
+    public ChatExecution(ParameterValueList arguments, Context context) {
+        message = arguments.getValue(MESSAGE);
     }
 
     @Override
@@ -43,10 +45,5 @@ public class ChatExecution implements InstructionExecution {
     @Override
     public boolean isDone(Context context) {
         return true;
-    }
-
-    @Override
-    public void readArguments(ParameterValueList arguments, Context context) {
-        message = arguments.getValue(MESSAGE);
     }
 }

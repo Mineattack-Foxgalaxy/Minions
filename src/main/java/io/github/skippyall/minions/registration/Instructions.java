@@ -8,11 +8,14 @@ import io.github.skippyall.minions.minion.program.instruction.ActionExecution;
 import io.github.skippyall.minions.minion.program.instruction.ChatExecution;
 import io.github.skippyall.minions.minion.program.instruction.EchoExecution;
 import io.github.skippyall.minions.minion.program.instruction.MineBlockExecution;
+import io.github.skippyall.minions.minion.program.instruction.inventory.FindItemExecution;
+import io.github.skippyall.minions.minion.program.instruction.inventory.GetStackExecution;
 import io.github.skippyall.minions.minion.program.instruction.inventory.SwapItemExecution;
 import io.github.skippyall.minions.minion.program.instruction.move.ContinuousWalkExecution;
 import io.github.skippyall.minions.minion.program.instruction.move.TurnExecution;
 import io.github.skippyall.minions.minion.program.instruction.move.TurnVectorExecution;
 import io.github.skippyall.minions.minion.program.instruction.move.WalkExecution;
+import io.github.skippyall.minions.minion.program.instruction.see.GetBlockExecution;
 import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.instruction.InstructionExecution;
@@ -22,7 +25,6 @@ import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class Instructions {
     public static final InstructionType WALK = register(
@@ -34,7 +36,7 @@ public class Instructions {
     );
     public static final InstructionType WALK_CONTINUOUS = register(
             "walk_continuous",
-            ContinuousWalkExecution::new,
+            (params, context) -> new ContinuousWalkExecution(),
             List.of(ExecutionContext.MINION_KEY),
             ContinuousWalkExecution.CODEC
     );
@@ -57,21 +59,21 @@ public class Instructions {
 
     public static final InstructionType ATTACK = register(
             "attack",
-            () -> new ActionExecution(EntityPlayerActionPack.ActionType.ATTACK),
+            (params, context) -> new ActionExecution(EntityPlayerActionPack.ActionType.ATTACK),
             List.of(ExecutionContext.MINION_KEY),
             MapCodec.unitCodec(() -> new ActionExecution(EntityPlayerActionPack.ActionType.ATTACK))
     );
 
     public static final InstructionType MINE_BLOCK = register(
             "mine_block",
-            MineBlockExecution::new,
+            (params, context) -> new MineBlockExecution(),
             List.of(ExecutionContext.MINION_KEY),
             MineBlockExecution.CODEC
     );
 
     public static final InstructionType USE = register(
             "use",
-            () -> new ActionExecution(EntityPlayerActionPack.ActionType.USE),
+            (params, context) -> new ActionExecution(EntityPlayerActionPack.ActionType.USE),
             List.of(ExecutionContext.MINION_KEY),
             MapCodec.unitCodec(() -> new ActionExecution(EntityPlayerActionPack.ActionType.USE))
     );
@@ -82,6 +84,33 @@ public class Instructions {
             List.of(SwapItemExecution.FROM_SLOT, SwapItemExecution.FROM_SCREEN, SwapItemExecution.TO_SLOT, SwapItemExecution.TO_SCREEN),
             List.of(ExecutionContext.MINION_KEY),
             SwapItemExecution.CODEC
+    );
+
+    public static final InstructionType GET_STACK = register(
+            "get_stack",
+            GetStackExecution::new,
+            List.of(GetStackExecution.SLOT, GetStackExecution.SCREEN),
+            List.of(GetStackExecution.ID, GetStackExecution.COUNT),
+            List.of(ExecutionContext.MINION_KEY),
+            GetStackExecution.CODEC
+    );
+
+    public static final InstructionType FIND_ITEM = register(
+            "find_item",
+            FindItemExecution::new,
+            List.of(FindItemExecution.ITEM_ID, FindItemExecution.SCREEN),
+            List.of(FindItemExecution.SLOT),
+            List.of(ExecutionContext.MINION_KEY),
+            FindItemExecution.CODEC
+    );
+
+    public static final InstructionType GET_BLOCK = register(
+            "get_block",
+            GetBlockExecution::new,
+            List.of(GetBlockExecution.FLUIDS, GetBlockExecution.REACH),
+            List.of(GetBlockExecution.ID),
+            List.of(ExecutionContext.MINION_KEY),
+            FindItemExecution.CODEC
     );
 
     public static final InstructionType CHAT = register(
@@ -101,16 +130,16 @@ public class Instructions {
             ChatExecution.CODEC
     );
 
-    private static InstructionType register(String id, Supplier<InstructionExecution> factory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters, Collection<Context.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {
+    private static InstructionType register(String id, InstructionType.ExecutionFactory factory, Collection<Parameter<?>> parameters, Collection<Parameter<?>> returnParameters, Collection<Context.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {
         Identifier identifier = Identifier.fromNamespaceAndPath(Minions.MOD_ID, id);
         return Registry.register(MinionRegistries.INSTRUCTION_TYPES, identifier, new InstructionType(factory, parameters, returnParameters, keys, executionCodec));
     }
 
-    private static InstructionType register(String id, Supplier<InstructionExecution> factory, Collection<Parameter<?>> parameters, Collection<Context.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {
+    private static InstructionType register(String id, InstructionType.ExecutionFactory factory, Collection<Parameter<?>> parameters, Collection<Context.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {
         return register(id, factory, parameters, List.of(), List.of(), executionCodec);
     }
 
-    private static InstructionType register(String id, Supplier<InstructionExecution> factory, Collection<Context.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {
+    private static InstructionType register(String id, InstructionType.ExecutionFactory factory, Collection<Context.Key<?>> keys, Codec<? extends InstructionExecution> executionCodec) {
         return register(id, factory, List.of(), List.of(), executionCodec);
     }
 

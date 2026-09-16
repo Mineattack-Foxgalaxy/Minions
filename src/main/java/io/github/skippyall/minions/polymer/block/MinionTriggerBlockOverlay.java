@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 public class MinionTriggerBlockOverlay implements PolymerBlock, PolymerClientDecoded, BlockWithElementHolder {
@@ -50,6 +51,7 @@ public class MinionTriggerBlockOverlay implements PolymerBlock, PolymerClientDec
         stack.set(DataComponents.ITEM_MODEL, Identifier.fromNamespaceAndPath(Minions.MOD_ID, "minion_trigger_no_plate_" + (initialBlockState.getValue(MinionTriggerBlock.POWERED) ? "active" : "inactive")));
 
         ItemDisplayElement element = new ItemDisplayElement(stack);
+        element.setOffset(new Vec3(0.0, 0.3, 0.0));
         element.setItemDisplayContext(ItemDisplayContext.NONE);
         holder.addElement(element);
         return holder;

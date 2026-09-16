@@ -32,10 +32,12 @@ public class PolymerRegistration {
         registerBlockOverlay(MinionBlocks.MINION_TRIGGER, new MinionTriggerBlockOverlay());
         PolymerBlockUtils.registerBlockEntity(MinionBlocks.MINION_TRIGGER_BE_TYPE);
         registerBlockOverlay(MinionBlocks.ANALOG_INPUT, new AnalogInputBlockOverlay());
+        registerBlockOverlay(MinionBlocks.ANALOG_OUTPUT, new AnalogInputBlockOverlay());
         registerBlockOverlay(MinionBlocks.TRIGGER_CONNECTOR, new ConnectorBlockOverlay());
 
         registerItemOverlay(MinionBlocks.MINION_TRIGGER.asItem(), new MinionsBlockItemOverlay(MinionBlocks.MINION_TRIGGER.asItem(), Items.COMPARATOR));
         registerItemOverlay(MinionBlocks.ANALOG_INPUT.asItem(), new MinionsBlockItemOverlay(MinionBlocks.ANALOG_INPUT.asItem(), Items.COMPARATOR));
+        registerItemOverlay(MinionBlocks.ANALOG_OUTPUT.asItem(), new MinionsBlockItemOverlay(MinionBlocks.ANALOG_OUTPUT.asItem(), Items.COMPARATOR));
         registerItemOverlay(MinionBlocks.TRIGGER_CONNECTOR.asItem(), new MinionsBlockItemOverlay(MinionBlocks.TRIGGER_CONNECTOR.asItem(), Items.CHORUS_PLANT));
 
         registerItemOverlay(MinionItems.REFERENCE_ITEM, new ClipboardItemOverlay());
@@ -45,6 +47,7 @@ public class PolymerRegistration {
         registerSimpleItemOverlay(MinionItems.MOVE_MODULE, Items.IRON_BOOTS);
         registerSimpleItemOverlay(MinionItems.ATTACK_MODULE, Items.IRON_PICKAXE);
         registerSimpleItemOverlay(MinionItems.INTERACT_MODULE, Items.LEVER);
+        registerSimpleItemOverlay(MinionItems.INVENTORY_MODULE, Items.CHEST);
         registerSimpleItemOverlay(MinionItems.EXPERIMENTAL_MODULE, Items.TNT);
         registerSimpleItemOverlay(MinionItems.MOB_SPAWNING_MODULE, Items.SPAWNER);
 

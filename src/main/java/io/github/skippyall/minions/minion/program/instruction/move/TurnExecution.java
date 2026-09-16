@@ -20,8 +20,7 @@ public class TurnExecution extends AbstractTurnExecution {
         super(targetYaw, targetPitch);
     }
 
-    @Override
-    public void readArguments(ParameterValueList arguments, Context context) {
+    public TurnExecution(ParameterValueList arguments, Context context) {
         MinionFakePlayer minion = context.getOrThrow(ExecutionContext.MINION_KEY);
 
         float maxAngle = arguments.getValue(ANGLE).floatValue();

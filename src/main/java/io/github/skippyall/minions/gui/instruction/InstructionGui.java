@@ -10,6 +10,7 @@ import io.github.skippyall.minions.module.MinionModule;
 import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.handler.supplier.ValueSupplier;
 import io.github.skippyall.minions.program.instruction.InstructionType;
+import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.registration.MinionComponentTypes;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.util.TranslationUtil;
@@ -68,7 +69,7 @@ public class InstructionGui {
     }
 
     public static CompletableFuture<@Nullable String> inputInstructionName(MinionsGui parent, GuiContext.Minion context, String defaultValue) {
-        return TextInput.input(parent, Component.translatable("minions.gui.instruction.enter_name"), defaultValue, (name, _) -> {
+        return TextInput.io(parent, Component.translatable("minions.gui.instruction.enter_name"), defaultValue, (name, _) -> {
             if (context.getMinion().getRuntime().hasInstruction(name)) {
                 return new Result.Error<>(Component.translatable("minions.gui.instruction.name_already_used"));
             }
@@ -176,5 +177,15 @@ public class InstructionGui {
                 builder.addLoreLine(Component.translatable("minions.gui.instruction.argument", valueSupplier.getDisplayText()));
         }
         return builder;
+    }
+
+    public static GuiElementBuilder createValueElement(TypedValue<?> value, RegistryAccess access) {
+        return new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_TYPES, value.type(), access))
+                .setName(value.getDisplayText());
+    }
+
+    public static GuiElementBuilder createValueElement(TypedValue<?> value, RegistryAccess access, String translationKey) {
+        return new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_TYPES, value.type(), access))
+                .setName(Component.translatable(translationKey, value.getDisplayText()));
     }
 }

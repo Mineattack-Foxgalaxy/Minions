@@ -53,6 +53,6 @@ public class ConfiguredValueSupplier<P> extends ConfiguredValueHandler<P, ValueS
         Result<TypedValue<?>, Component> value = supplier.resolve(newContext);
         Result<TypedValue<?>, Component> convertedResult = value.flatMap(v -> converters.convert(v));
 
-        return convertedResult.flatMap(convertedValue -> Casts.castOrError(convertedValue, parameter.type()));
+        return convertedResult.flatMap(convertedValue -> Casts.cast(convertedValue, parameter.type()));
     }
 }

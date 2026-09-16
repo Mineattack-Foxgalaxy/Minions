@@ -54,7 +54,7 @@ public class ConverterList {
     }
 
     private <F,I,T> Result<TypedValue<?>, Component> convert(TypedValue<F> from, ValueConverter<I,T> converter, ListIterator<ValueConverter<?,?>> iterator) {
-        Result<I, Component> inter = Casts.castOrError(from, converter.getFrom());
+        Result<I, Component> inter = Casts.cast(from, converter.getFrom());
         if(inter instanceof Result.Error<I, Component> error) {
             return new Result.Error<>(
                     Component.translatable("minions.converter.list.passing_error", iterator.previousIndex())

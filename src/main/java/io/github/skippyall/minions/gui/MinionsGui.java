@@ -47,7 +47,8 @@ public abstract class MinionsGui {
             open = false;
             if (child != null) {
                 child.close(alreadyClosed);
-            } else if (!alreadyClosed) {
+            }
+            if (!alreadyClosed) {
                 closeBacking();
             }
         }

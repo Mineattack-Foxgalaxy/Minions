@@ -14,6 +14,7 @@ public class MinionRegistration {
         MinionItems.register();
         SkinProviders.register();
         SpecialAbilities.register();
+        ValueConsumers.register();
         ValueConverters.register();
         ValueSuppliers.register();
         ValueTypes.register();

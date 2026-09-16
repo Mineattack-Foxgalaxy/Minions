@@ -2,7 +2,9 @@ package io.github.skippyall.minions.registration;
 
 import io.github.skippyall.minions.Minions;
 import io.github.skippyall.minions.block.ConnectorBlock;
-import io.github.skippyall.minions.block.input.BlockValueSupplier;
+import io.github.skippyall.minions.block.io.AnalogOutputBlock;
+import io.github.skippyall.minions.block.io.BlockValueConsumer;
+import io.github.skippyall.minions.block.io.BlockValueSupplier;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlock;
 import io.github.skippyall.minions.block.miniontrigger.MinionTriggerBlockEntity;
 import io.github.skippyall.minions.program.value.TypedValue;
@@ -37,6 +39,12 @@ public class MinionBlocks {
             FabricBlockEntityTypeBuilder.create(MinionTriggerBlockEntity::new, MINION_TRIGGER).build()
     );
 
+    public static final Block TRIGGER_CONNECTOR = registerBlockWithItem(
+            "trigger_connector",
+            ConnectorBlock::new,
+            BlockBehaviour.Properties.of()
+    );
+
     public static final Block ANALOG_INPUT = registerBlockWithItem(
             "analog_input",
             Block::new,
@@ -47,10 +55,14 @@ public class MinionBlocks {
                     .pushReaction(PushReaction.DESTROY)
     );
 
-    public static final Block TRIGGER_CONNECTOR = registerBlockWithItem(
-            "trigger_connector",
-            ConnectorBlock::new,
+    public static final AnalogOutputBlock ANALOG_OUTPUT = registerBlockWithItem(
+            "analog_output",
+            AnalogOutputBlock::new,
             BlockBehaviour.Properties.of()
+                    .noOcclusion()
+                    .instabreak()
+                    .sound(SoundType.STONE)
+                    .pushReaction(PushReaction.DESTROY)
     );
 
 
@@ -83,10 +95,11 @@ public class MinionBlocks {
             BlockBehaviour.Properties properties
     ) {
         properties.setId(ResourceKey.create(Registries.BLOCK, Minions.id(id)));
-        return Registry.register(BuiltInRegistries.BLOCK, id, constructor.apply(properties));
+        return Registry.register(BuiltInRegistries.BLOCK, Minions.id(id), constructor.apply(properties));
     }
 
     public static void register() {
         BlockValueSupplier.SIDED.registerForBlocks((level, pos, state, blockEntity, direction) -> () -> new TypedValue<>((long) level.getBestNeighborSignal(pos), ValueTypes.LONG), MinionBlocks.ANALOG_INPUT);
+        BlockValueConsumer.SIDED.registerForBlocks(MinionBlocks.ANALOG_OUTPUT::getBlockValueConsumer, ANALOG_OUTPUT);
     }
 }

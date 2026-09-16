@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
-public class MineBlockExecution implements InstructionExecution.Argumentless {
+public class MineBlockExecution implements InstructionExecution {
     public static final Codec<MineBlockExecution> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     BlockPos.CODEC.fieldOf("currentBlock").forGetter(e -> Objects.requireNonNull(e.currentBlock)),

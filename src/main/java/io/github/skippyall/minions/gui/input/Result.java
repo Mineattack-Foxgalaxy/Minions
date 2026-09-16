@@ -9,14 +9,14 @@ import java.util.function.Supplier;
 
 public sealed interface Result<T, E> permits Result.Success, Result.Error {
     static <T> Result<T, String> wrap(UnsafeOperation<T> toWrap) {
-        return wrapCustomError(toWrap, Exception::getMessage);
+        return wrapTransformError(toWrap, Exception::getMessage);
     }
 
     static <T, E> Result<T, E> wrapCustomError(UnsafeOperation<T> toWrap, E error) {
-        return wrapCustomError(toWrap,  e -> error);
+        return wrapTransformError(toWrap, e -> error);
     }
 
-    static <T, E> Result<T, E> wrapCustomError(UnsafeOperation<T> toWrap, Function<Exception, E> errorTransformer) {
+    static <T, E> Result<T, E> wrapTransformError(UnsafeOperation<T> toWrap, Function<Exception, E> errorTransformer) {
         try {
             return new Result.Success<>(toWrap.run());
         } catch (Exception e) {
