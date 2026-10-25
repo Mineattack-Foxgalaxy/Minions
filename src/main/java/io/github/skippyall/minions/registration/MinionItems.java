@@ -52,7 +52,7 @@ public class MinionItems {
     );
 
     public static final Item EXPERIMENTAL_MODULE = registerModule(
-            Minions.id("experimental"),
+            Minions.id("experimental_module"),
             List.of(Instructions.CHAT, Instructions.ECHO, Instructions.GET_BLOCK)
     );
 

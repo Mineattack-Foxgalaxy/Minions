@@ -119,7 +119,7 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
         }
     }
 
-    record Error<T, E>(E message) implements Result<T, E> {
+    record Error<T, E>(E error) implements Result<T, E> {
         @Override
         public boolean isSuccess() {
             return false;
@@ -133,12 +133,12 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
 
         @Override
         public T getOrThrow() {
-            throw new RuntimeException("Result was an error: " + message);
+            throw new RuntimeException("Result was an error: " + error);
         }
 
         @Override
         public E getErrorOrThrow() {
-            return message;
+            return error;
         }
 
         @Override
@@ -148,7 +148,7 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
 
         @Override
         public Optional<E> getOptionalError() {
-            return Optional.of(message);
+            return Optional.of(error);
         }
 
         @Override
@@ -163,17 +163,22 @@ public sealed interface Result<T, E> permits Result.Success, Result.Error {
 
         @Override
         public <U> Result<U, E> map(Function<T, U> mapper) {
-            return new Error<>(message);
+            return forResultType();
         }
 
         @Override
         public <U> Result<U, E> flatMap(Function<T, Result<U, E>> mapper) {
-            return new Error<>(message);
+            return forResultType();
         }
 
         @Override
         public <U> Result<T, U> mapError(Function<E, U> mapper) {
-            return new Error<>(mapper.apply(message));
+            return new Error<>(mapper.apply(error));
+        }
+
+        public <U> Result<U, E> forResultType() {
+            //noinspection unchecked (There is not actually anything of type T)
+            return (Result<U, E>) this;
         }
     }
 

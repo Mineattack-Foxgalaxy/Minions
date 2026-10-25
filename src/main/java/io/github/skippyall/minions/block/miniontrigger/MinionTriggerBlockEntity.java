@@ -62,6 +62,7 @@ public class MinionTriggerBlockEntity extends BlockEntity {
                 InstructionGui.selectInstructionModuleMenu(player, null, minion)
                         .thenAccept(type -> {
                             instruction = new ConfiguredInstruction(type);
+                            openGui(player);
                         });
             }
             return true;

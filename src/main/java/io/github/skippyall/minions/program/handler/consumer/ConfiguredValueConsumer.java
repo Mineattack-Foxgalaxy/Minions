@@ -31,8 +31,8 @@ public class ConfiguredValueConsumer<P> extends ConfiguredValueHandler<P, ValueC
     }
 
     public void consumeValue(TypedValue<?> value, Context context) {
-        Result<TypedValue<?>, Component> converted = converters.convert(value);
-        if(converted instanceof Result.Success<TypedValue<?>, Component> success) {
+        Result<? extends TypedValue<?>, Component> converted = converters.convert(value);
+        if(converted instanceof Result.Success<? extends TypedValue<?>, Component> success) {
             Context newContext = context.toBuilder()
                     .put(ResolutionContext.PARAMETER_NAME, parameter.name())
                     .build();

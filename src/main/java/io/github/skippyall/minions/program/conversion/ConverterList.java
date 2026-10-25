@@ -9,69 +9,43 @@ import io.github.skippyall.minions.util.TranslationUtil;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class ConverterList {
+public class ConverterList extends AbstractList<ValueConverter> {
     public static final Codec<ConverterList> CODEC = ValueConverter.CODEC.listOf().xmap(ConverterList::new, l -> l.converters);
 
-    private final List<ValueConverter<?,?>> converters;
+    private final List<ValueConverter> converters;
 
     public ConverterList() {
         this.converters = new ArrayList<>();
     }
 
-    private ConverterList(List<ValueConverter<?,?>> converters) {
+    private ConverterList(List<ValueConverter> converters) {
         this.converters = new ArrayList<>(converters);
     }
 
-    public static ConverterList of(List<ValueConverter<?,?>> converters) {
+    public static ConverterList of(List<ValueConverter> converters) {
         return new ConverterList(new ArrayList<>(converters));
     }
 
-    public List<ValueConverter<?,?>> getConverters() {
-        return converters;
-    }
-
-    public ValueType<?> getInputType() {
-        return converters.getFirst().getFrom();
-    }
-
-    public ValueType<?> getOutputType() {
-        return converters.getLast().getTo();
-    }
-
-    public Result<TypedValue<?>, Component> convert(TypedValue<?> input) {
-        if(converters.isEmpty()) {
-            return new Result.Success<>(input);
-        } else {
-            ListIterator<ValueConverter<?, ?>> iterator = converters.listIterator();
-            return convert(input, iterator.next(), iterator);
+    public Result<? extends TypedValue<?>, Component> convert(TypedValue<?> input) {
+        TypedValue<?> current = input;
+        for(ValueConverter converter : converters) {
+            Result<? extends TypedValue<?>, Component> result = converter.convert(current);
+            if(result instanceof Result.Success<? extends TypedValue<?>, Component> success) {
+                current = success.result();
+            } else if (result instanceof Result.Error<? extends TypedValue<?>, Component> error){
+                return error;
+            }
         }
+        return new Result.Success<>(current);
     }
 
-    private <F,I,T> Result<TypedValue<?>, Component> convert(TypedValue<F> from, ValueConverter<I,T> converter, ListIterator<ValueConverter<?,?>> iterator) {
-        Result<I, Component> inter = Casts.cast(from, converter.getFrom());
-        if(inter instanceof Result.Error<I, Component> error) {
-            return new Result.Error<>(
-                    Component.translatable("minions.converter.list.passing_error", iterator.previousIndex())
-                            .append("\n")
-                            .append(error.message())
-            );
-        }
-        Result<T, Component> to = converter.convert(inter.getOrThrow());
-
-        if(iterator.hasNext() && to instanceof Result.Success<T, Component> success) {
-            return convert(new TypedValue<>(success.result(), converter.getTo()), iterator.next(), iterator);
-        } else {
-            return to.map(v -> new TypedValue<>(v, converter.getTo()));
-        }
-    }
-
-    public static @Nullable Component createConverterWarning(ValueConverter<?, ?> converter) {
+    public static @Nullable Component createConverterWarning(ValueConverter converter) {
         return null;
     }
 
@@ -87,21 +61,37 @@ public class ConverterList {
     }
 
     public void check(Consumer<Component> errorConsumer, ValueType<?> input, ValueType<?> output) {
-        Component firstCastWarning = createCastWarning(input, converters.isEmpty() ? output : converters.get(0).getFrom());
-        if(firstCastWarning != null) {
-            errorConsumer.accept(firstCastWarning);
-        }
-        for(int i = 0; i < converters.size(); i++) {
-            ValueConverter<?,?> converter = converters.get(i);
+        for(ValueConverter converter : converters) {
             Component converterWarning = createConverterWarning(converter);
             if(converterWarning != null) {
                 errorConsumer.accept(converterWarning);
             }
-            Component castWarning = createCastWarning(converter.getTo(), i + 1 < converters.size() ? converters.get(i + 1).getFrom() : output);
-            if(castWarning != null) {
-                errorConsumer.accept(castWarning);
-            }
         }
+    }
+
+    @Override
+    public int size() {
+        return converters.size();
+    }
+
+    @Override
+    public ValueConverter get(int index) {
+        return converters.get(index);
+    }
+
+    @Override
+    public ValueConverter set(int index, ValueConverter element) {
+        return converters.set(index, element);
+    }
+
+    @Override
+    public void add(int index, ValueConverter valueConverter) {
+        converters.add(index, valueConverter);
+    }
+
+    @Override
+    public ValueConverter remove(int index) {
+        return converters.remove(index);
     }
 
     @Override

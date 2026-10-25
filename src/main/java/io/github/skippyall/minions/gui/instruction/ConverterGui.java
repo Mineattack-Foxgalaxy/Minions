@@ -17,23 +17,22 @@ import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
 
 public class ConverterGui extends MinionsGui {
+    private ValueType<?> from;
     private @Nullable ValueConverterType<?> valueConverterType;
-    private @Nullable ValueConverter<?,?> converter;
+    private @Nullable ValueConverter converter;
     private ConverterList list;
-    private ValueType<?> from, to;
 
     private SimpleGui gui;
     private boolean isNew;
     private int index;
 
-    public ConverterGui(MinionsGui parent, @Nullable ValueConverter<?,?> converter, ValueType<?> from, ValueType<?> to, ConverterList list, boolean isNew, int index) {
+    public ConverterGui(MinionsGui parent, ValueType<?> from, @Nullable ValueConverter converter, ConverterList list, boolean isNew, int index) {
         super(parent);
+        this.from = from;
         this.converter = converter;
         if(converter != null) {
             this.valueConverterType = converter.getType();
         }
-        this.from = from;
-        this.to = to;
         this.list = list;
         this.isNew = isNew;
         this.index = index;
@@ -54,7 +53,12 @@ public class ConverterGui extends MinionsGui {
 
         updateTypeDisplay();
         updateConverterDisplay();
-        gui.setSlot(8, backButton());
+        gui.setSlot(1, InstructionGui.createDeleteButton(this, () -> {
+                    list.remove(index);
+                    goBack();
+                })
+        );
+        gui.setSlot(2, backButton());
 
         gui.open();
     }
@@ -83,13 +87,13 @@ public class ConverterGui extends MinionsGui {
         updateTypeDisplay();
     }
 
-    public void setConverter(ValueConverter<?,?> converter) {
+    public void setConverter(ValueConverter converter) {
         this.converter = converter;
         if(isNew) {
-            list.getConverters().add(index, converter);
+            list.add(index, converter);
             isNew = false;
         } else {
-            list.getConverters().set(index, converter);
+            list.set(index, converter);
         }
         updateConverterDisplay();
     }
@@ -110,12 +114,12 @@ public class ConverterGui extends MinionsGui {
 
     private void configureData() {
         if(valueConverterType != null) {
-            valueConverterType.configure(this, from, to, converter)
+            valueConverterType.configure(this, from, converter)
                     .thenAccept(this::setConverter);
         }
     }
 
-    public static GuiElementBuilder createConverterElement(ValueConverter<?,?> converter, RegistryAccess manager) {
+    public static GuiElementBuilder createConverterElement(ValueConverter converter, RegistryAccess manager) {
         GuiElementBuilder builder = new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_CONVERTER_TYPES, converter.getType(), manager));
         builder.addLoreLine(converter.getDisplayText());
         return builder;

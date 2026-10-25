@@ -7,10 +7,10 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public interface ValueConverterType<C extends ValueConverter<?,?>> {
+public interface ValueConverterType<C extends ValueConverter> {
     MapCodec<C> getCodec();
 
-    boolean isSupportedConversion(ValueType<?> from, ValueType<?> to);
+    boolean isSupportedConversion(ValueType<?> from);
 
-    <F,T> CompletableFuture<? extends C> configure(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter<?,?> old);
+    <F> CompletableFuture<? extends C> configure(MinionsGui parent, ValueType<F> from, @Nullable ValueConverter old);
 }

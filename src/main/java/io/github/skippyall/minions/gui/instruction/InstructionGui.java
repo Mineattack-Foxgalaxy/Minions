@@ -4,6 +4,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.GuiDisplay;
 import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.gui.input.BooleanInput;
 import io.github.skippyall.minions.gui.minion.SimpleMinionsGui;
 import io.github.skippyall.minions.minion.fakeplayer.MinionFakePlayer;
 import io.github.skippyall.minions.module.MinionModule;
@@ -187,5 +188,17 @@ public class InstructionGui {
     public static GuiElementBuilder createValueElement(TypedValue<?> value, RegistryAccess access, String translationKey) {
         return new GuiElementBuilder(GuiDisplay.getDisplayStack(MinionRegistries.VALUE_TYPES, value.type(), access))
                 .setName(Component.translatable(translationKey, value.getDisplayText()));
+    }
+
+    public static GuiElementBuilder createDeleteButton(MinionsGui parent, Runnable onDelete) {
+        return new GuiElementBuilder(Items.LAVA_BUCKET)
+                .setName(Component.translatable("minions.gui.instruction.configure.delete"))
+                .setCallback(() -> BooleanInput.confirm(parent, Component.translatable("minions.gui.instruction.configure.delete.confirm"))
+                        .thenAccept((confirmed) -> {
+                            if (confirmed) {
+                                onDelete.run();
+                            }
+                        })
+                );
     }
 }

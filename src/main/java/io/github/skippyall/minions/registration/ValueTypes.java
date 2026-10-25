@@ -24,7 +24,7 @@ public class ValueTypes {
                     o -> o instanceof Long l ? l : null,
                     (parent, oldValue) -> TextInput.inputLong(
                             parent,
-                            Component.literal("Integer"),
+                            Component.translatable("value_type.minions.long"),
                             oldValue
                     ),
                     value -> Component.literal(value.toString())
@@ -39,7 +39,7 @@ public class ValueTypes {
                     o -> o instanceof Double d ? d : null,
                     (parent, oldValue) -> TextInput.inputDouble(
                             parent,
-                            Component.literal("Number"),
+                            Component.translatable("value_type.minions.double"),
                             oldValue
                     ),
                     value -> Component.literal(value.toString())
@@ -66,7 +66,7 @@ public class ValueTypes {
                     o -> o instanceof String s ? s : null,
                     ((parent, oldValue) -> TextInput.inputString(
                             parent,
-                            Component.literal("Text"),
+                            Component.translatable("value_type.minions.string"),
                             oldValue
                     )),
                     value -> Component.literal("\"" + value + "\"")

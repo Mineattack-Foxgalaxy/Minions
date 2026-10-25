@@ -44,7 +44,7 @@ public class AnalogOutputBlock extends Block {
             @Override
             public void acceptValue(TypedValue<?> value) {
                 Casts.cast(value, ValueTypes.LONG).ifSuccess(signal -> {
-                    outputSignal(signal.intValue(), level, pos, state);
+                    outputSignal(Math.clamp(signal, 0, 15), level, pos, state);
                 });
             }
 

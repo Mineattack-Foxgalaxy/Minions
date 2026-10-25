@@ -2,6 +2,8 @@ package io.github.skippyall.minions.gui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import io.github.skippyall.minions.program.value.ValueType;
+import io.github.skippyall.minions.registration.MinionRegistries;
 import net.minecraft.core.IdMap;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
@@ -88,6 +90,10 @@ public class PaginatedList extends MinionsGui {
                 })
         );
         return future;
+    }
+
+    public static CompletableFuture<ValueType<?>> chooseValueType(MinionsGui parent, Component title) {
+        return createListFuture(parent, title, MinionRegistries.VALUE_TYPES, t -> new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_TYPES, t, parent.viewer.registryAccess())));
     }
 
     private void addItemsAndNavigation() {

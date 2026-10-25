@@ -3,42 +3,33 @@ package io.github.skippyall.minions.program.conversion;
 import com.mojang.serialization.MapCodec;
 import io.github.skippyall.minions.gui.MinionsGui;
 import io.github.skippyall.minions.gui.input.Result;
+import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.value.ValueType;
-import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueConverters;
 import io.github.skippyall.minions.registration.ValueTypes;
+import io.github.skippyall.minions.util.FutureUtil;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
-    public static final MapCodec<EqualityConverter<?>> CODEC = MinionRegistries.VALUE_TYPES.byNameCodec().dispatchMap(
-            "value_type",
-            EqualityConverter::getFrom,
-            EqualityConverter::getCodec
-    );
+public class EqualityConverter implements ValueConverter {
+    public static final MapCodec<EqualityConverter> CODEC = TypedValue.CODEC.xmap(EqualityConverter::new, converter -> converter.compareValue).fieldOf("compareValue");
 
-    private ValueType<F> fromType;
-    private F compareValue;
+    TypedValue<?> compareValue;
 
-    public EqualityConverter(ValueType<F> fromType, F compareValue) {
-        this.fromType = fromType;
+    public EqualityConverter(TypedValue<?> compareValue) {
         this.compareValue = compareValue;
     }
 
     @Override
-    public Result<Boolean, Component> convert(F from) {
-        return new Result.Success<>(compareValue.equals(from));
+    public Result<? extends TypedValue<?>, Component> convert(TypedValue<?> from) {
+        boolean equal = from.value().equals(compareValue.value());
+        return new Result.Success<>(new TypedValue<>(equal, ValueTypes.BOOLEAN));
     }
 
     @Override
-    public ValueType<F> getFrom() {
-        return fromType;
-    }
-
-    @Override
-    public ValueType<Boolean> getTo() {
+    public ValueType<?> getOutputType(ValueType<?> inputType) {
         return ValueTypes.BOOLEAN;
     }
 
@@ -49,33 +40,29 @@ public class EqualityConverter<F> implements ValueConverter<F, Boolean> {
 
     @Override
     public Component getDisplayText() {
-        return Component.translatable("value_converter.minions.equality.display", fromType.getDisplayText(compareValue));
+        return Component.translatable("value_converter.minions.equality.display", compareValue.getDisplayText());
     }
 
-    private static <F> MapCodec<EqualityConverter<F>> getCodec(ValueType<F> fromType) {
-        return fromType.codec().fieldOf("compareValue")
-                .xmap(compareValue -> new EqualityConverter<>(fromType, compareValue), converter -> converter.compareValue);
-    }
-
-    public static class EqualityConverterType implements ValueConverterType<EqualityConverter<?>> {
+    public static class Type implements ValueConverterType<EqualityConverter> {
         @Override
-        public MapCodec<EqualityConverter<?>> getCodec() {
+        public MapCodec<EqualityConverter> getCodec() {
             return CODEC;
         }
 
         @Override
-        public boolean isSupportedConversion(ValueType<?> from, ValueType<?> to) {
-            return to == ValueTypes.BOOLEAN;
+        public boolean isSupportedConversion(ValueType<?> from) {
+            return true;
         }
 
         @Override
-        public <F,T> CompletableFuture<EqualityConverter<?>> configure(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter<?,?> old) {
+        public <F> CompletableFuture<EqualityConverter> configure(MinionsGui parent, ValueType<F> from, @Nullable ValueConverter old) {
             F oldValue = null;
-            if(old instanceof EqualityConverter<?> eq && eq.fromType == from) {
+            if(old instanceof EqualityConverter eq) {
                 oldValue = from.checkedCast(eq.compareValue);
             }
             return from.openValueDialog(parent, oldValue)
-                    .thenApply(compareValue -> new EqualityConverter<>(from, compareValue));
+                    .thenCompose(FutureUtil::failIfNull)
+                    .thenApply(compareValue -> new EqualityConverter(new TypedValue<>(compareValue, from)));
         }
     }
 }

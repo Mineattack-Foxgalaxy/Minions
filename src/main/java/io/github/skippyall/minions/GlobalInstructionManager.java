@@ -65,6 +65,9 @@ public class GlobalInstructionManager extends SavedData {
 
     public void removeInstruction(UUID runtimeId, int id) {
         Int2ObjectMap<ExecutingInstruction> entry = instructions.get(runtimeId);
+        if(entry != null) {
+            entry.remove(id);
+        }
     }
 
     public Int2ObjectMap<ExecutingInstruction> getInstructions(UUID runtimeId) {

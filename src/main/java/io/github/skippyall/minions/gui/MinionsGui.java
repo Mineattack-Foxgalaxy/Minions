@@ -59,7 +59,7 @@ public abstract class MinionsGui {
     }
 
     public void goBack() {
-        if (parent != null) {
+        if (parent != null && parent.open) {
             open = false;
             parent.child = null;
             parent.reopen();

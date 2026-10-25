@@ -49,7 +49,6 @@ public class MinionRuntime implements InstructionRuntime {
         for(ExecutingInstruction instruction : getInstructions()) {
             instruction.tick(context);
         }
-        removeStoppedInstructions();
     }
 
     public void disableInstructionType(InstructionType instructionType) {
@@ -58,7 +57,6 @@ public class MinionRuntime implements InstructionRuntime {
                 instruction.stop(context);
             }
         }
-        removeStoppedInstructions();
     }
 
     public Context getContext() {
@@ -100,11 +98,5 @@ public class MinionRuntime implements InstructionRuntime {
 
     public Collection<ExecutingInstruction> getInstructions() {
         return getInstructionMap().values();
-    }
-
-    private void removeStoppedInstructions() {
-        getInstructions().removeIf(instruction -> {
-            return instruction.getState() == ExecutingInstruction.State.STOPPED;
-        });
     }
 }

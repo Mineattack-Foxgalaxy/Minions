@@ -3,7 +3,6 @@ package io.github.skippyall.minions.gui.instruction;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import io.github.skippyall.minions.gui.MinionsGui;
-import io.github.skippyall.minions.gui.input.BooleanInput;
 import io.github.skippyall.minions.program.Context;
 import io.github.skippyall.minions.program.handler.Parameter;
 import io.github.skippyall.minions.program.instruction.ConfiguredInstruction;
@@ -44,17 +43,10 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
         };
 
         if(onDelete != null) {
-            gui.setSlot(7, new GuiElementBuilder(Items.LAVA_BUCKET)
-                    .setName(Component.translatable("minions.gui.instruction.configure.delete"))
-                    .setCallback(() -> BooleanInput.confirm(this, Component.translatable("minions.gui.instruction.configure.delete.confirm"))
-                            .thenAccept((confirmed) -> {
-                                if (confirmed) {
-                                    onDelete.run();
-                                    instruction.onInstructionRemove();
-                                }
-                            })
-                    )
-            );
+            gui.setSlot(7, InstructionGui.createDeleteButton(this, () -> {
+                onDelete.run();
+                instruction.onInstructionRemove();
+            }));
         }
 
         gui.setSlot(8, backButton());
@@ -135,6 +127,8 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
             );
             slot--;
         }
+
+        updateLastError();
     }
 
     private void updateConsumers() {
@@ -150,5 +144,7 @@ public class ConfigureInstructionGui extends MinionsGui implements ConfiguredIns
             );
             slot++;
         }
+
+        updateLastError();
     }
 }

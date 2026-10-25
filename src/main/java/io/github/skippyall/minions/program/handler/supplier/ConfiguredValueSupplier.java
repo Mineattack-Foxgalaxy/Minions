@@ -40,7 +40,7 @@ public class ConfiguredValueSupplier<P> extends ConfiguredValueHandler<P, ValueS
             case Result.Success<P, Component> success -> list.setValue(parameter, success.result());
             case Result.Error<P, Component> error -> {
                 errorConsumer.accept(Component.translatable("minions.instruction.argument.error", parameter.name()));
-                errorConsumer.accept(error.message());
+                errorConsumer.accept(error.error());
             }
         }
     }
@@ -51,7 +51,7 @@ public class ConfiguredValueSupplier<P> extends ConfiguredValueHandler<P, ValueS
                 .build();
 
         Result<TypedValue<?>, Component> value = supplier.resolve(newContext);
-        Result<TypedValue<?>, Component> convertedResult = value.flatMap(v -> converters.convert(v));
+        Result<? extends TypedValue<?>, Component> convertedResult = value.flatMap(v -> converters.convert(v));
 
         return convertedResult.flatMap(convertedValue -> Casts.cast(convertedValue, parameter.type()));
     }

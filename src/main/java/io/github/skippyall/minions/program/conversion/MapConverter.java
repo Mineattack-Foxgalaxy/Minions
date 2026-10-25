@@ -5,8 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.skippyall.minions.gui.MinionsGui;
+import io.github.skippyall.minions.gui.PaginatedList;
 import io.github.skippyall.minions.gui.converter.MapConverterGui;
 import io.github.skippyall.minions.gui.input.Result;
+import io.github.skippyall.minions.program.value.TypedValue;
 import io.github.skippyall.minions.program.value.ValueType;
 import io.github.skippyall.minions.registration.MinionRegistries;
 import io.github.skippyall.minions.registration.ValueConverters;
@@ -20,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class MapConverter<F,T> implements ValueConverter<F,T> {
+public class MapConverter<F,T> implements ValueConverter {
     public static final MapCodec<MapConverter<?,?>> CODEC = Codec.mapPair(
             MinionRegistries.VALUE_TYPES.byNameCodec().fieldOf("fromType"),
             MinionRegistries.VALUE_TYPES.byNameCodec().fieldOf("toType")
@@ -57,16 +59,19 @@ public class MapConverter<F,T> implements ValueConverter<F,T> {
     }
 
     @Override
-    public Result<T, Component> convert(F from) {
-        return new Result.Success<>(map.getOrDefault(from, defaultValue));
+    public Result<? extends TypedValue<?>, Component> convert(TypedValue<?> value) {
+        TypedValue<F> cast = value.checkedCast(from);
+        if(cast != null) {
+            return new Result.Success<>(new TypedValue<>(map.getOrDefault(cast.value(), defaultValue), to));
+        } else {
+            return new Result.Success<>(new TypedValue<>(defaultValue, to));
+        }
     }
 
-    @Override
     public ValueType<F> getFrom() {
         return from;
     }
 
-    @Override
     public ValueType<T> getTo() {
         return to;
     }
@@ -77,6 +82,11 @@ public class MapConverter<F,T> implements ValueConverter<F,T> {
 
     public T getDefaultValue() {
         return defaultValue;
+    }
+
+    @Override
+    public ValueType<?> getOutputType(ValueType<?> inputType) {
+        return to;
     }
 
     @Override
@@ -103,20 +113,26 @@ public class MapConverter<F,T> implements ValueConverter<F,T> {
 
     public static class Type implements ValueConverterType<MapConverter<?,?>> {
         @Override
-        public MapCodec<MapConverter<?, ?>> getCodec() {
+        public MapCodec<MapConverter<?,?>> getCodec() {
             return CODEC;
         }
 
         @Override
-        public boolean isSupportedConversion(ValueType<?> from, ValueType<?> to) {
+        public boolean isSupportedConversion(ValueType<?> from) {
             return true;
         }
 
         @Override
-        public <F, T> CompletableFuture<MapConverter<F, T>> configure(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter<?, ?> old) {
+        public <F> CompletableFuture<? extends MapConverter<?,?>> configure(MinionsGui parent, ValueType<F> from, @Nullable ValueConverter old) {
+            return PaginatedList.chooseValueType(parent, Component.empty()).thenCompose(
+                    to -> configure2(parent, from, to, old)
+            );
+        }
+
+        private <F,T> CompletableFuture<? extends MapConverter<?,?>> configure2(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter old) {
             List<Map.Entry<F, T>> entryList;
             T defaultValue = null;
-            if(old instanceof MapConverter<?,?> mapConverter && mapConverter.getFrom() == from && mapConverter.getTo() == to) {
+            if(old instanceof MapConverter<?,?> mapConverter && mapConverter.getFrom() == from) {
                 //noinspection unchecked
                 entryList = new ArrayList<>(((MapConverter<F, T>)mapConverter).getMap().entrySet());
                 //noinspection unchecked

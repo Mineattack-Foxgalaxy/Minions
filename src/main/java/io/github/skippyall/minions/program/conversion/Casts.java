@@ -53,6 +53,10 @@ public class Casts {
         }
     }
 
+    public static <F,T> Result<TypedValue<T>, Component> castTypedValue(TypedValue<F> from, ValueType<T> to) {
+        return cast(from, to).map(v -> new TypedValue<>(v, to));
+    }
+
     public static boolean canCastSafely(ValueType<?> from, ValueType<?> to) {
         if(from == to) {
             return true;

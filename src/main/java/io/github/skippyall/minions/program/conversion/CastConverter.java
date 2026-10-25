@@ -17,33 +17,25 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public class CastConverter<F,T> implements ValueConverter<F,T> {
-    private static final MapCodec<CastConverter<?,?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                    MinionRegistries.VALUE_TYPES.byNameCodec().fieldOf("from").forGetter(CastConverter::getFrom),
-                    MinionRegistries.VALUE_TYPES.byNameCodec().fieldOf("to").forGetter(CastConverter::getTo)
+public class CastConverter<T> implements ValueConverter {
+    private static final MapCodec<CastConverter<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                    MinionRegistries.VALUE_TYPES.byNameCodec().fieldOf("to").forGetter(converter -> converter.to)
             ).apply(instance, CastConverter::new)
     );
 
-    private final ValueType<F> from;
     private final ValueType<T> to;
 
-    public CastConverter(ValueType<F> from, ValueType<T> to) {
-        this.from = from;
+    public CastConverter(ValueType<T> to) {
         this.to = to;
     }
 
     @Override
-    public Result<T, Component> convert(F fromValue) {
-        return Casts.cast(new TypedValue<>(fromValue, from), to);
+    public Result<TypedValue<T>, Component> convert(TypedValue<?> fromValue) {
+        return Casts.castTypedValue(fromValue, to);
     }
 
     @Override
-    public ValueType<F> getFrom() {
-        return from;
-    }
-
-    @Override
-    public ValueType<T> getTo() {
+    public ValueType<?> getOutputType(ValueType<?> inputType) {
         return to;
     }
 
@@ -54,29 +46,24 @@ public class CastConverter<F,T> implements ValueConverter<F,T> {
 
     @Override
     public Component getDisplayText() {
-        return Component.translatable("value_converter.minions.cast.display", Component.translatable(TranslationUtil.getTranslationKey(from, MinionRegistries.VALUE_TYPES)), Component.translatable(TranslationUtil.getTranslationKey(to, MinionRegistries.VALUE_TYPES)));
+        return Component.translatable("value_converter.minions.cast.display", Component.translatable(TranslationUtil.getTranslationKey(to, MinionRegistries.VALUE_TYPES)));
     }
 
-    public static class Type implements ValueConverterType<CastConverter<?,?>> {
+    public static class Type implements ValueConverterType<CastConverter<?>> {
         @Override
-        public MapCodec<CastConverter<?, ?>> getCodec() {
+        public MapCodec<CastConverter<?>> getCodec() {
             return CastConverter.CODEC;
         }
 
         @Override
-        public boolean isSupportedConversion(ValueType<?> from, ValueType<?> to) {
-            return Casts.getCast(from, to) != null;
+        public boolean isSupportedConversion(ValueType<?> from) {
+            return true;
         }
 
         @Override
-        public <F,T> CompletableFuture<CastConverter<?,?>> configure(MinionsGui parent, ValueType<F> from, ValueType<T> to, @Nullable ValueConverter<?, ?> old) {
-            return PaginatedList.createListFuture(parent, Component.translatable("minions.gui.instruction.converters.cast.input_type"), MinionRegistries.VALUE_TYPES, type -> new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_TYPES, type, parent.viewer.registryAccess())))
-                    .thenCompose(inputType ->
-                        PaginatedList.createListFuture(parent, Component.translatable("minions.gui.instruction.converters.cast.output_type"), MinionRegistries.VALUE_TYPES, type -> new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_TYPES, type, parent.viewer.registryAccess())))
-                                .thenApply(outputType ->
-                                    new CastConverter<>(inputType, outputType)
-                                )
-                    );
+        public <F> CompletableFuture<CastConverter<?>> configure(MinionsGui parent, ValueType<F> from, @Nullable ValueConverter old) {
+            return PaginatedList.createListFuture(parent, Component.translatable("minions.gui.instruction.converters.cast.output_type"), MinionRegistries.VALUE_TYPES, type -> new GuiElementBuilder(GuiDisplay.getDisplayStackWithName(MinionRegistries.VALUE_TYPES, type, parent.viewer.registryAccess())))
+                    .thenApply(CastConverter::new);
         }
     }
 }
